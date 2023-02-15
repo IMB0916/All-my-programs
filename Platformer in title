@@ -1,0 +1,642 @@
+/** 
+ * 
+ * SP @Prodigy6 - 2023
+ *
+ * My 12th game!
+ * 
+ * !!!WARNING!!!
+ * THIS GAME MAY NOT WORK ON CERTAIN DEVICES
+ * INCLUDING BUT NOT LIMITED TO CHROMEBOOKS
+ * @chromebook_users: do the spikes work now?
+ * 
+ * IF IT DOES NOT LOAD, THEN RESTART THE PROGRAM / REFRESH THE PAGE
+ * 
+ * YOU MAY WANT TO ZOOM OUT UNTIL YOU GET TO 75-80%
+ * 
+ * IF IT RUNS VERY SLOWLY/NOT AT ALL YOU MAY WANT TO SCROLL DOWN A BIT UNTIL YOU CAN SEE THE VERY TOP OF THE CANVAS
+ * 
+ * Platformer you play in the title
+ * 
+ * Arrow keys to move, R to restart
+ * 
+ * CREDITS {
+ * 
+ *  Inspired by VEXCESS @VXS & Liam K @liamkka
+ *  Special thanks to Aliquis @bhavjitChauhan as well
+ * 
+ *  daniel @dkareh for the loop protector code so it doesn't crash when you scroll away
+ * 
+ *  Actual setting title code credit to VEXCESS as well
+ *  
+ *  Uhhh... idk where else to put this, but I had a lot of fun making this. A nice break from 7000 line tower defenses if you get my drift.
+ *  
+ * }
+ * 
+ * DATES {
+ * 
+ *  STARTED: 1.21.23
+ *  FINISHED: 1.22.23
+ *  RELEASED: 1.24.23
+ *  
+ *  took 3-4 hours, most of the work was making the levels
+ * 
+ * }
+ * 
+ * BLOCKS {
+ *  
+ *  ◻ : air 
+ *  ◼ : normal block
+ *  ▧ : portal
+ *  ◂ ▾ ▸ ▴ : spikes
+ *  ⊺⊺ : trampoline
+ *  
+ * }
+ * 
+ * code is ugly
+ * 
+ * logo is cool
+ * 
+ * pretty inefficient ngl but... idk no good excuse
+ * 
+ * don't press space, will lock (thumbnail)
+ * 
+ * ok all you complainers the first level is now easier
+ * 
+**/
+
+// {
+
+smooth();
+size(600, 600, P2D);
+
+// credit to daniel @dkareh
+(function() {return this;})().LoopProtector.prototype.leave = function() {};
+
+// title code
+// all credit to VEXCESS @VXS AND Aliquis @bhavjitChauhan
+var JSON_ = (function(){return this.JSON;})();
+var top_ = (function(){return this.top;})();
+function setTitle(title) {
+  top_.postMessage(JSON_.stringify({action: "page-info", title: title}), "*");
+}
+
+var clicked = false;
+
+// logo vars :D
+var logoImgs = [];
+var logoTimer = 1;
+var arr = [];
+
+background(0, 0, 0, 0);
+fill(255);
+textSize(380);
+textFont(createFont("Montserrat Bold"));
+textAlign(CENTER, CENTER);
+text("SP", 295, 298);
+for(var i = 0; i < 30; i++) {
+    for(var j = 0; j < 30; j++) {
+        logoImgs.push([get(i*30, j*30, 30, 30), i*30, j*30, 0, 285, false]);
+    }
+}
+
+var player = {
+    
+    x: 1,
+    y: 1,
+    yV: 0,
+    canJump: false
+    
+};
+
+var keys = [];
+
+var blocks = [];
+
+// originally going to be coded differently...
+// don't need an object anymore but who cares ;)
+function block(type) {
+    this.t = type;
+}
+
+// the little introduction in the title variables
+var stage = -2;
+var introTimer = 0;
+function advPage() {
+    
+    introTimer ++;
+    
+    if(keys[DOWN] && introTimer > 150) {
+        stage++;
+        introTimer = 5;
+    }
+    
+}
+
+// level variables
+
+var levels = [
+    
+    /*
+    
+        so no copy paste
+        
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "x-----------------------------x",
+    */
+    
+    [
+        
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "x-----------------------------x",
+        "x-----------------------------x",
+        "x-----------------------------x",
+        "x-----------------------------x",
+        "x-------------x-x-x--x--------x",
+        "x------x--x--------------x----x",
+        "xx-----------------------xx---x",
+        "xxx----------------------xxx--x",
+        "xxx----------------------xxxxpx",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        
+    ],
+    
+    [
+        
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "x----------------x------------x",
+        "x----------------x------------x",
+        "x---------xxxxx--x------------x",
+        "x--------x--------------------x",
+        "x--------x--------------------x",
+        "x--------x--------------------x",
+        "x--------x--------------------x",
+        "xt-------xsssssssstsssssssssspx",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        
+    ],
+    
+    [
+        
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "x----------------------------px",
+        "x-----------------------------x",
+        "xx------------------------x--xx",
+        "x------------x----------------x",
+        "x------------------------x----x",
+        "x-----------------------------x",
+        "x-----------------------------x",
+        "xsssssssssssssssssssssssssssssx",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        
+    ],
+    
+    [
+        
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "x-----------------------x-----x",
+        "x-----------------------x-----x",
+        "x----------x---------xx-x--x--x",
+        "x--------------------x--x--x--x",
+        "x------sssssx--l-----x--x-xx--x",
+        "x--------------l-----x--x--x--x",
+        "x--------------l-----x--x--x--x",
+        "x--------------l-----x--x-xx--x",
+        "x-------------tr-----x--x--x--x",
+        "x-----xsssssssx------x--x--x--x",
+        "x--------------------x----xx--x",
+        "x--------------------x----xx-px",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        
+    ],
+    
+    [
+        
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "x---x---x---x-------x---x---xpx",
+        "x---x---x---x-------x-------x-x",
+        "x---x-------x---s---x-------x-x",
+        "x-----------x---x---x-------x-x",
+        "x-------s---x---x---x-------x-x",
+        "x---s---x---x---x---x---s---x-x",
+        "x---x---x-------x-------x---xtx",
+        "x---x---x-----t-x-------x---x-x",
+        "x---x---x---s---x---s--txr-lx-x",
+        "x---x-t-x---x---x---x---x-----x",
+        "xt--x---x---x---x---x---x----xx",
+        "x---x---x--txsssxt--x---x---xxx",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        
+    ],
+    
+    [
+        
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "x-xddddddddddddddddddddddddddxx",
+        "x-x---------------------------x",
+        "x-x---------------------------x",
+        "x-x---------------------------x",
+        "x-x---------------------------x",
+        "x-xp-----s----s---s---s---s---x",
+        "x-xxxxxxxxxttxxxtxxxtxxxtxxxx-x",
+        "x-xxxxxxxxxxxxxxxxxxxxxxxxxxx-x",
+        "x-x-----x---------------------x",
+        "x-x--------------------------tx",
+        "x-x--------------------------xx",
+        "x-x--------sts----------------x",
+        "x-x----------------------sts--x",
+        "x-x---------------------------x",
+        "x-x--sts----------------------x",
+        "x-----------------------------x",
+        "x---t--sssssssssstssssssssssssx",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        
+    ],
+    
+    [
+        
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "x-----------------------------x",
+        "x-----x---x-xxxxx-x---x-x-----x",
+        "x-----x---x---x---xx--x-x-----x",
+        "x-----x-x-x---x---x-x-x-x-----x",
+        "x-----x-x-x---x---x--xx-------x",
+        "x------x-x--xxxxx-x---x-x-----x",
+        "x-----------------------------x",
+        "x-----------------------------x",
+        "x-----------------------------x",
+        "x-----------------------------x",
+        "x-----------------------------x",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        
+    ],
+];
+
+var levelTitles = [
+    
+    "Starting off",
+    "Trampolines are bouncy, spikes are sharp",
+    "You can air jump",
+    "Annoying",
+    "Trampolines'n'Spikes",
+    "Last Level",
+    "Congrats",
+    
+];
+
+var curLevel = 0;
+
+var level = function() {
+    
+    blocks = [];
+    player.x = 1;
+    player.y = 1;
+    
+    for(var i in levels[curLevel]) {
+        
+        for(var j in levels[curLevel][i]) {
+            blocks.push(new block(levels[curLevel][i][j]));
+        }
+        
+        blocks.push(new block(" "));
+        
+    }
+    
+};
+
+// computes the game title
+var titleBlox = function(x) {
+    
+    // helpfully named variable
+    var m = "";
+    
+    for(var i = 0; i < blocks.length; i++) {
+        
+        // display player
+        if(i === round(player.y - 0.5) * 32 + round(player.x - 0.5) && blocks[i].t !== " ") {
+            m += "◉";
+        }
+        
+        else {
+            
+            // display other blocks
+            switch(blocks[i].t) {
+                
+                case "x":
+                    m += "◼";
+                break;
+                
+                case "-":
+                    m += "◻";
+                break;
+                
+                case "p":
+                    m += "▧";
+                break;
+                
+                case "t":
+                    m += "⊺⊺";
+                break;
+                
+                case "l":
+                case "d":
+                case "r":
+                case "s":
+                    m += "△";
+                break;
+                
+                case " ": 
+                    m += " ";
+                break;
+                
+            }
+            
+        }
+        
+    }
+    
+    return m;
+    
+};
+
+// check if there is a block at a certain spot
+// used for collisions
+var checkBlox = function(pos, look) {
+    return blocks[pos].t !== look;
+};
+
+// the background
+background(255);
+noStroke();
+for(var i = 0; i < 600; i++) {
+    fill(lerpColor(color(188, 235, 232), color(228, 255, 255), i / 600));
+    rect(0, i, 600, 1);
+}
+var back = get();
+
+draw = function() {
+    
+    // beautiful background
+    image(back, 0, 0);
+    
+    // sets stuff up
+    textFont(createFont("Verdana Bold"));
+    fill(0);
+    textAlign(CENTER, CENTER);
+    
+    // thumbnail
+    if(keys[32]) {
+        
+        stage = 5;
+        
+    }
+    
+    // other text
+    else {
+        
+        fill(0);
+        textSize(70);
+        pushMatrix();
+        translate(300, 100);
+        rotate(-3);
+        text("^look up there", 0, 0);
+        popMatrix();
+        
+        textSize(50);
+        pushMatrix();
+        translate(300, 300);
+        rotate(-1);
+        text("if the keys aren't\nresponding, click\ninside this box", 0, 0);
+        popMatrix();
+        
+    }
+    
+    switch(stage) {
+        
+        // click to begin
+        case -2:
+            
+            image(back, 0, 0);
+            
+            fill(0);
+            textSize(110);
+            pushMatrix();
+            translate(300, 250);
+            rotate(-3);
+            text("click to\nbegin", 0, 0);
+            popMatrix();
+            
+            textSize(35);
+            if(clicked) {
+                stage = -1;
+            }
+            
+            textSize(23);
+            text("You may want to press CTRL and - to zoom out, to be able to see the whole title", 25, 220, 550, 600);
+            
+            setTitle("Click the canvas");
+            
+        break;
+        
+        // the logo >‿<
+        case -1:
+            
+            arr = [];
+            background(0);
+            imageMode(CENTER);
+            
+            // most of this is just copied from the normal logo, then converted into the title text
+            for(var i in logoImgs) {
+                
+                pushMatrix();
+                translate(logoImgs[i][3] + 15, logoImgs[i][4]);
+                image(logoImgs[i][0], 0, 0);
+                popMatrix();
+                
+                if(logoImgs[i][5]) {
+                    logoImgs[i][3] += (logoImgs[i][1] - logoImgs[i][3]) / 12;
+                    logoImgs[i][4] += (logoImgs[i][2] - logoImgs[i][4]) / 12;
+                    
+                }
+                
+            }
+            
+            if(logoTimer < 180) {
+                
+                logoImgs[logoTimer * 5][5] = true;
+                logoImgs[logoTimer * 5 - 1][5] = true;
+                logoImgs[logoTimer * 5 - 2][5] = true;
+                logoImgs[logoTimer * 5 - 3][5] = true;
+                logoImgs[logoTimer * 5 - 4][5] = true;
+                
+            }
+            
+            imageMode(CORNER);
+                
+            if(logoTimer > 380) {
+                stage = 0;
+            }
+            
+            logoTimer ++;
+            
+            // bascially the entire conversion
+            for(var j = 5; j < 21; j++) {
+                
+                for(var i = 0; i < 32; i++) {
+                    
+                    if(get((600 / 32) * i, (600 / 25) * j) === -1) {                        arr.push("◼");
+                    }
+                    
+                    else {
+                        arr.push("◻");
+                    }
+                    
+                }
+                
+                arr.push(" ");
+                
+            }
+            
+            setTitle(arr.join(""));
+            
+            image(back, 0, 0);
+            
+            // helpful
+            fill(0);
+            textSize(70);
+            pushMatrix();
+            translate(300, 100);
+            rotate(-3);
+            text("^look up there", 0, 0);
+            popMatrix();
+            
+            textSize(50);
+            pushMatrix();
+            translate(300, 300);
+            rotate(-1);
+            text("if the keys aren't\nresponding, click\ninside this box", 0, 0);
+            popMatrix();
+            
+        break;
+        
+        // introductory messages
+        case 0:
+            
+            setTitle(frameCount % 70 > 35 ? "Welcome to the game that you play within the title! (Press down to continue)".substring(introTimer / 5, 0) : "Welcome to the game that you play within the title! (Press down to continue)".substring(introTimer / 5, 0) + "|");
+            advPage();
+            
+        break;
+        
+        case 1:
+            
+            setTitle(frameCount % 70 > 35 ? "Use the arrow keys to move. You are the circle ◉ (Press down to continue)".substring(introTimer / 5, 0) : "Use the arrow keys to move. You are the circle ◉ (Press down to continue)".substring(introTimer / 5, 0) + "|");
+            advPage();
+            
+        break;
+        
+        case 2:
+            
+            setTitle(frameCount % 70 > 35 ? "Get to the portal ▧ to complete the level (Press down to continue)".substring(introTimer / 5, 0) : "Get to the portal ▧ to complete the level (Press down to continue)".substring(introTimer / 5, 0) + "|");
+            advPage();
+            
+        break;
+        
+        case 3:
+            
+            setTitle(frameCount % 70 > 35 ? "Good luck! (Press down to begin)".substring(introTimer / 5, 0) : "Good luck! (Press down to begin)".substring(introTimer / 5, 0) + "|");
+            advPage();
+            level();
+            
+        break;
+        
+        // main game
+        case 4:
+            
+            // sets the title
+            setTitle(titleBlox(blocks) + "[Level " + (curLevel + 1) + "]: " + levelTitles[curLevel]);
+            
+            // key interaction
+            if(keys[RIGHT] && checkBlox(floor(player.y) * 32 + floor(player.x) + 1, "x")) {
+                player.x += 0.15;
+            }
+            
+            if(keys[LEFT] && checkBlox(floor(player.y) * 32 + floor(player.x) - 1, "x")) {
+                player.x -= 0.15;
+            }
+            
+            if(keys[UP] && player.canJump) {
+                player.yV = -0.163;
+                player.canJump = false;
+            }
+            
+            player.y += player.yV;
+            
+            // if there is something below
+            if(!checkBlox(constrain(floor(player.y + 1) * 32 + floor(player.x), 0, blocks.length - 1), "x")) {
+                player.yV = -0.006;
+                player.canJump = true;
+            }
+            
+            // if the player reached the portal
+            if(!checkBlox(floor(player.y) * 32 + floor(player.x), "p")) {
+                curLevel ++;
+                level();
+            }
+            
+            // trampoline
+            if(!checkBlox(constrain(floor(player.y) * 32 + floor(player.x), 0, blocks.length - 1), "t")) {
+                player.yV = -0.26;
+            }
+            
+            // spikes / if the player went off the screen / r to restart
+            if(!checkBlox(constrain(floor(player.y) * 32 + floor(player.x), 0, blocks.length - 1), "s") || !checkBlox(constrain(floor(player.y) * 32 + floor(player.x), 0, blocks.length - 1), "r") || !checkBlox(constrain(floor(player.y) * 32 + floor(player.x), 0, blocks.length - 1), "l") || !checkBlox(constrain(floor(player.y) * 32 + floor(player.x), 0, blocks.length - 1), "d") || player.y > (blocks.length - 6) / 32 || keys[82]) {
+                level();
+            }
+            
+            // if the player can't go up
+             if(!checkBlox(constrain(floor(player.y - 1) * 32 + floor(player.x), 0, blocks.length - 1), "x")) {
+                player.yV = 0.06;
+            }
+            
+            // gravity
+            player.yV += 0.006;
+        
+        break;
+        
+        case 5:
+            
+            textSize(100);
+            pushMatrix();
+            translate(300, 150);
+            rotate(10);
+            text("Platformer", 0, 0);
+            popMatrix();
+            
+            textSize(60);
+            pushMatrix();
+            translate(300, 400);
+            rotate(2);
+            text("(that you play\nin the title)", 0, 0);
+            popMatrix();
+            
+            setTitle("Platformer (that you play in the title)");
+            
+            noLoop();
+            
+        break;
+    }
+};
+
+// interaction
+keyPressed = function() {
+    keys[keyCode] = true;
+};
+
+keyReleased = function() {
+    keys[keyCode] = false;
+};
+
+mouseClicked = function() {
+    clicked = true;
+};
+
+// }
