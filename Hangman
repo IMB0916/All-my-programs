@@ -1,0 +1,576 @@
+/**
+ * 
+ * H  H   A   N   N  GGGG M     M   A   N   N
+ * H  H  A A  NN  N G     MM   MM  A A  NN  N
+ * HHHH  AAA  N N N G  GG M M M M  AAA  N N N
+ * H  H A   A N  NN G   G M  M  M A   A N  NN
+ * H  H A   A N   N  GGG  M  M  M A   A N   N
+ * 
+ * My 8th game!
+ * SP @Prodigy6 - 2022
+ * 
+ * it's just hangman!! over 300 different words
+ * dates {
+ *  STARTED  : 10/07/22
+ *  FINISHED : 10/12/22
+ *  RELEASED: 10/13/22
+ * }
+ * 
+ * ok bugs should be fixed; sorry if there are more -- PLEASE GIVE A DETAILED REPORT
+**/
+// {
+var wTimer = 0;
+var lockLetters = false;
+var endImg;
+var howManyLetters = 0;
+var lists = {
+    colors: ["blue", "gray", "navy", "cyan", "lime", "brown", "black", "violet", "magenta", "indigo", "purple", "cerulean", "pink", "seafoam green", "forest green", "maroon", "crimson", "orange", "yellow", "green", "white", "charcoal", "lavender", "periwinkle", "turquoise", "yellow green", "red orange", "sky blue", "gold", "silver", "teal", "plum", "beige"],
+    
+    // alot of this was copied straight from the typist game pls no judge i was running out of time
+    foods: ["pizza", "pasta", "banana","apple","orange","kumquat","pizza","burger","salad","pasta","linguine","lasagna","nacho","taco","jelly","onion","spinach","quesadilla","panini","sandwich","turkey","mutton","pork","porkchop","poultry","mustard","ketchup","ranch","butter","condiment","cheese","provolone","cheddar","swiss","peach","pear","strawberry","chip","potato","donut","doughnut","pepperoni","parmesean","nugget","fruit","vegetable","honeycrisp","radish","carrot","asparagus","almond","peanut","chocolate","vanilla","candy","dairy","yogurt","milk", "cake","cookies","cupcake","brownie","water","juice","grape","bread","macaroni","cereal","plum","lemon","melon","tangerine","watermelon","canteloupe","cauliflower","broccoli","horseradish","cabbage","lettuce","mushroom","anchovies","sausage","kebab","rice","seafood"],
+    state: ["washington", "oregon", "california", "nevada", "arizona", "utah", "idaho", "montana", "wyoming", "colorado", "new mexico", "texas", "oklahoma", "kansas", "nebraska", "south dakota", "north dakota", "minnesota", "iowa", "missouri", "arkansas", "louisiana", "mississippi", "illinois", "wisconsin", "alabama", "georgia", "florida", "south carolina", "north carolina", "tennessee", "michigan", "virginia", "kentucky", "west virginia", "ohio", "pennsylvania", "maryland", "delaware", "new york", "vermont", "new hampshire", "maine", "massachusetts", "connecticut", "rhode island", "alaska", "hawaii", "new jersey", "indiana"],
+    country: ["united states", "canada", "mexico", "belize", "guatemala", "venezuela", "brazil", "chile", "peru", "bolivia", "paraguay", "uruguay", "ecuador", "nicaragua", "el salvador", "costa rica", "cuba", "bahamas", "argentina", "south africa", "botswana", "zambia", "zimbabwe", "malawi", "mozambique", "lesotho", "angola", "algeria", "tunisia", "libya", "mali", "benin", "togo", "gambia", "gabon", "cameroon", "egypt", "sudan", "south sudan", "congo", "rwanda", "burundi", "kenya", "senegal", "somalia", "ethiopia", "eritrea", "niger", "nigeria", "chad", "liberia", "israel", "saudi arabia", "yemen", "oman", "afghanistan", "china", "russia", "india", "nepal", "bhutan", "bangladesh", "sri lanka", "pakistan", "myanmar", "laos", "south korea", "north korea", "japan", "kazakhstan", "kyrgzystan", "azerbaijan", "armenia", "georgia", "ukraine", "australia", "new zealand", "indonesia", "malaysia", "singapore", "brunei", "papua new guinea", "poland", "latvia", "hungary", "united kingdom", "spain", "france", "germany", "finland", "norway", "sweden", "denmark", "iceland", "portugal", "austria", "belgium", "italy", "greece", "guinea", "burkina faso", "guinea bissau", "switzerland", "panama", "colombia", "lithuania", "estonia", "turkey", "romania", "slovakia", "slovenia"],
+    sports: ["soccer", "tennis", "basketball", "golf", "running", "cross country", "volleyball", "badminton", "football", "swimming", "boxing", "table tennis", "skiing", "ice skating", "snowboarding", "roller skating", "cricket", "rugby", "bowling", "hockey", "field hockey", "surfing", "karate", "horse racing", "skateboarding", "cycling", "archery", "fishing", "gymnastics", "figure skating"],
+    holidays: ["christmas", "halloween", "new years", "birthday", "hanukkah", "flag day", "juneteenth", "cinco de mayo", "valentines day", "st patricks day", "easter", "mothers day", "memorial day", "labor day", "veterans day", "thanksgiving", "kwanzaa", "diwali", "day of the dead", "yom kippur", "passover"],
+};
+var imgs = [];
+var bckg;
+var presents = [];
+var pMsg = ["P", "R", "E", "S", "E", "N", "T", "S"];
+var transImg, transImgX = 0.1;
+var logoTimer = 1;
+var woodTexture;
+var ranList = [lists.colors, lists.foods, lists.state, lists.country, lists.sports, lists.holidays];
+var rLt = ["color", "food", "state", "country", "sport", "holiday"];
+var ranListSelect = ~~random(0, ranList.length);
+var alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+var phraseFound = [];
+var selectedPhrase = ~~(random(0, ranList[ranListSelect].length));
+for(var i = 0; i < ranList[ranListSelect][selectedPhrase].length; i++) {
+    phraseFound.push("");
+    if(ranList[ranListSelect][selectedPhrase][i] !== " ") {
+        howManyLetters ++;
+    }
+}
+var outlineText = function(msg, x, y) {
+    fill(0);
+    for(var i = -2; i < 3; i++) {
+        for(var j = -2; j < 3; j++) {
+            fill(0);
+            text(msg, x + i, y + j);
+        }
+    }
+    fill(255);
+    text(msg, x, y);
+};
+
+var handCursor = 0;
+var clicked = false;
+var keyIsBeingTyped = false;
+var page = "load";
+var bodyPartsLeft = 6;
+var elim = [];
+var good = [];
+var howManyFinished = 0;
+var alreadyDoneLetters = [];
+for(var i = 0; i < 26; i++) {
+    alreadyDoneLetters.push(false);
+}
+var confetti = function() {
+    this.x = random(275, 325);
+    this.y = random(650, 670);
+    this.xV = random(-5, 5);
+    this.yV = random(-9, -25);
+    this.r = random(-5, 5);
+    this.rV = random(-2, 2);
+    this.col = color(random(20, 235), random(20, 235), random(20, 235));
+};
+confetti.prototype.draw = function() {
+    rectMode(CENTER);
+    noStroke();
+    fill(this.col, 235);
+    pushMatrix();
+    translate(this.x, this.y);
+    rotate(this.r);
+    rect(0, 0, 50, 25);
+    popMatrix();
+    this.x += this.xV;
+    this.y += this.yV;
+    this.r += this.rV;
+    this.xV *= 0.992;
+    this.yV += 0.16;
+    this.rV *= 0.995;
+    rectMode(CORNER);
+    strokeWeight(2);
+    stroke(0);
+};
+var fetti = [];
+// head, l arm, r arm, torso, l leg, r leg
+function cursorCollide(x, y, w, h) {
+    return mouseX > x && mouseY > y && mouseX < x + w && mouseY < y + h;
+}
+var bck;
+function revealLetter(letter) {
+    for(var i = 0; i < ranList[ranListSelect][selectedPhrase].length; i++) {
+        if(letter.toString().toLowerCase() === ranList[ranListSelect][selectedPhrase][i].toString().toLowerCase()) {
+            phraseFound[i] = ranList[ranListSelect][selectedPhrase][i].toString();
+            good.push(ranList[ranListSelect][selectedPhrase][i].toString());
+            howManyFinished ++;
+        }
+    }
+    if(!ranList[ranListSelect][selectedPhrase].includes(letter)) {
+        bodyPartsLeft --;
+        elim.push(letter.toString().toLowerCase());
+    }
+}
+var Button = function(config) {
+    this.type = config.type || "rectangular";
+    this.x = config.x;
+    this.y = config.y;
+    this.w = config.w;
+    this.h = config.h || 50;
+    this.show = config.show;
+    this.onClick = config.onClick;
+};
+Button.prototype.draw = function() {
+    this.show();
+    switch(this.type) {
+        case "rectangular":
+            if(mouseX > this.x && mouseX < this.x + this.w && mouseY > this.y && mouseY < this.y + this.h) {
+                handCursor = 1;
+                if(clicked) {
+                    this.onClick();
+                }
+            }
+        break;
+        case "circular":
+            if(dist(mouseX, mouseY, this.x, this.y) <= this.w / 2) {
+                handCursor = 1;
+                if(clicked) {
+                    this.onClick();
+                }
+            }
+        break;
+    }
+};
+var buttons = {
+    playBtn: new Button({
+        type: "rectangular",
+        x: 150,
+        y: 330,
+        w: 300,
+        h: 100,
+        show: function() {
+            image(woodTexture, 150, 330, 300, 100);
+            textSize(50);
+            outlineText("b e g i n", 300, 380);
+            if(cursorCollide(150, 330, 300, 100)) {
+                fill(0, 40);
+                strokeWeight(1.5);
+                stroke(0);
+                rect(150, 330, 300, 100);
+            }
+        },
+        onClick: function() {
+            page = "gm";
+        },
+    }),
+    howBtn: new Button({
+        type: "rectangular",
+        x: 150,
+        y: 450,
+        w: 300,
+        h: 100,
+        show: function() {
+            image(woodTexture, 150, 450, 300, 100);
+            textSize(32.5);
+            outlineText("w h a t   i s\nh a n g m a n ?", 300, 500);
+            if(cursorCollide(150, 450, 300, 100)) {
+                fill(0, 40);
+                strokeWeight(1.5);
+                stroke(0);
+                rect(150, 450, 300, 100);
+            }
+        },
+        onClick: function() {
+            page = "uranoob";
+        },
+    }),
+    bckBtn: new Button({
+        type: "rectangular",
+        x: 50,
+        y: 500,
+        w: 175,
+        h: 75,
+        show: function() {
+            image(woodTexture, 50, 500, 175, 75);
+            textSize(22);
+            outlineText("y e s ,\nw h a t e v e r", 137.5, 537.5);
+            if(cursorCollide(50, 500, 175, 75)) {
+                fill(0, 40);
+                strokeWeight(1.5);
+                stroke(0);
+                rect(50, 500, 175, 75);
+            }
+        },
+        onClick: function() {
+            page = "maine";
+        },
+    }),
+    bckfrml: new Button({
+        type: "rectangular",
+        x: 50,
+        y: 500,
+        w: 175,
+        h: 75,
+        show: function() {
+            image(woodTexture, 50, 500, 175, 75);
+            textSize(25);
+            outlineText("b a c k   t o\nm e n u", 137.5, 537.5);
+            if(cursorCollide(50, 500, 175, 75)) {
+                fill(0, 40);
+                strokeWeight(1.5);
+                stroke(0);
+                rect(50, 500, 175, 75);
+            }
+        },
+        onClick: function() {
+            wTimer = 0;
+lockLetters = false;
+endImg = "";
+howManyLetters = 0;
+ranListSelect = ~~random(0, ranList.length);
+phraseFound = [];
+selectedPhrase = ~~(random(0, ranList[ranListSelect].length));
+for(var i = 0; i < ranList[ranListSelect][selectedPhrase].length; i++) {
+    phraseFound.push("");
+    if(ranList[ranListSelect][selectedPhrase][i] !== " ") {
+        howManyLetters ++;
+    }
+}
+fetti = [];
+bodyPartsLeft = 6;
+elim = [];
+good = [];
+howManyFinished = 0;
+alreadyDoneLetters = [];
+for(var i = 0; i < 26; i++) {
+    alreadyDoneLetters.push(false);
+}
+        page = "maine";
+
+        },
+    }),
+};
+var loadTimer = 0;
+function draw() {
+    // _clearLogs();
+    try {
+            switch(page) {
+                case "load":
+                    switch(loadTimer) {
+                        case 1:
+                            noStroke();
+                            for(var i = 0; i < 20; i++) {
+                                for(var j = 0; j < 20; j++) {
+                                    fill(random(235, 255), random(189, 209), random(110, 130));
+                                    rect(i * 30, j * 30, 30, 30);
+                                }
+                            }
+                            filter(BLUR, 3);
+                            bck = get(1, 1, 598, 598);
+                        break;
+                        case 2:
+                            for(var i = random(-5, 5); i < random(600, 605); i+= random(3, 5)) {
+                                fill(random(175, 185), random(107, 127), random(20, 40));
+                                rect(0, i, 600, random(5, 7));
+                            }
+                            woodTexture = get(0, 0, width, height);
+                        break;
+                        case 3:
+                            for(var i = 0; i < 8; i++) {
+    presents.push([i * 50 + 125, 525, 300, 615]);
+}
+                        break;
+                        case 4:
+                            background(0, 0, 0, 0);
+fill(0);
+textSize(380);
+textFont(createFont("Montserrat Bold"));
+textAlign(CENTER, CENTER);
+text("SP", 295, 295);
+fill(127.5);
+text("SP", 300, 300);
+fill(255);
+text("SP", 305, 305);
+for(var i = 0; i < 30; i++) {
+    for(var j = 0; j < 30; j++) {
+        imgs.push([get(i*30, j*30, 30, 30), i*30, j*30, 0, 285, false]);
+    }
+}
+                        break;
+                        case 5:
+                            noStroke();
+background(21, 0, 158);
+for(var i = 0; i < height; i+= 10) {
+    fill(0, 3);
+    rect(0, i, width, height - i);
+}
+for(var i = 0; i < 600; i++) {
+    fill(255);
+    ellipse(random(0, width), random(0, height), random(0.5, 2.5), random(0.5, 2.5));
+}
+
+bckg = get(0, 0, 600, 600);
+                        break;
+                        case 7:
+                            page = "logo";
+                        break;
+                    }
+                    noStroke();
+                    background(255, 207, 207);
+                    for(var i = 0; i < 1; i += 0.01) {
+                        fill(lerpColor(color(255, 207, 207), color(205, 157, 57), i));
+                        rect(0, i * 1000, 600, 10);
+                    }
+                    fill(0);
+                    textSize(100);
+                    textAlign(CENTER, CENTER);
+                    outlineText("Loading...", 300, 125);
+                    textSize(50);
+                    outlineText(((loadTimer / 7) * 100).toFixed(2) + "% done", 300, 350);
+                    loadTimer ++;
+                break;
+                case "logo":
+       image(bckg, 0, 0);
+    imageMode(CENTER);
+    for(var i in imgs) {
+        pushMatrix();
+        translate(imgs[i][3] + 15, imgs[i][4]);
+        image(imgs[i][0], 0, 0);
+        popMatrix();
+        if(imgs[i][5]) {
+            imgs[i][3] += (imgs[i][1] - imgs[i][3]) / 10;
+            imgs[i][4] += (imgs[i][2] - imgs[i][4]) / 10;
+        }
+    }
+    if(logoTimer < 180) {
+        imgs[logoTimer * 5][5] = true;
+        imgs[logoTimer * 5 - 1][5] = true;
+        imgs[logoTimer * 5 - 2][5] = true;
+        imgs[logoTimer * 5 - 3][5] = true;
+        imgs[logoTimer * 5 - 4][5] = true;
+    }
+    imageMode(CORNER);
+    if(logoTimer > 60) {
+        for(var i in presents) {
+            textSize(height / 15);
+            textFont(createFont("Montserrat Bold"));
+            fill(255);
+            text(pMsg[i], presents[i][2], presents[i][3]);
+            if(logoTimer > 135) {
+                presents[i][2] += (presents[i][0] - presents[i][2]) / 15;
+                presents[i][3] += (presents[i][1] - presents[i][3]) / 15;
+            }
+        }
+    }
+    if(logoTimer > 280) {
+        transImg = get(0, 0, width, height);
+        page = "maine";
+    }
+    logoTimer ++;
+    
+    break;
+                case "maine":
+                    image(bck, 0, 0, 600, 600);
+                    textSize(95);
+                    pushMatrix();
+                    translate(300, 0);
+                    rotate(sin(frameCount * 0.25) * 10);
+                    noStroke();
+                    image(woodTexture, -150, 50, 300, 200);
+                    // fill(185, 117, 30);
+                    // rect(-150, 50, 300, 200);
+                    strokeWeight(2);
+                    stroke(0);
+                    line(0, 0, 157.5 - 308, 50);
+                    line(0, 0, 149, 50);
+                    pushMatrix();
+                    translate(300, 130);
+                    rotate(12);
+                    fill(0, 30);
+                    text("HANG", -303, 65);
+                    outlineText("HANG", -303, 55);
+                    popMatrix();
+                    textSize(70);
+                    fill(0, 30);
+                    text("MAN", -45, 218);
+                    outlineText("MAN", -50, 210);
+                    popMatrix();
+                    buttons.playBtn.draw();
+                    buttons.howBtn.draw();
+                    image(transImg, transImgX, 0);
+        transImgX += (600 - transImgX) / 10;
+                break;
+                case "lose":
+                    image(bck, 0, 0, 600, 600);
+                    textSize(75);
+                    outlineText("lose :p", 300, 75);
+                    textSize(37.5);
+                    fill(0);
+                    text("you failed...\nyou can always try again (right?)", 25, 120, 550, 600);
+                    image(endImg, 200, 165, 200, 200);
+                    buttons.bckfrml.draw();
+                break;
+                case "dub":
+                    image(bck, 0, 0, 600, 600);
+                    textSize(75);
+                    outlineText("win :D", 300, 75);
+                    textSize(37.5);
+                    fill(0);
+                    text("you saved bob!!\nwant to play again?", 25, 120, 550, 600);
+                    image(endImg, 200, 165, 200, 200);
+                    buttons.bckfrml.draw();
+                break;
+                case "uranoob":
+                    image(bck, 0, 0, 600, 600);
+                    textSize(57);
+                    outlineText("how to play\nhangman?", 300, 75);
+                    textSize(30);
+                    fill(0);
+                    text("hangman is a game when you have a hidden phrase. try to guess the letters. if you get one right, it's revealed. but if it's wrong, your hangman starts appearing. if all of his limbs appear, then you lose.", 25, 0, 550, 600);
+                    buttons.bckBtn.draw();
+                break;
+                case "gm":
+                    background(255);
+                    image(bck, 0, 0, 600, 600);
+                    text("theme: " + rLt[ranListSelect], 300, 575);
+                    noFill();
+                    stroke(0);
+                    strokeWeight(4);
+                    if(bodyPartsLeft <= 2) {
+                    line(100, 275, 140, 235);
+                    }
+                    if(bodyPartsLeft <= 3) {
+                    line(100, 275, 60, 235);
+                    }
+                    if(bodyPartsLeft <= 1) {
+                        line(100, 325, 140, 365);
+                    }
+                    if(bodyPartsLeft <= 0) {
+                    line(100, 325, 60, 365);
+                    }
+                    if(bodyPartsLeft <= 4) {
+                    line(100, 240, 100, 325);
+                    }
+                    if(bodyPartsLeft <= 5) {
+                        ellipse(100, 200, 80, 80);
+                    }
+                    if(bodyPartsLeft < 0) {
+                        wTimer ++;
+                        lockLetters = true;
+                    }
+                    line(100, 158, 100, 146);
+                    line(0, 145, 99, 145);
+                    textAlign(CENTER, CENTER);
+                    for(var i = 0; i < ranList[ranListSelect][selectedPhrase].length; i++) {
+                        fill(0);
+                        textSize(40);
+                        text(phraseFound[i], (600 - (ranList[ranListSelect][selectedPhrase].length * 40)) / 2 + i * 40 + 20, 75);
+                        strokeWeight(3);
+                        stroke(0);
+                        if(bodyPartsLeft < 0 && wTimer > 120) {
+                                text(ranList[ranListSelect][selectedPhrase][i], (600 - (ranList[ranListSelect][selectedPhrase].length * 40)) / 2 + i * 40 + 20, 75);
+                        }
+                        if(ranList[ranListSelect][selectedPhrase][i] !== " ") {
+                            line((600 - (ranList[ranListSelect][selectedPhrase].length * 40)) / 2 + i * 40 + 5, 100, (600 - (ranList[ranListSelect][selectedPhrase].length * 40)) / 2 + i * 40 + 35, 100);
+                        }
+                    }
+                    if(howManyFinished === howManyLetters) {
+                        lockLetters = true;
+                        wTimer ++;
+                        if(fetti.length < 150) {
+                            for(var i = 0; i < 7; i++) {
+                                fetti.push(new confetti());
+                            }
+                        }
+                    }
+                    for(var i = 0; i < fetti.length; i++) {
+                        fetti[i].draw();
+                        if(fetti[i].y > 800) {
+                            fetti.splice(i, 1);
+                        }
+                    }
+                    strokeWeight(1.5);
+                    textSize(27.5);
+                    for(var i = 0; i < 10; i++) {
+                        for(var j = 0; j < 3; j++) {
+                            fill(0);
+                            if(j * 10 + i < 26) {
+                                text(alphabet[j * 10 + i], i * 50 + 75, j * 50 + 424);
+                                fill(115, 50, 50, 75);
+                                for(var k = 0; k < elim.length; k++) {
+                                    if(elim[k] === alphabet[j * 10 + i]) {
+                                        fill(255, 0, 0, 75);
+                                    }
+                                }
+                                for(var l = 0; l < good.length; l++) {
+                                    if(good[l] === alphabet[j * 10 + i]) {
+                                        fill(25, 255, 25, 75);
+                                    }
+                                }
+                                ellipse(i * 50 + 75, j * 50 + 425, 45, 45);
+                                if(dist(mouseX, mouseY, i * 50 + 75, j * 50 + 425) < 46 / 2) {
+                                    if(alreadyDoneLetters[j * 10 + i] === false && !lockLetters) {
+                                        handCursor = 1;
+                                        fill(0, 20);
+                                        ellipse(i * 50 + 75, j * 50 + 425, 45, 45);
+                                        if(clicked) {
+                                            alreadyDoneLetters[j * 10 + i] = true;
+                                            revealLetter(alphabet[j * 10 + i]);
+                                        }
+                                    }
+                                    else {
+                                        handCursor = 2;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if(wTimer > 300) {
+                        endImg = get(0, 0, 600, 600);
+                        if(bodyPartsLeft < 0) {
+                            page = "lose";
+                        }
+                        else {
+                            page = "dub";
+                        }
+                    }
+            }
+    }
+    catch(e) {
+        _clearLogs();
+        println("Tell SP what you were doing, plus your browser and device type when this occurred: " + e);
+    }
+    switch(handCursor) {
+        case 0:
+            cursor(ARROW);
+        break;
+        case 1:
+            cursor(HAND);
+        break;
+        case 2:
+            cursor('no-drop');
+        break;
+    }
+    handCursor = 0;
+    clicked = false;
+    keyIsBeingTyped = false;
+}
+function keyReleased() {
+    keyIsBeingTyped = true;
+}
+function mouseClicked() {
+    clicked = true;
+}
+// }
