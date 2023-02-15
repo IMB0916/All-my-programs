@@ -1,0 +1,5010 @@
+/***
+ * INVASION
+ * 
+ * SP + ÐoɠIovɛɼ - 2023 for CoC Round 2
+ * (This was for the "into the deep" theme)
+ * 
+ * 5000 lines of code in 2 weeks.
+ * 
+ * constructive criticism is very highly appreciated :D
+ * 
+ * go team ninjaz :)
+ * 
+ * @UPDATES=======
+ *  -Made level 10 (the one with a lot of aliens) much easier
+ *  -Made loading screen slightly faster
+ *  -Fixed bug with bullet hitboxes that occurred with player and pet
+ *  -Entry placed into CoC thread
+ *  -Potentially better alien & baby alien graphics coming? if doglover can do them in time
+ * @STORY=========
+ *  You are an astronaut placed on a desolate planet that you need to take back from the aliens that have taken it over. You have found a baby alien, which you adopt. You must guide both of you through the levels & game.
+ * @CONTROLS======
+ *  Arrow keys to move
+ *  Z to pick up guns
+ *  Shift to shoot
+ *  If you want to change them, then line 2612 will help you :)
+ * @CREDITS=======
+ *  [most] graphics by ÐoɠIovɛɼ
+ *  [most] gameplay + menu + font + portal/enemy/pet/gun/background graphics by SP
+ *  Loop protector by daniel @dkareh
+ *  Loading algorithm by OOPS! Studio @Cristianop1
+ *  Used pixel art maker by Rur for [most] pixel art @christophergon 
+ * 
+ *  STARTED: 1/31
+ *  FINISHED: 2/12
+ *  RELEASED: 2/13
+ * 
+ *  My 13th game (lucky!)
+ *  Doglover's 1st (i think)
+ * 
+ ***/
+
+// code  {
+
+/** GENERAL SETUP **/
+smooth();
+size(600, 600, P2D);
+
+// credit to daniel @dkareh
+(function() {return this;})().LoopProtector.prototype.leave = function() {};
+
+var page = "load";
+
+// mouse variables
+var handCursor = false;
+var clicked = false;
+
+
+// loading variables
+var curLoad = 0;
+var loaded = false;
+
+// collisions
+function rectCollide(x, y, w, h, x2, y2, w2, h2) {
+    return x2 + w2 > x && x2 < x + w && y2 + h2 > y && y2 < y + h2;
+}
+
+function cursorCollide(x, y, w, h) {
+    return mouseX > x && mouseY > y && mouseX < x + w && mouseY < y + h;
+}
+
+var font = {
+    
+    A: [
+        
+        "   x   ",
+        "  x x",
+        " x   x",
+        " x   x",
+        "x     x",
+        "x     x",
+        "xxxxxxx",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        
+    ],
+    
+    a: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        " xxxxx",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x    xx",
+        " xxxx x",
+        
+    ],
+    
+    B: [
+        
+        "xxxxxx ",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "xxxxxx",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "xxxxxx ",
+        
+    ],
+    
+    b: [
+        
+        "x      ",
+        "x",
+        "x",
+        "x",
+        "x",
+        "xxxxxx",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "xxxxxx ",
+        
+    ],
+    
+    C: [
+        
+        "  xxxx ",
+        " x    x",
+        "x     ",
+        "x     ",
+        "x     ",
+        "x     ",
+        "x     ",
+        "x     ",
+        "x     ",
+        "x     ",
+        " x    x",
+        "  xxxx",
+        
+    ],
+    
+    c: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        " xxxxx",
+        "x     x",
+        "x      ",
+        "x      ",
+        "x      ",
+        "x     x",
+        " xxxxx",
+        
+    ],
+    
+    D: [
+        
+        "xxxxx  ",
+        "x    x",
+        "x    x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x    x",
+        "x    x",
+        "xxxxx ",
+        
+    ],
+    
+    d: [
+        
+        "      x",
+        "      x",
+        "      x",
+        "      x",
+        "      x",
+        " xxxxxx",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " xxxxxx",
+        
+    ],
+    
+    E: [
+        
+        "xxxxxxx",
+        "x",
+        "x",
+        "x",
+        "x",
+        "xxxxxxx",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "xxxxxxx",
+        
+    ],
+    
+    e: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        " xxxxx",
+        "x     x",
+        "x     x",
+        "xxxxxx",
+        "x",
+        "x     x",
+        " xxxxx",
+        
+    ],
+    
+    F: [
+        
+        "xxxxxxx",
+        "x",
+        "x",
+        "x",
+        "x",
+        "xxxxxxx",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        
+    ],
+    
+    f: [
+        
+        "      ",
+        "",
+        "  xxx ",
+        " x   x",
+        "x",
+        "x",
+        "x",
+        "xxxxxx",
+        "x",
+        "x",
+        "x",
+        "x",
+        
+    ],
+    
+    G: [
+        
+        "  xxxx ",
+        " x    x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x   xxx",
+        "x     x",
+        "x     x",
+        "x     x",
+        " x    x",
+        "  xxxx",
+        
+    ],
+    
+    g: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        " xxxxx",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " xxxxxx",
+        "      x",
+        "      x",
+        "      x",
+        "      x",
+        "      x",
+        "xxxxxx",
+        
+    ],
+    
+    H: [
+        
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "xxxxxxx",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        
+    ],
+    
+    h: [
+        
+        "x      ",
+        "x",
+        "x",
+        "x",
+        "x",
+        "xxxxxx",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        
+    ],
+    
+    I: [
+        
+        "xxxxxxx",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "xxxxxxx",
+        
+    ],
+    
+    i: [
+        
+        " ",
+        "",
+        "",
+        "x",
+        "",
+        "",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        
+    ],
+    
+    J: [
+        
+        "xxxxxxx",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "xxx",
+        
+    ],
+    
+    j: [
+        
+        "    ",
+        "",
+        "",
+        "   x",
+        "",
+        "",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "xxx"
+        
+    ],
+    
+    K: [
+        
+        "x     x",
+        "x    x",
+        "x   x",
+        "x  x",
+        "x x",
+        "xx",
+        "xx",
+        "x x",
+        "x  x",
+        "x   x",
+        "x    x",
+        "x     x",
+        
+    ],
+    
+    k: [
+        
+        "x      ",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x     x",
+        "x   xx",
+        "x xx",
+        "xx",
+        "x xx",
+        "x   xx",
+        "x     x",
+        
+    ],
+    
+    L: [
+        
+        "x      ",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "xxxxxxx",
+        
+    ],
+    
+    l: [
+        
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        
+    ],
+    
+    M: [
+        
+        "x     x",
+        "x     x",
+        "x     x",
+        "xx   xx",
+        "x x x x",
+        "x x x x",
+        "x x x x",
+        "x x x x",
+        "x  x  x",
+        "x  x  x",
+        "x  x  x",
+        "x  x  x",
+        
+    ],
+    
+    m: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "x",
+        "xxx xx ",
+        "x  x  x",
+        "x  x  x",
+        "x  x  x",
+        "x  x  x",
+        "x  x  x",
+        "x  x  x",
+        
+    ],
+    
+    N: [
+        
+        "x     x",
+        "x     x",
+        "xx    x",
+        "x x   x",
+        "x x   x",
+        "x  x  x",
+        "x  x  x",
+        "x   x x",
+        "x   x x",
+        "x    xx",
+        "x     x",
+        "x     x",
+        
+    ],
+    
+    n: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "x",
+        "xxxxxx ",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        
+    ],
+    
+    O: [
+        
+        " xxxxx ",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " xxxxx",
+        
+    ],
+    
+    o: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        " xxxxx ",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " xxxxx",
+        
+    ],
+    
+    P: [
+        
+        " xxxxx ",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "xxxxxx",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        
+    ],
+    
+    p: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        " xxxxx ",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "xxxxxx",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        
+    ],
+    
+    Q: [
+        
+        " xxxxx ",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x    xx",
+        "x    xx",
+        " xxxxxx",
+        "    x",
+        "     x",
+        
+    ],
+    
+    q: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        " xxxxx ",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " xxxxxx",
+        "      x",
+        "      x",
+        "      x",
+        "      x",
+        "      x",
+        "      x",
+        
+    ],
+    
+    R: [
+        
+        " xxxxx ",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "xxxxxx",
+        "x x",
+        "x  x",
+        "x   x",
+        "x   x",
+        "x    x",
+        "x    x",
+        
+    ],
+    
+    r: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "x",
+        "xxxxxx",
+        "x     x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        
+    ],
+    
+    S: [
+        
+        " xxxxx ",
+        "x     x",
+        "x",
+        "x",
+        "x",
+        " xxxxx",
+        "      x",
+        "      x",
+        "      x",
+        "      x",
+        "x     x",
+        " xxxxx",
+        
+    ],
+    
+    s: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        " xxxxx",
+        "x     x",
+        "x",
+        " xxxxx",
+        "      x",
+        "x     x",
+        " xxxxx ",
+        
+    ],
+    
+    T: [
+        
+        "xxxxxxx",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        
+    ],
+    
+    t: [
+        
+        "     ",
+        "  x",
+        "  x",
+        "  x",
+        "xxxxx",
+        "  x",
+        "  x",
+        "  x",
+        "  x",
+        "  x",
+        "  x",
+        "   xx",
+        
+    ],
+    
+    U: [
+        
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " xxxxx",
+        
+    ],
+    
+    u: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " xxxxx",
+        
+    ],
+    
+    V: [
+        
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " x   x",
+        " x   x",
+        " x   x",
+        " x   x",
+        "  x x",
+        "  x x",
+        "  x x",
+        "   x",
+        
+    ],
+    
+    v: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        "x     x",
+        "x     x",
+        " x   x",
+        " x   x",
+        "  x x",
+        "  x x",
+        "   x",
+        
+    ],
+    
+    W: [
+        
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x  x  x",
+        "x  x  x",
+        "x  x  x",
+        "x  x  x",
+        "x  x  x",
+        "x  x  x",
+        " xx xx",
+        
+    ],
+    
+    w: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x  x  x",
+        "x  x  x",
+        "x  x  x",
+        " xx xx",
+        
+    ],
+    
+    X: [
+        
+        "x     x",
+        "x     x",
+        " x   x",
+        "  x x",
+        "  x x",
+        "   x",
+        "   x",
+        "  x x",
+        "  x x",
+        " x   x",
+        "x     x",
+        "x     x",
+        
+    ],
+    
+    x: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        "x     x",
+        " x   x",
+        "  x x",
+        "   x",
+        "  x x",
+        " x   x",
+        "x     x",
+        
+    ],
+    
+    Y: [
+        
+        "x     x",
+        "x     x",
+        " x   x",
+        " x   x",
+        "  x x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        
+    ],
+    
+    y: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " xxxxxx",
+        "      x",
+        "      x",
+        "      x",
+        "      x",
+        "      x",
+        "xxxxxx",
+        
+    ],
+    
+    Z: [
+        
+        "xxxxxxx",
+        "     x",
+        "     x",
+        "    x",
+        "    x",
+        "   x",
+        "   x",
+        "  x",
+        "  x",
+        " x",
+        " x",
+        "xxxxxxx",
+        
+    ],
+    
+    "1": [
+        
+        "  xx   ",
+        " x x",
+        "x  x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        "xxxxxxx",
+        
+    ],
+    
+    "2": [
+        
+        "  xxx  ",
+        " x   x",
+        "x     x",
+        "      x",
+        "      x",
+        "     x",
+        "    x",
+        "   x",
+        "  x",
+        " x",
+        "x",
+        "xxxxxxx",
+        
+    ],
+    
+    "3": [
+        
+        " xxxxx ",
+        "x     x",
+        "      x",
+        "      x",
+        "      x",
+        " xxxxx",
+        "      x",
+        "      x",
+        "      x",
+        "      x",
+        "x     x",
+        " xxxxx",
+        
+    ],
+    
+    "4": [
+        
+        " x   x ",
+        " x   x",
+        "x    x",
+        "x    x",
+        "xxxxxxx",
+        "     x",
+        "     x",
+        "     x",
+        "     x",
+        "     x",
+        "     x",
+        "     x",
+        
+    ],
+    
+    "5": [
+        
+        "xxxxxxx",
+        "x",
+        "x",
+        "x",
+        "x",
+        "xxxxxx",
+        "      x",
+        "      x",
+        "      x",
+        "      x",
+        "x     x",
+        " xxxxx",
+        
+    ],
+    
+    "6": [
+        
+        " xxxxx ",
+        "x     x",
+        "x",
+        "x",
+        "x",
+        "xxxxxx",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " xxxxx",
+        
+    ],
+    
+    "7": [
+        
+        "xxxxxxx",
+        "x     x",
+        "     x",
+        "     x",
+        "     x",
+        "  xxxxx",
+        "    x",
+        "    x",
+        "   x",
+        "   x",
+        "   x",
+        "   x",
+        
+    ],
+    
+    "8": [
+        
+        " xxxxx ",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " xxxxx",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " xxxxx",
+        
+    ],
+    
+    "0": [
+        
+        " xxxxx ",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " xxxxx",
+        
+    ],
+    
+    "9": [
+        
+        " xxxxx ",
+        "x     x",
+        "x     x",
+        "x     x",
+        "x     x",
+        " xxxxxx",
+        "      x",
+        "      x",
+        "      x",
+        "      x",
+        "x     x",
+        " xxxxx",
+        
+    ],
+    
+    z: [
+        
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        "xxxxxxx",
+        "     x",
+        "    x",
+        "   x",
+        "  x",
+        " x",
+        "xxxxxxx",
+        
+    ],
+    
+    ":": [
+        
+        "   ",
+        "",
+        " x",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        " x",
+        "",
+        "",
+        
+    ],
+    
+    "=": [
+        
+        "       ",
+        "",
+        "",
+        "xxxxxxx",
+        "",
+        "",
+        "",
+        "",
+        "xxxxxxx",
+        "",
+        "",
+        "",
+        
+    ],
+    
+    "!": [
+        
+        " ",
+        "",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "x",
+        "",
+        "",
+        "x",
+        "",
+        "",
+        
+    ],
+    
+    ".": [
+        
+        " ",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "x",
+        
+    ],
+    
+    ",": [
+        
+        " ",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        " x",
+        "xx",
+        
+    ],
+    
+    "?": [
+        
+        " xxxxx ",
+        "x     x",
+        "      x",
+        "      x",
+        "     x",
+        "     x",
+        "    x",
+        "   x",
+        "   x",
+        "",
+        "",
+        "   x",
+        
+    ],
+    
+    "/": [
+        
+        "      x",
+        "     x",
+        "     x",
+        "    x",
+        "    x",
+        "   x",
+        "   x",
+        "  x",
+        "  x",
+        " x",
+        " x",
+        "x",
+        
+    ],
+    
+    " ": [
+        
+        "  "
+        
+    ],
+    
+};
+
+// blank template
+/*
+ "": [
+ 
+        "       ",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        
+    ],
+*/
+
+// draw the pixel text
+// this was all made after start of contest, specifically on 2/1
+var pxlTxt = function(msg, x, Y, siz) {
+    
+    // position of individual letter
+    var xs = x;
+    var y = Y;
+    
+    // for the loop
+    var idx = 0;
+    
+    while (idx < msg.length) {
+        
+        // new line
+        if (msg[idx] === "\n") {
+            
+            y += siz * 17;
+            xs = x;
+            
+        }
+        
+        else {
+            
+            // get indexes
+            for (var i = 0; i < font[msg[idx]].length; i++) {
+                
+                for (var j = 0; j < font[msg[idx]][i].length; j++) {
+                    
+                    // draw the actual font
+                    if (font[msg[idx]][i][j] === "x") {
+                        rect(j * siz + xs + 0.25, i * siz + y + 0.25, siz + 0.5, siz + 0.5);
+                    }
+                    
+                }
+                
+            }
+            
+            xs += font[msg[idx]][0].length * siz + siz;
+            
+        }
+        
+        idx++;
+        
+    }
+    
+};
+
+
+/** PIXEL ART
+ * Credit to Rur for creating the tool used to create it (for judges, Liam said it was ok to use a tool)
+**/
+var renderBitmap = function(target) {
+    
+    var w = 0;
+    
+    background(0, 0);
+    noStroke();
+    
+    target.m.forEach(function(i, y) {
+        
+        w = max(w, i.length);
+        
+        for (var x = i.length; x--;) {
+            
+            if (i[x] === " ") {
+                continue;
+            }
+            fill(target.p[i[x]]);
+            rect(x * 10, y * 10, 10, 10);
+            
+        }
+        
+    });
+    
+    return get(0, 0, w * 10, target.m.length * 10);
+};
+
+// astronaut pallate. instead of having to copy paste it 8 times
+// also used for ground block
+var pallate = {
+    
+    " ": color(255, 255, 255, 0),
+    "c": color(140, 185, 255, 255),
+    "h": color(0, 0, 0, 255),
+    "x": color(93, 93, 93, 255),
+    "y": color(99,99,99,255),
+    "z": color(104, 104, 104, 255),
+    "B": color(116,116,116,255),
+    "D": color(128, 128, 128, 255),
+    "E": color(133,133,133,255),
+    "K": color(168,168,168,255),
+    "N": color(185,185,185,255),
+    "Q": color(203, 203, 203, 255),
+    "U": color(226, 226, 226, 255),
+    "V": color(232, 232, 232, 255),
+    "Z": color(255, 255, 255, 255),
+    
+};
+
+// graphics
+var astronaut_idle = {
+    
+    m: [
+        
+        "          ZZZZ        ",
+        "         ZZZZhh       ",
+        "        ZZZZhZZh      ",
+        "        ZZZhhhhh      ",
+        "        VZZhhhhh      ",
+        "        QVZZZZZZ      ",
+        "         QVVZZZ       ",
+        "      ZZZzQQQZ        ",
+        "     ZZZZzVUUV        ",
+        "     QQQZzZZZZZ       ",
+        "     ZZZZzQZZQZU      ",
+        "     cccZzQZZQZc      ",
+        "     cccZzQZZQZU      ",
+        "     ccZZzQZZQZy      ",
+        "     ZZZZzQZZQZy      ",
+        "     ZccczQZZZQU      ",
+        "     DDDZzQZZQZ       ",
+        "     ZZZZzDDDD        ",
+        "      ZZZxVVQQ        ",
+        "          ZZVQ        ",
+        "          ZZZQ        ",
+        "          ZZZQ        ",
+        "          ZZZQ        ",
+        "          ZZXQ        ",
+        "          ZZWQ        ",
+        "          ZZVQ        ",
+        "          ZZZVVQ      ",
+        "          ZZZZZQ      ",
+        
+    ],
+    
+    p: pallate,
+    
+};
+
+var astronautwalk1 = {
+    
+    m: [
+        
+        "          ZZZZ        ",
+        "         ZZZZhh       ",
+        "        ZZZZhZZh      ",
+        "        ZZZhhhhh      ",
+        "        VZZhhhhh      ",
+        "        QVZZZZZZ      ",
+        "         QQVVZZ       ",
+        "      ZZZzQQQZ        ",
+        "     ZZZZzVUUV        ",
+        "     QQQZzZZZZZ       ",
+        "     ZZZZzQZZQZU      ",
+        "     cccZzQZZQZc      ",
+        "     cccZzQZZQZU      ",
+        "     ccZZzQZZQZy      ",
+        "     ZZZZzQZZQZy      ",
+        "     ZccczQZZZQU      ",
+        "     DDDZzQZZQZ       ",
+        "     ZZZZzDDDD        ",
+        "      ZZZxZZZQ        ",
+        "          ZZZQ        ",
+        "         ZZZZQQ       ",
+        "         ZZZQQQ       ",
+        "        ZZZ  QQQ      ",
+        "        ZZZ  QQQ      ",
+        "       ZZZ    QQQ     ",
+        "       ZZZ    QQQ     ",
+        "      ZZZ      QQQQ   ",
+        "       ZZZ     QQQ    ",
+    ],
+    
+    p: pallate,
+    
+};
+
+var astronautwalk2 = {
+    
+    m: [
+        
+        "          ZZZZ        ",
+        "         ZZZZhh       ",
+        "        ZZZZhZZh      ",
+        "        ZZZhhhhh      ",
+        "        VZZhhhhh      ",
+        "        QVZZZZZZ      ",
+        "         QQVVZZ       ",
+        "      ZZZzQQQZ        ",
+        "     ZZZZzVUUV        ",
+        "     QQQZzZZZZZ       ",
+        "     ZZZZzQZZQZU      ",
+        "     cccZzQZZQZc      ",
+        "     cccZzQZZQZU      ",
+        "     ccZZzQZZQZy      ",
+        "     ZZZZzQZZQZy      ",
+        "     ZccczQZZZQU      ",
+        "     DDDZzQZZQZ       ",
+        "     ZZZZzDDDD        ",
+        "      ZZZxZZZQ        ",
+        "          ZZZQ        ",
+        "          ZZZQ        ",
+        "         ZZZQQQ       ",
+        "         ZZZQQQ       ",
+        "         ZZZQQQ       ",
+        "        ZZZ  QQQ      ",
+        "        ZZZ  QQQ      ",
+        "       ZZZ    QQQQ    ",
+        "       ZZZZ   QQQ     ",
+        
+    ],
+    
+    p: pallate,
+    
+};
+
+var astronautwalk3 = {
+    
+    m: [
+        
+        "          ZZZZ        ",
+        "         ZZZZhh       ",
+        "        ZZZZhZZh      ",
+        "        ZZZhhhhh      ",
+        "        VZZhhhhh      ",
+        "        QVZZZZZZ      ",
+        "         QQVVZZ       ",
+        "      ZZZzQQQZ        ",
+        "     ZZZZzVUUV        ",
+        "     QQQZzZZZZZ       ",
+        "     ZZZZzQZZQZU      ",
+        "     cccZzQZZQZc      ",
+        "     cccZzQZZQZU      ",
+        "     ccZZzQZZQZy      ",
+        "     ZZZZzQZZQZy      ",
+        "     ZccczQZZZQU      ",
+        "     DDDZzQZZQZ       ",
+        "     ZZZZzDDDD        ",
+        "      ZZZxZZZQ        ",
+        "          ZZZQ        ",
+        "          ZZZQ        ",
+        "          ZZZQQ       ",
+        "          ZZQQQ       ",
+        "         ZZZQQQ       ",
+        "         ZZZ QQ       ",
+        "         ZZ  QQ       ",
+        "        ZZZ  QQQ      ",
+        "        ZZZZ  QQQ     ",
+        
+    ],
+    
+    p: pallate,
+    
+};
+
+var astronautwalk4 = {
+    
+    m: [
+        
+        "          ZZZZ        ",
+        "         ZZZZhh       ",
+        "        ZZZZhZZh      ",
+        "        ZZZhhhhh      ",
+        "        VZZhhhhh      ",
+        "        QVZZZZZZ      ",
+        "         QVVZZZ       ",
+        "      ZZZzQQQZ        ",
+        "     ZZZZzVUUV        ",
+        "     QQQZzZZZZZ       ",
+        "     ZZZZzQZZQZU      ",
+        "     cccZzQZZQZc      ",
+        "     cccZzQZZQZU      ",
+        "     ccZZzQZZQZy      ",
+        "     ZZZZzQZZQZy      ",
+        "     ZccczQZZZQU      ",
+        "     DDDZzQZZQZ       ",
+        "     ZZZZzDDDD        ",
+        "      ZZZxVVQQ        ",
+        "          ZZVQ        ",
+        "          ZZZQ        ",
+        "          ZZZQ        ",
+        "          ZZZQ        ",
+        "          ZZXQ        ",
+        "          ZZWQ        ",
+        "          ZZVQ        ",
+        "          ZZZVVQ      ",
+        "          ZZZZZQ      ",
+        
+    ],
+    
+    p: pallate,
+    
+};
+
+var astronautwalk5 = {
+    
+    m: [
+        
+        "          ZZZZ        ",
+        "         ZZZZhh       ",
+        "        ZZZZhZZh      ",
+        "        ZZZhhhhh      ",
+        "        VZZhhhhh      ",
+        "        QVZZZZZZ      ",
+        "         QQVVZZ       ",
+        "      ZZZzQQQZ        ",
+        "     ZZZZzVUUV        ",
+        "     QQQZzZZZZZ       ",
+        "     ZZZZzQZZQZU      ",
+        "     cccZzQZZQZc      ",
+        "     cccZzQZZQZU      ",
+        "     ccZZzQZZQZy      ",
+        "     ZZZZzQZZQZy      ",
+        "     ZccczQZZZQU      ",
+        "     DDDZzQZZQZ       ",
+        "     ZZZZzDDDD        ",
+        "      ZZZxQZZZ        ",
+        "          QZZZ        ",
+        "          QZZZ        ",
+        "          QQZZ        ",
+        "          QQZZZ       ",
+        "         QQQZZZ       ",
+        "         QQQ ZZ       ",
+        "         QQ  ZZ       ",
+        "        QQQ  ZZZ      ",
+        "        QQQQ  ZZZ     ",
+        
+    ],
+    
+    p: pallate,
+    
+};
+
+var astronautwalk6 = {
+    
+    m: [
+        
+        "          ZZZZ        ",
+        "         ZZZZhh       ",
+        "        ZZZZhZZh      ",
+        "        ZZZhhhhh      ",
+        "        VZZhhhhh      ",
+        "        QVZZZZZZ      ",
+        "         QQVVZZ       ",
+        "      ZZZzQQQZ        ",
+        "     ZZZZzVUUV        ",
+        "     QQQZzZZZZZ       ",
+        "     ZZZZzQZZQZU      ",
+        "     cccZzQZZQZc      ",
+        "     cccZzQZZQZU      ",
+        "     ccZZzQZZQZy      ",
+        "     ZZZZzQZZQZy      ",
+        "     ZccczQZZZQU      ",
+        "     DDDZzQZZQZ       ",
+        "     ZZZZzDDDD        ",
+        "      ZZZxQZZZ        ",
+        "          QZZZ        ",
+        "          QZZZ        ",
+        "         QQQZZZ       ",
+        "         QQQZZZ       ",
+        "         QQQZZZ       ",
+        "        QQQ  ZZZ      ",
+        "        QQQ  ZZZ      ",
+        "       QQQ    ZZZZ    ",
+        "       QQQQ   ZZZ     ",
+        
+    ],
+    
+    p: pallate,
+    
+};
+
+var astronautwalk7 = {
+    
+    m: [
+        
+        "          ZZZZ        ",
+        "         ZZZZhh       ",
+        "        ZZZZhZZh      ",
+        "        ZZZhhhhh      ",
+        "        VZZhhhhh      ",
+        "        QVZZZZZZ      ",
+        "         QQVVZZ       ",
+        "      ZZZzQQQZ        ",
+        "     ZZZZzVUUV        ",
+        "     QQQZzZZZZZ       ",
+        "     ZZZZzQZZQZU      ",
+        "     cccZzQZZQZc      ",
+        "     cccZzQZZQZU      ",
+        "     ccZZzQZZQZy      ",
+        "     ZZZZzQZZQZy      ",
+        "     ZccczQZZZQU      ",
+        "     DDDZzQZZQZ       ",
+        "     ZZZZzDDDD        ",
+        "      ZZZxQZZZ        ",
+        "          QZZZ        ",
+        "         QQQZZZ       ",
+        "         QQQZZZ       ",
+        "        QQQ  ZZZ      ",
+        "        QQQ  ZZZ      ",
+        "       QQQ    ZZZ     ",
+        "       QQQ    ZZZ     ",
+        "      QQQ      ZZZZ   ",
+        "       QQQ     ZZZ    ",
+        
+    ],
+    
+    p: pallate,
+    
+};
+
+// it looks disgusting
+var alien = {
+    
+    m: [
+        
+        "                    ",
+        "",
+        "        gggg        ",
+        "      gggggggg      ",
+        "     hhhhhggggg     ",
+        "     jjjjhhhggg     ",
+        "    jjjjjjhhhggg    ",
+        "    aajjjjjhhggg    ",
+        "    aaajjjjhhhgg    ",
+        "   aaaaajjjjhhggg   ",
+        "   aaaaaajjjjhhgg   ",
+        "   aacccaajjccchg   ",
+        "   iacddaaaacddhg   ",
+        "  iiacddaaaacddjhg  ",
+        "  iiiaaaaaaaaajjhg  ",
+        "  bfiiaaaaaaaaaaaa  ",
+        "  bbfiiaaaaaaaaaaa  ",
+        "  bbfiiiiaaaaaaaaa  ",
+        "  bbffiiiiaaaaaaaa  ",
+        "  bbfffiiiiiiaaaaa  ",
+        "  bbbffffiiiiiiiii  ",
+        "   bbbffffffffffb   ",
+        "    bbbbbbbbbbbb    ",
+        "      bbbbbbbb      ",
+        "",
+        "",
+        "",
+        
+    ],
+    
+    p: {
+        
+        " ": color(255, 0),
+        "a": color(4, 217, 36),
+        "b": color(0, 197, 16),
+        "c": 255,
+        "d": 0,
+        "f": color(0, 202, 21),
+        "g": color(24, 237, 56),
+        "h": color(19, 232, 51),
+        "i": color(0, 210, 29),
+        "j": color(11, 224, 43),
+        
+    },
+    
+};
+
+// ehhh i made this by hand too
+var petImg = {
+    
+    m: [
+        
+        "                ",
+        "",
+        "      gggg      ",
+        "    gggggggg    ",
+        "   hhhhhggggg   ",
+        "   jjjjhhhggg   ",
+        "  jjjjjjhhhggg  ",
+        "  aajjjjjhhggg  ",
+        "  aaajjjjhhhgg  ",
+        " aaaaajjjjhhggg ",
+        " aaaaaajjjjhhgg ",
+        " aacccaajjccchg ",
+        " iacddaaaacddhg ",
+        "iiacddaaaacddjhg",
+        "iiiaaaaaaaaajjhg",
+        "bfiiadaaaadaaaaa",
+        "bbfiiaddddaaaaaa",
+        "bbfiiiiaaaaaaaaa",
+        "bbffiiiiaaaaaaaa",
+        "bbfffiiiiiiaaaaa",
+        "bbbffffiiiiiiiii",
+        " bbbffffffffffb ",
+        "  bbbbbbbbbbbb  ",
+        "    bbbbbbbb    ",
+        "",
+        "",
+        "",
+        
+    ],
+    
+    p: {
+        
+        " ": color(255, 0),
+        "a": color(4, 217, 36),
+        "b": color(0, 197, 16),
+        "c": color(116, 109, 252),
+        "d": 0,
+        "f": color(0, 202, 21),
+        "g": color(24, 237, 56),
+        "h": color(19, 232, 51),
+        "i": color(0, 210, 29),
+        "j": color(11, 224, 43),
+        
+    },
+    
+};
+
+var block_top = {
+    
+    m:[
+        
+        "KKKKKKKKKKKKKK",
+        "KNNNNKKKKKKKKK",
+        "KKKKKKKKKNNNKK",
+        "KKKKKKKKKKKKKK",
+        "KKKKNNKKKKKKKK",
+        "yyKKKKKyyyyKKK",
+        "yyyKKKyyyyyyyy",
+        "BByyyyyyBBBByy",
+        "EBBByyyEEBBBEE",
+        "EEEEEBBEEEEEEE",
+        "EBBEEEEEBBEEEE",
+        "EEEEEEEEEEEEEE",
+        "EEEEEBBEEEEBBE",
+        "EEEEEEEEEEEEEE",
+        
+    ],
+    
+    p: pallate,
+    
+};
+
+var block_normal = {
+    
+    m:[
+        
+        "BBEEEEEEEEEEEE",
+        "EEEEEyyyEEEBBE",
+        "EEEEyyEyyyEEEE",
+        "EEEEEEEEEyyyEE",
+        "EBBEEEEEEEEEEE",
+        "EEEEEEBBBEEEEE",
+        "EEEEEEEEEEEEEE",
+        "BBEEyyyEEEBBEE",
+        "EEyyyEEEBBBEEE",
+        "yyyEEBEEEEEyyy",
+        "EBBEEEEEyyyyyE",
+        "EEEEEEEyyEEEEE",
+        "EEEEBBBEEEEBBE",
+        "EEEEEEEEEEEEEE",
+        
+    ],
+    
+    p: pallate,
+    
+};
+
+var acid = {
+    
+    m:[
+        
+        "s   s    s    ",
+        "ss ssss sss  s",
+        "ttsstsssstssss",
+        "tttttttsttttts",
+        "uuuutttttttttt",
+        "uuuuuuuuuutstt",
+        "tttttuuutttttt",
+        "ttsttttttttttt",
+        "ttttttttuuuttt",
+        "ttuuuuuuusuuuu",
+        "tttttuuuuuuttt",
+        "ttttttttuuuutt",
+        "uutttstttttuuu",
+        "tttttttttttttt",
+        
+    ],
+    
+    p: {
+        
+        " ":color(255,255,255,0),
+        "s":color(45,225,85,255),
+        "t":color(55,150,75,255),
+        "u":color(45,180,80,255),
+        
+    }, // has to be "custom" because the colors are different
+    
+};
+
+var arrow = {
+    
+    m:[
+        
+        "              ",
+        "              ",
+        "       AA     ",
+        "       ABA    ",
+        "       ABBA   ",
+        " AAAAAAABBBA  ",
+        " ABBBBBBBBBBA ",
+        " ABBBBBBBBBBA ",
+        " AAAAAAABBBA  ",
+        "       ABBA   ",
+        "       ABA    ",
+        "       AA     ",
+        "              ",
+        "              ",
+        
+    ],
+    
+    p: {
+        
+        " ":color(255,255,255,0),
+        "A":color(65,200,185,255),
+        "B":color(135,235,225,255),
+        
+    },
+    
+};
+
+var trampoline = {
+    
+    m:[
+        
+        "tttttttttttttt",
+        "ttttttttuttttt",
+        "tuttutttuutttt",
+        "ttuuuuttttuutt",
+        "tttttttttttttt",
+        "tttttuuutttttt",
+        "tttttttttuuttt",
+        "tttuuutttttttt",
+        "tttttuuutttttt",
+        "tuuttttttttuut",
+        "tttttttttuuutt",
+        "ttttttuuuutttt",
+        "ttuuuttttttttt",
+        "tttttttttttttt",
+        
+    ],
+    
+    p: {
+        
+        "t":color(175,90,200,255),
+        "u":color(200,135,220,255),
+        
+    },
+    
+};
+
+var portal = {
+    
+    m:[
+        
+        "              ",
+        "     aaaa     ",
+        "    bbbbbb    ",
+        "   aaaaaaab   ",
+        "   abbbbbab   ",
+        "  babaaababa  ",
+        "  bababababa  ",
+        "  bababababa  ",
+        "  bababbbaba  ",
+        "   abaaaaab   ",
+        "   abbbbbbb   ",
+        "    aaaaaa    ",
+        "     bbbb     ",
+        "              " ,
+        
+    ],
+    
+    p: {
+        
+        "a":color(139, 45, 247),
+        "b":color(109, 15, 217),
+        
+    },
+    
+};
+
+// now to load all of the images
+var dimensions = {};
+
+var imgs = {
+    
+    "astronut": function() {
+        
+        dimensions = {
+            w: astronaut_idle.m[0].length,
+            h: astronaut_idle.m.length,
+        };
+        
+        //converts the bitmap into an image
+        astronaut_idle = renderBitmap(astronaut_idle);
+        
+        background(0, 0);
+        image(astronaut_idle, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    "astronut1": function() {
+        
+        dimensions = {
+            w: astronautwalk1.m[0].length,
+            h: astronautwalk1.m.length,
+        };
+        
+        //converts the bitmap into an image
+        astronautwalk1 = renderBitmap(astronautwalk1);
+        
+        background(0, 0);
+        image(astronautwalk1, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    "astronut2": function() {
+        
+        dimensions = {
+            w: astronautwalk2.m[0].length,
+            h: astronautwalk2.m.length,
+        };
+        
+        //converts the bitmap into an image
+        astronautwalk2 = renderBitmap(astronautwalk2);
+        
+        background(0, 0);
+        image(astronautwalk2, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    "astronut3": function() {
+        
+        dimensions = {
+            w: astronautwalk3.m[0].length,
+            h: astronautwalk3.m.length,
+        };
+        
+        //converts the bitmap into an image
+        astronautwalk3 = renderBitmap(astronautwalk3);
+        
+        background(0, 0);
+        image(astronautwalk3, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    "astronut4": function() {
+        
+        dimensions = {
+            w: astronautwalk4.m[0].length,
+            h: astronautwalk4.m.length,
+        };
+        
+        //converts the bitmap into an image
+        astronautwalk4 = renderBitmap(astronautwalk4);
+        
+        background(0, 0);
+        image(astronautwalk4, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    "astronut5": function() {
+        
+        dimensions = {
+            w: astronautwalk5.m[0].length,
+            h: astronautwalk5.m.length,
+        };
+        
+        //converts the bitmap into an image
+        astronautwalk5 = renderBitmap(astronautwalk5);
+        
+        background(0, 0);
+        image(astronautwalk5, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    "astronut6": function() {
+        
+        dimensions = {
+            w: astronautwalk6.m[0].length,
+            h: astronautwalk6.m.length,
+        };
+        
+        //converts the bitmap into an image
+        astronautwalk6 = renderBitmap(astronautwalk6);
+        
+        background(0, 0);
+        image(astronautwalk6, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    "astronut7": function() {
+        
+        dimensions = {
+            w: astronautwalk7.m[0].length,
+            h: astronautwalk7.m.length,
+        };
+        
+        //converts the bitmap into an image
+        astronautwalk7 = renderBitmap(astronautwalk7);
+        
+        background(0, 0);
+        image(astronautwalk7, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    "alien": function() {
+        
+        dimensions = {
+            w: alien.m[0].length,
+            h: alien.m.length,
+        };
+        
+        //converts the bitmap into an image
+        alien = renderBitmap(alien);
+        
+        background(0, 0);
+        image(alien, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    "petImg": function() {
+        
+        dimensions = {
+            w: petImg.m[0].length,
+            h: petImg.m.length,
+        };
+        
+        //converts the bitmap into an image
+        petImg = renderBitmap(petImg);
+        
+        background(0, 0);
+        image(petImg, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    "top": function() {
+        
+        dimensions = {
+            w: block_top.m[0].length,
+            h: block_top.m.length,
+        };
+        
+        //converts the bitmap into an image
+        block_top = renderBitmap(block_top);
+        
+        background(0, 0);
+        image(block_top, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    "norm": function() {
+        
+        dimensions = {
+            w: block_normal.m[0].length,
+            h: block_normal.m.length,
+        };
+        
+        //converts the bitmap into an image
+        block_normal = renderBitmap(block_normal);
+        
+        background(0, 0);
+        image(block_normal, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    "acid": function() {
+        
+        dimensions = {
+            w: acid.m[0].length,
+            h: acid.m.length,
+        };
+        
+        //converts the bitmap into an image
+        acid = renderBitmap(acid);
+        
+        background(0, 1);
+        image(acid, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    // background
+    "bck": function() {
+        
+        // gradient
+        noStroke();
+        for(var i = 0; i < 1; i+= 0.01) {
+            fill(lerpColor(color(6, 26, 103), color(70, 0, 85), i));
+            rect(i * 600, 0, 6, 600);
+        }
+        
+        for(var i = 0; i < 1; i+= 0.01) {
+            fill(lerpColor(color(6, 26, 103), color(70, 0, 85), i), 120);
+            rect(0, 600 * i, 600, 6);
+        }
+        
+        // stars
+        for(var i = 0; i < 200; i++) {
+            fill(random(220, 240), random(255));
+            ellipse(random(600), random(600), random(4), random(4));
+        }
+
+        return get(0, 0, 600, 600);
+        
+    },
+    
+    // the title
+    "title": function() {
+        
+        image(imgs.bck, 0, 0, 600, 600);
+        
+        textSize(100);
+        fill(220);
+        textFont(createFont("SP Custom Bold Italics"));
+        textAlign(CENTER, CENTER);
+        text("INVASION", 300, 150);
+        
+        // pixelate
+        noStroke();
+        for(var i = 50; i < 550; i+= 4) {
+            for(var j = 75; j < 225; j+= 4) {
+                fill(get(i, j));
+                rect(i, j, 4, 4);
+            }
+        }
+
+        return get(0, 0, 600, 600);
+        
+    },
+    
+    // victory
+    "win": function() {
+        
+        image(imgs.bck, 0, 0, 600, 600);
+        
+        textSize(125);
+        fill(220);
+        textFont(createFont("SP Custom Bold Italics"));
+        textAlign(CENTER, CENTER);
+        text("VICTORY", 300, 100);
+        
+        // pixelate
+        noStroke();
+        for(var i = 10; i < 590; i+= 4) {
+            for(var j = 0; j < 250; j+= 4) {
+                fill(get(i, j));
+                rect(i, j, 4, 4);
+            }
+        }
+
+        return get(0, 0, 600, 600);
+        
+    },
+    
+    // it is
+    "helpfultext": function() {
+        
+        image(imgs.bck, 0, 0, 600, 600);
+        
+        textSize(50);
+        fill(220);
+        textFont(createFont("SP Custom Bold Italics"));
+        textAlign(CENTER, CENTER);
+        text("congrats, you defeated\nall of the aliens\nand return home as\na national hero", 300, 400);
+        
+        // pixelate
+        // this is where the loop protector comes in clutch
+        noStroke();
+        for(var i = 26; i < 582; i+= 2.05) {
+            for(var j = 274; j < 530; j+= 2.05) {
+                fill(get(i, j));
+                rect(i, j, 2.05, 2.05);
+            }
+        }
+
+        return get(10, 150, 580, 400);
+        
+    },
+    
+    // begin button
+    "btn": function() {
+        
+        image(imgs.bck, 0, 0, 600, 600);
+        
+        fill(255, 50);
+        rect(175, 200, 250, 100);
+        
+        fill(255, 230);
+        textSize(59);
+        textFont(createFont("SP Custom Bold Italics"));
+        textAlign(CENTER, CENTER);
+        text("BEGIN", 300, 250);
+        
+        // pixelate
+        noStroke();
+        for(var i = 175; i < 175 + 250; i+= 3) {
+            for(var j = 200; j < 300; j+= 3) {
+                fill(get(i, j));
+                rect(i, j, 3, 3);
+            }
+        }
+
+        return get(175, 200, 250, 100);
+        
+    },
+    
+    // if you hover over the begin button
+    "btn2": function() {
+        
+        image(imgs.bck, 0, 0, 600, 600);
+        
+        fill(255, 50);
+        rect(175, 200, 250, 100);
+        
+        fill(255, 230);
+        textSize(67.5);
+        textFont(createFont("SP Custom Bold Italics"));
+        textAlign(CENTER, CENTER);
+        text("BEGIN", 300, 250);
+        
+        // pixelate
+        noStroke();
+        for(var i = 175; i < 175 + 250; i+= 3) {
+            for(var j = 200; j < 300; j+= 3) {
+                fill(get(i, j));
+                rect(i, j, 3, 3);
+            }
+        }
+
+        return get(175, 200, 250, 100);
+        
+    },
+    
+    "arrow": function() {
+        // was originally going to look like v
+        /*
+            background(0, 0);
+            
+            noStroke();
+            fill(148, 57, 8);
+            rect(0, 102, 600, 342);
+            rect(257, 428, 85, 171);
+            arc(300, 111, 600, 128, -180, 0);
+            
+            fill(220);
+            rect(128, 214, 257, 85);
+            triangle(385, 171, 385, 342, 480, 257);
+            
+            // pixelate
+            for(var i = 0; i < 600; i+= 5) {
+                for(var j = 0; j < 600; j+= 5) {
+                    fill(get(i, j));
+                    rect(i, j, 5, 5);
+                }
+            }
+            
+            return get(0, 0, 600, 600);
+            
+        */
+        
+        dimensions = {
+            w: arrow.m[0].length,
+            h: arrow.m.length,
+        };
+        
+        //converts the bitmap into an image
+        arrow = renderBitmap(arrow);
+        
+        background(0, 0);
+        image(arrow, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    // not actually a trampoline
+    "trampoline": function() {
+        
+        dimensions = {
+            w: trampoline.m[0].length,
+            h: trampoline.m.length,
+        };
+        
+        //converts the bitmap into an image
+        trampoline = renderBitmap(trampoline);
+        
+        background(0, 0);
+        image(trampoline, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    // portal
+    "portal": function() {
+        
+        dimensions = {
+            w: portal.m[0].length,
+            h: portal.m.length,
+        };
+        
+        //converts the bitmap into an image
+        portal = renderBitmap(portal);
+        
+        background(0, 0);
+        image(portal, 0, 0);
+        
+        return get(0, 0, dimensions.w * 10, dimensions.h * 10);
+        
+    },
+    
+    // gun part 1
+    "mask1": function() {
+        
+        noStroke();
+        background(0, 0);
+        
+        fill(255);
+        rect(0, 0, 521, 260, 60, 60, 60, 0);
+        rect(547, 52, 52, 156);
+        rect(521, 104, 26, 52);
+        
+        return get();
+        
+    },
+    
+    // gun part 2
+    "mask2": function() {
+        
+        background(0, 0);
+        
+        for(var i = 0; i < 600; i+=3) {
+            fill(lerpColor(140, 85, i / 600));
+            rect(i, 0, 3, 500);
+        }
+        
+        return get();
+        
+    },
+    
+    // gun part 3
+    
+    "mask": function() {
+        
+        (imgs.mask2).mask(imgs.mask1);
+        
+    },
+    
+    // actual gun
+    "gun": function() {
+        
+        background(0, 1);
+        
+        fill(150);
+        quad(0, 260, 156, 260, 125, 443, 0, 443);
+        
+        image(imgs.mask2, 0, 0);
+        
+        // pixelate
+        for(var i = 0; i < 443; i+= 15) {
+            for(var j = 0; j < 443; j+= 15) {
+                fill(get(i, j));
+                rect(i, j, 15, 15);
+            }
+        }
+
+        return get(0, 0, 600, 443);
+    },
+    
+};
+
+// credit to oops studio
+var load = function() {
+    
+    background(0, 0);
+    
+    var obj = Object.keys(imgs);
+    
+    imgs[obj[curLoad]] = imgs[obj[curLoad]]();
+    curLoad++;
+    
+    if (curLoad < obj.length) {
+        loaded = false;
+    } 
+    
+    // finish loading
+    else {
+        loaded = true;
+        page = "maine";
+    }
+    
+};
+
+
+// notification func
+var notifications = [];
+
+function notification(message) {
+    
+    this.m = message;
+    
+    // pos
+    this.x = 620;
+    this.y = 10;
+    
+    if (notifications.length > 0) {
+        this.y = (notifications.length - 1) * 75 + 10;
+    }
+    
+    // duration
+    this.life = 0;
+    
+}
+
+notification.prototype.draw = function() {
+    
+    fill(220);
+    strokeWeight(4);
+    stroke(220, 5, 5);
+    rect(this.x, this.y, 150, 65);
+    
+    fill(220, 5, 5);
+    noStroke();
+    pxlTxt(this.m, this.x + 10, this.y + 10, 1.5);
+    
+    if (this.life < 180) {
+        this.x += (440 - this.x) / 20;
+    }
+    else {
+        this.x += (660 - this.x) / 25;
+    }
+    
+    this.life++;
+    
+};
+
+// prevents a bug
+notifications.push(new notification(""));
+
+// the player
+function player(config) {
+    
+    this.x = 0;
+    this.y = 0;
+    
+    this.xV = 0;
+    this.yV = 0;
+    
+    this.jump = true;
+    
+    this.controls = config.controls; // up left right grab shoot restart
+    
+    // which way it is facing
+    this.dir = 1;
+    
+    // if it has gun
+    this.gun = 0;
+    
+    // gun stuff
+    this.gunCache = 0;
+    this.gunDelay = 0;
+    
+    // if killed every enemy
+    this.portal = false;
+    
+    // for the walking
+    this.imgIdx = 0;
+    this.imgDesc = false;
+    
+}
+
+// define player
+var Player = new player({
+    
+    controls: [38, 37, 39, 90, 16, 88],
+    
+});
+
+// define blocks
+// needs to be here for the particle stuff
+var blocks = [];
+
+
+// particle function
+// made just for this program
+function particle(config) {
+    
+    this.x = config.x + random(-config.dispersement, config.dispersement);
+    this.y = config.y + random(-config.dispersement, config.dispersement);
+    
+    this.col = config.col;
+    
+    this.xV = random(-2, 2);
+    this.yV = random(-2, 2);
+    
+    // size
+    this.sz = config.siz * random(0.8, 1.25);
+    
+    // opacity
+    this.o = random(225, 265);
+    this.oV = random(1, 2.5);
+    
+    // if it does gravity
+    this.grav = config.grav;
+    
+    this.type = config.type || "rect";
+    
+    this.blockCol = config.blockCol || false;
+    
+    this.die = false;
+    
+    // constrain vals
+    // ok the names are weird but who cares
+    this.cY = config.cY || false;
+    this.uberCY = config.UCY || false;
+    if(this.cY) {
+        this.xV = constrain(this.xV, -1, 1);
+        this.yV = constrain(this.yV, -1, 1);
+    }
+    if(this.uberCY) {
+        this.xV = constrain(this.xV, -0.15, 0.15);
+        this.yV = constrain(this.yV, -0.15, 0.15);
+    }
+    
+}
+
+
+particle.prototype.draw = function() {
+    
+    if (!this.die) {
+        
+        noStroke();
+        fill(this.col, this.o);
+        
+        if (this.type === "rect") {
+            rect(this.x, this.y, this.sz, this.sz);
+        }
+        else {
+            ellipse(this.x, this.y, this.sz, this.sz);
+        }
+        
+        this.o -= this.oV;
+        this.oV *= 1.01;
+        
+    }
+    
+};
+
+particle.prototype.move = function() {
+    
+    this.x += this.xV;
+    this.y += this.yV;
+    
+    if (this.grav) {
+        this.yV += 0.1;
+    }
+    
+    for (var i = 0; i < blocks.length; i++) {
+        if (rectCollide(this.x, this.y, 5, 5, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type.toLowerCase() !== "a" && this.blockCol) {
+            this.die = true;
+        }
+    }
+    
+};
+
+particle.prototype.run = function() {
+    
+    this.move();
+    this.draw();
+    
+};
+
+// pet function
+// this storyline has changed a lot
+function pet() {
+    
+    this.x = 0;
+    this.y = 0;
+    
+    this.yV = 0;
+    
+    this.jump = false;
+    
+    this.targeted = false;
+    
+    // for the earlier levels
+    this.inLevel = false;
+    
+}
+
+var Pet = new pet();
+
+var particles = [];
+
+// so the player doesnt go off the edge
+var constran = [];
+
+var guns = [];
+
+var bullets = [];
+
+var keys = [];
+
+var enemies = [];
+
+
+// gun on ground
+function gun(x, y) {
+    
+    this.x = x;
+    this.y = y;
+    
+    this.die = false;
+    
+}
+
+// draw the gun
+gun.prototype.draw = function() {
+    
+    image(imgs.gun, this.x + 10, this.y + sin(frameCount * 1.5) * 5 + 22.5, 50, 37);
+    
+};
+
+// bullets
+function bullet(x, y, dir, fromPlayer) {
+    
+    this.x = x;
+    this.y = y;
+    
+    this.dir = dir;
+    
+    this.die = false;
+    
+    // so you don't kill yourself with your own bullet
+    this.fromPlayer = fromPlayer;
+    
+}
+
+bullet.prototype.draw = function() {
+    
+    fill(250, 40, 40);
+    ellipse(this.x, this.y, 7, 7);
+    
+};
+
+// most complicated function
+bullet.prototype.move = function() {
+    
+    this.x += this.dir * 8;
+    
+};
+
+bullet.prototype.collide = function() {
+    
+    // hit a block
+    for (var j = 0; j < blocks.length; j++) {
+        
+        if (this.x > blocks[j].x && this.x + 4 < blocks[j].x + 70 && this.y > blocks[j].y && this.y + 4 < blocks[j].y + 70 && blocks[j].type.toLowerCase() !== "r") {
+            
+            this.die = true;
+            
+        }
+        
+    }
+    
+    // hit a player
+    if (this.x > Player.x + 2 && this.x + 4 < Player.x + 42 && this.y > Player.y && this.y + 4 < Player.y + 70 && !this.fromPlayer) {
+        
+        setup();
+        
+        notifications.push(new notification("you were\nfatally shot"));
+        
+    }
+    
+    // hit [the] pet
+    if (this.x > Pet.x + 2 && this.x + 4 < Pet.x + 33 && this.y > Pet.y && this.y + 4 < Pet.y + 70 && Pet.inLevel) {
+        
+        if (this.fromPlayer) {
+            
+            notifications.push(new notification("you fatally\nshot your pet"));
+        }
+        else {
+            notifications.push(new notification("your pet was\nfatally shot"));
+        }
+        
+        setup();
+        
+    }
+    
+    // hit an enemy
+    for (var i = 0; i < enemies.length; i++) {
+        
+        if (rectCollide(this.x, this.y, 4, 4, enemies[i].x, enemies[i].y, 45, 70) && this.fromPlayer) {
+            
+            this.die = true;
+            enemies.splice(i, 1);
+            
+            notifications.push(new notification("you killed\nan alien"));
+            
+        }
+        
+    }
+    
+};
+
+bullet.prototype.full = function() {
+    
+    this.draw();
+    this.move();
+    this.collide();
+    
+};
+
+// not used very much, but still exists
+function Button(config) {
+    
+    this.x = config.x;
+    this.y = config.y;
+    
+    this.w = config.w;
+    this.h = config.h;
+    
+    this.show = config.show;
+    
+    this.clicky = config.clicky;
+    
+}
+
+Button.prototype.draw = function() {
+    
+    this.show();
+    
+    if (cursorCollide(this.x, this.y, this.w, this.h)) {
+        
+        handCursor = true;
+        
+        if (clicked) {
+            this.clicky();
+        }
+        
+    }
+    
+};
+
+
+// levels
+/*****
+ * 
+ * BLOCK INDEX
+ * 
+ *  x - grass block
+ *  y - normal block
+ *  r - arrow
+ *  t - trampoline
+ *  a - acid
+ *  g - gun
+ *  
+ *  @ - player
+ *  * - pet
+ *  ( - overpowered enemy (100 shots)
+ *  $ - normal enemy (10 shots)
+ *  ^ - defenseless enemy
+ *  # - portal
+ * 
+ * " " - air
+ * 
+*****/
+
+// not going to go indepth
+var levels = [
+    
+    // 0
+    [
+        
+        " @ r                                                                #",
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "",
+        
+    ],
+    
+    // 1
+    [
+        
+        "@   r                #",
+        "xxxxxxxxxtaaaaaaxxxxxx",
+        "yyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+    // 2
+    [
+        
+        "@  r  g              #",
+        "xxxxxxxxxxxxxxx   xxxx",
+        "yyyyyyyyyyyyyyy   yyyy",
+        "yyyyyyyyyyyyyyy   yyyy",
+        "yyyyyyyyyyyyyyy t yyyy",
+        "yyyyyyyyyyyyyyy ^ yyyy",
+        "yyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+    // 3
+    [
+        
+        "",
+        "@ g r       $    #",
+        "xxxxxxxxxx   xxxxx",
+        "yyyyyyyyyy   yyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+    // 4
+    [
+        
+        "        x",
+        "@  r             #",
+        "xxxxxaaaaaaaaaxxxx",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+    // 5
+    [
+        
+        "            *",
+        "",
+        "",
+        "@  r                                    #",
+        "xxxxxxxxxttttttxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+    // 6
+    [
+        
+        "*",
+        "@g r             #",
+        "xxxxxxxxxxx$xxxxxx",
+        "yyyyyyyyyyy yyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+    // 7
+    [
+        
+        "                                  r       #",
+        "                              xxxxxxxxxxxxx",
+        "                               yyyyyyyyyyyy",
+        "                               yyyyyyyyyyyy",
+        "                              tyyyyyyyyyyyy",
+        "                               yyyyyyyyyyyy",
+        "                               yyyyyyyyyyyy",
+        "                              tyyyyyyyyyyyy",
+        "             r                 yyyyyyyyyyyy",
+        "*            x                 yyyyyyyyyyyy",
+        "@  r    x                   xxtxyyyyyyyyyyy",
+        "xxxxaaaaaaaaaaaaaaaaaaxxaaaayyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+    // 8
+    [
+        
+        "             $ #",
+        "           txxxx",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "*",
+        "@g r   t          ",
+        "xxxxxxxxxxxxxxxxxx",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+    // 9
+    [
+        
+        "                 x",
+        "       x     t   y",
+        "*      y  $$$$$$$y",
+        "@g r   yxxxxxxxxxyxxy   r      #",
+        "xxxxxxtyyyyyyyyyyyyyyxxxxxxxxxxx",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+    // 10
+    [
+        
+        "*",
+        "@  r             x",
+        "xxxxxxxxaaaaxxaaaaaaaxxxxxxx  xxxxxx",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyy   yyyyyy",
+        "yyyyyyyyyyyyyyyyyy            yyyyyy",
+        "yyyyyyyyyyyyyyyy          yyyyyyyyyy",
+        "yyyyyyyyyyyyyyyy#      yyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyy  yyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+    // 11
+    [
+        
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyy       yyyyyyyyyyyyyyyyy",
+        "yy                    yyyyyyyyyyyyyyy",
+        "y*                            yyyyyyy",
+        "y@  R                        #yyyyyyy",
+        "yyyyyyyAAA               yyyyyyyyyyyy",
+        "yyyyyyyyyyyAAAyAAAAAyyAAyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+    // 12
+    [
+        
+        "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyy         yyyyyyyyyyyyyyyyyy",
+        "yyyyyyyy            yyyyyyyyyyyyyyyyy",
+        "yyy                     yyyyyyyyyyyyy",
+        "y*                             yyyyyy",
+        "y@g R                          #yyyyy",
+        "yyyyyyyyy$            yyyy$yyyyyyyyyy",
+        "yyyyyyyyytyAAAAyyyAAyyyyyytyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+    // 13
+    [
+        
+        "                                   #",
+        "",
+        "",
+        "",
+        "",
+        "xxxxxxx                            x",
+        "yyyyyyyxxxxxxxxxxxxx         (",
+        "yyyyyyyyyyyyyyyyyyyyxxxxxxxxxx   r  ",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyx xxxtx",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy yyyyy",
+        "yyyyyyyyy      y     y       yy yyyyy",
+        "yyyyyyy            y y          yyyyy",
+        "yyyy               y            yyyyy",
+        "y*                yy            yyyyy",
+        "y@g R       y      y           tyyyyy",
+        "yyyyy yy           y           yyyyyy",
+        "yyyyy yyAAAAAAAAAAAyyAAAAAAyyyyyyyyyy",
+        "yyyyy yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyy yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyy yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+    // 14 / final level
+    [
+        
+        "               yyyyyyy",
+        "               yyyyyyy",
+        "              xyyyyyyy",
+        "              yyyyyyyy",
+        "              yyyyyyyy",
+        "             xyyyyyyyy",
+        "             yyyyyyyyyyyyyyyyy",
+        "             yyyyyyyyyyyyyyyyy",
+        "            xyyyyyyyyyyyyyyyyyyyy",
+        "                yyyyyyyyyyyyyyyyyyy",
+        "           x             yyyyyyyyyyyyy",
+        "           yy    yyyy          yyyyyyyyy",
+        "          xyyy yyyyyyyy      (   yyyyyyyyyyyyyyyy",
+        "*        xyyyy yyyyyyyyyyyyAAAyyyyyyyyyyyyyyyyyyy",
+        "@g  r  xxyyyyy yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "xxxxxxxyyyyyyy      yyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "                              yyyyyyyyyyyyyyy yyy",
+        "                         yyyyyyyyyyyyyyyyyyyy yyy",
+        "               yyyyyyyyy yyyyyyyyyyyyyyyyyyyy yyy",
+        "AAAAAAAAA yAAAAyyyyyyyyy yyyyyyyyyy      y       ",
+        "yyyyyyyyy yyyyyyyyyyyyyy yyyyy                   ",
+        "yyyyyyyyy yyyyyyyyyyyyyy                     t   ",
+        "yyyyyyyyy yyyyyyyyyyyyyy           (  y          ",
+        "yyyyyyyyy yyyyyyyyyyyyyy yyyyyyyyyAAAAAAAAAAtAyyy",
+        "yyyy             yyyyyyy yyy      yyyyyyyyyyyyyyy",
+        "yyyy              yyyyyy yyyyyyyy yyyyyyyy(    yy",
+        "yyyy                          yyy yyyyyyyy#    yy",
+        "yyyyyAAAyyyAA yAyyyyyy yyyyy      yyyyyyyyyyyy yy",
+        "yyyyyyyyyyyyy yyyyyyyy yyyyyyyyyytyyyyyyyyyyyy yy",
+        "yyyyyyyyyyyyy yyyyyyyy yyyyyyyyyyyyyyyyyyyyyyy yy",
+        "yyyyyyyyyyyyyAyyyyyyyy                    (    yy",
+        "    yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyytyy",
+        "     yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        "      yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+        
+    ],
+    
+];
+
+// level messages
+/*
+ [
+    x: ,
+    y: ,
+    message: ,
+    level: ,
+ ],
+*/
+var messages = [
+    
+    [
+        
+        100,
+        -50,
+       "Welcome to planet X!",
+        0
+        
+    ],
+    
+    [
+        
+        600,
+        -50,
+        "You have been sent\nhere on a simple mission.",
+        0
+        
+    ],
+    
+    [
+        
+        1150,
+        -50,
+        "Aliens have invaded and taken over,\nand made it a hostile environment.",
+        0
+        
+    ],
+    
+    [
+        
+        2000,
+        -50,
+        "Due to the fact that this planet\nis deemed an important strategic position,",
+        0
+        
+    ],
+    
+    [
+        
+        3100,
+        -50,
+        "it is necessary for you to\ntake it back.",
+        0
+        
+    ],
+    
+    [
+        4300,
+        -50,
+        "Good luck :D",
+        0
+        
+    ],
+    
+    [
+        
+        150,
+        -150,
+        "These things make you bounce...\nSome sort of natural mutation, I suppose.\nAlso, avoid hot acid. It is not good for your skin",
+        1
+        
+    ],
+    
+    [
+        
+        150,
+        -100,
+        "Pick up blasters\nPress Z",
+        2
+        
+    ],
+    
+    [
+        
+        600,
+        -100,
+        "Press SHIFT to shoot...\nDefeat the aliens, but be warned...\nthey have no legs.",
+        2
+        
+    ],
+    
+    [
+        
+        125,
+        -50,
+        "Do not underestimate\nthe aliens",
+        3
+        
+    ],
+    
+    [
+        
+        125,
+        -50,
+        "Well, we must go on this quest",
+        4
+        
+    ],
+    
+    [
+        
+        400,
+        -180,
+        "to defeat all of the aliens",
+        4
+        
+    ],
+    
+    [
+        
+        150,
+        50,
+        "AAH! Kill it!\nwait, it is friendly!",
+        5
+        
+    ],
+    
+    [
+        
+        750,
+        50,
+        "It is so cute though!\nIt must be a baby alien.",
+        5,
+        
+    ],
+    
+    [
+        
+        1350,
+        50,
+        "I will adopt it...\nhis name is now Ralph",
+        5
+        
+    ],
+    
+    [
+        
+        1900,
+        0,
+        "And you do adopt Ralph, but unofficially.\nYou must now guide both of you\nthrough the levels.",
+        5
+        
+    ],
+    
+    [
+        
+        150,
+        0,
+        "LOOK OUT!",
+        6
+        
+    ],
+    
+    [
+        
+        110,
+        600,
+        "These natural formations\nare pretty strange",
+        7
+        
+    ],
+    
+    [
+        
+        650,
+        500,
+        "Timing is everything",
+        7
+        
+    ],
+    
+    [
+        
+        1500,
+        500,
+        "You may need to leave\nyour pet behind",
+        7
+        
+    ],
+    
+    [
+        
+        2000,
+        -50,
+        "Almost done",
+        7
+        
+    ],
+    
+    [
+        
+        110,
+        500,
+        "Look out above!",
+        8,
+        
+    ],
+    
+    [
+        
+        450,
+        300,
+        "Yes, it is possible.\nTime your air jump right.",
+        8
+        
+    ],
+    
+    [
+        
+        85,
+        75,
+        "Fools rush in...",
+        9
+        
+    ],
+    
+    [
+        
+        85,
+        -100,
+        "This place is cold\nand barren",
+        10
+        
+    ],
+    
+    [
+        
+        1500,
+        -100,
+        "Guess that I am going down...",
+        10
+        
+    ],
+    
+    [
+        
+        85,
+        300,
+        "Yikes, lots of acid in\nthis cave. Watch your step.",
+        11
+        
+    ],
+    
+    [
+        
+        225,
+        290,
+        "Wow, they are patrolling\nthis far back?\nWe must be getting closer",
+        12
+        
+    ],
+    
+    [
+        
+        100,
+        910,
+        "You may neeed to make sacrifices\nR to restart",
+        13
+        
+    ],
+    
+    [
+        
+        100,
+        890,
+        "This might be it!",
+        14
+        
+    ],
+    
+    [
+        
+        500,
+        600,
+        "I would not go in there\nif I were you...",
+        14
+        
+    ],
+    
+];
+
+// current level
+var level = 0;
+
+var lvlHints = [
+    
+    // 0
+    "Try using the arrow keys to\nmove. Go to the far right, the\nportal will appear.",
+    "Acid is very hot and deadly.\nBoost pads are fun and\nbouncy.",
+    "Blasters are also deadly.\nPick them up by pressing Z\nPress shift to shoot, where\nyou are facing.",
+    "Instantly grab the blaster\nand shoot at the enemy, you\nmay need to hop a bullet",
+    "...",
+    
+    // 5
+    "wow, that was unexpected",
+    "Instantly grab the blaster\nand shoot, you may need to\njump over a bullet",
+    "Timing is everything. You\ncan air jump :D",
+    "There is an alien above\nyou. Do not shoot your pet.",
+    "There are probably more. Just\nkeep blind shooting.",
+    
+    // 10
+    "Travel down.",
+    "The jumps are tough. Keep your\npet very close.",
+    "Defeat the enemies!",
+    "You may want to trap your pet",
+    "Big labyrinth...\ngood luck :D",
+    
+];
+
+// camera
+var cam = {
+    x: 0,
+    y: 0,
+};
+
+// block
+function block(x, y, t) {
+    
+    this.x = x;
+    this.y = y;
+    
+    this.type = t;
+    
+}
+
+block.prototype.draw = function() {
+    
+    // so its not too laggy
+    if (dist(this.x, this.y, Player.x, Player.y) < 700) {
+        
+        noStroke();
+        
+        switch (this.type) {
+            
+            case "x":
+                image(imgs.top, this.x, this.y, 71, 71);
+            break;
+            
+            case "y":
+                image(imgs.norm, this.x - 0.5, this.y - 0.5, 71, 71);
+            break;
+            
+            case "a":
+                image(imgs.acid, this.x - 0.5, this.y, 72, 70);
+            break;
+            
+            case "A":
+                fill(170);
+                rect(this.x, this.y - 0.5, 71, 71);
+                image(imgs.acid, this.x, this.y, 71, 71);
+            break;
+            
+            case "#":
+                
+                image(imgs.portal, this.x, this.y, 71, 71);
+                
+                // mesmerizing particles
+                if(frameCount % 8 === 0) {
+                        
+                        particles.push(new particle({
+                            
+                            x: sin(frameCount * 3) * 40 + this.x + 35,
+                            y: cos(frameCount * 3) * 48 + this.y + 30,
+                            
+                            col: color(139, 45, 247),
+                            
+                            dispersement: 0,
+                            
+                            siz: 7,
+                            
+                            type: "rect",
+                            
+                            blockCol: false,
+                            
+                            UCY: true
+                            
+                        }));
+                        
+                    }
+                
+            break;
+            
+            case "t":
+                image(imgs.trampoline, this.x, this.y, 70, 70);
+            break;
+            
+            case "r":
+                image(imgs.arrow, this.x - 0.5, this.y - 0.5, 71, 70);
+            break;
+            
+            case "R":
+                fill(170);
+                rect(this.x - 0.5, this.y - 0.5, 141, 71);
+                image(imgs.arrow, this.x - 0.5, this.y - 0.5, 71, 70);
+            break;
+            
+        }
+        
+    }
+    
+    // acid particles
+    if (this.type === "a") {
+        
+        if (frameCount % 12 === 0) {
+            
+            particles.push(new particle({
+                
+                x: this.x + random(0, 70),
+                y: this.y + random(-5, 4),
+                
+                col: color(random(26, 66), random(186, 226), random(11, 51)),
+                
+                dispersement: 5,
+                
+                siz: random(2, 5),
+                
+                type: "circle",
+                
+                blockCol: true,
+                
+            }));
+            
+        }
+        
+    }
+    
+};
+
+// gun collide
+gun.prototype.coll = function() {
+    
+    if (rectCollide(this.x + 5, this.y + 5, 60, 60, Player.x, Player.y, 45, 70) && keys[Player.controls[3]]) {
+        
+        this.die = true;
+        
+        Player.gun = 1;
+        Player.gunCache = 10;
+        Player.gunDelay = 0;
+        
+    }
+    
+    // yeah enemies can pick guns up too
+    for (var m = 0; m < enemies.length; m++) {
+        
+        if (rectCollide(this.x + 5, this.y + 5, 60, 60, enemies[m].x, enemies[m].y, 45, 70)) {
+            
+            this.die = true;
+            
+            enemies[m].bulletsShot = 0;
+            enemies[m].bulletReload = 0;
+            enemies[m].bulletCapacity = max(10, enemies[m].bulletCapacity);
+            
+        }
+        
+    }
+    
+};
+
+gun.prototype.full = function() {
+    this.draw();
+    this.coll();
+};
+
+// enemy/alien
+function enemy(x, y, cap) {
+    
+    this.x = x;
+    this.y = y;
+    
+    this.xV = 0;
+    this.yV = 0;
+    
+    this.dir = 1;
+    
+    this.jump = false;
+    
+    this.targeted = false;
+    
+    this.die = false;
+    
+    this.bulletsShot = 0;
+    this.bulletReload = 0;
+    this.bulletCapacity = cap;
+    
+}
+
+// the messages
+// this code is disorganized don't ask why they are here of all places
+function msg(x, y, m) {
+    
+    this.msg = m;
+    
+    this.x = x;
+    this.y = y;
+    
+}
+
+msg.prototype.draw = function() {
+    
+    fill(225);
+    
+    if (dist(this.x, this.y, Player.x, Player.y) < 1100) {
+        pxlTxt(this.msg, this.x, this.y, 2.5);
+    }
+    
+};
+
+var msgs = [];
+
+// setup the level
+function setup() {
+    
+    // resets like 50 things
+    enemies = [];
+    bullets = [];
+    blocks = [];
+    guns = [];
+    msgs = [];
+    
+    Pet.inLevel = false;
+    
+    Pet.xV = 0;
+    Pet.yV = 0;
+    
+    Player.xV = 0;
+    Player.yV = 0;
+    
+    Player.gun = 0;
+    Player.portal = false;
+    
+    if(page !== "win") {
+        
+        for (var i = 0; i < levels[level].length; i++) {
+            
+            for (var j = 0; j < levels[level][i].length; j++) {
+                
+                for (var k = 0; k < levels[level][i][j].length; k++) {
+                    
+                    // blocks that work
+                    switch (levels[level][i][j]) {
+                        
+                        case "x":
+                        case "t":
+                        case "a":
+                        case "A":
+                        case "#":
+                        case "y":
+                        case "r":
+                        case "R":
+                            blocks.push(new block(j * 70, i * 70, levels[level][i][j]));
+                        break;
+                        
+                        // gun
+                        case "g":
+                            guns.push(new gun(j * 70, i * 70));
+                        break;
+                        
+                        case "@":
+                            Player.x = j * 70;
+                            Player.y = i * 70;
+                        break;
+                        
+                        // pet
+                        case "*":
+                            Pet.inLevel = true;
+                            Pet.x = j * 70;
+                            Pet.y = i * 70;
+                        break;
+                        
+                        // enemies
+                        case "^":
+                            enemies.push(new enemy(j * 70, i * 70, 0));
+                        break;
+                        
+                        case "$":
+                            enemies.push(new enemy(j * 70, i * 70, 10));
+                        break;
+                        
+                        case "(":
+                            enemies.push(new enemy(j * 70, i * 70, 100));
+                        break;
+                        
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+        // add messages
+        for (var i = 0; i < messages.length; i++) {
+            
+            if (messages[i][3] === level) {
+                msgs.push(new msg(messages[i][0], messages[i][1], messages[i][2]));
+            }
+            
+        }
+        
+    }
+    
+}
+
+// draw player
+player.prototype.draw = function() {
+    
+    // walking animation
+    if (abs(this.xV) > 1) {
+        
+        if (this.dir === -1) {
+            
+            pushMatrix();
+                translate(this.x + 57.5, this.y);
+                scale(-1, 1);
+                
+                // basically takes which one it is supposed to display from the array vvvvv
+                image([imgs.astronut1, imgs.astronut2, imgs.astronut3, imgs.astronut4, imgs.astronut5, imgs.astronut6, imgs.astronut7][this.imgIdx], 0, 0, 55, 70);
+                
+            popMatrix();
+            
+        }
+        
+        else {
+            
+            image([imgs.astronut1, imgs.astronut2, imgs.astronut3, imgs.astronut4, imgs.astronut5, imgs.astronut6, imgs.astronut7][this.imgIdx], this.x - 5, this.y, 55, 70);
+            
+        }
+        
+        // image stuff
+        if (frameCount % 10 === 0) {
+            
+            if (this.imgIdx > 5) {
+                this.imgDesc = false;
+            }
+            
+            if (this.imgIdx < 1) {
+                this.imgDesc = true;
+            }
+            
+            if (this.imgDesc) {
+                this.imgIdx++;
+            }
+            else {
+                this.imgIdx--;
+            }
+        }
+        
+    }
+    
+    // idle
+    else {
+        
+        if (this.dir === -1) {
+            
+            pushMatrix();
+                translate(this.x + 57.5, this.y);
+                scale(-1, 1);
+                
+                image(imgs.astronut, 0, 0, 55, 70);
+                
+            popMatrix();
+            
+        }
+        else {
+            image(imgs.astronut, this.x - 5, this.y, 55, 70);
+        }
+        
+    }
+    
+    // draw gun
+    if (this.gun === 1) {
+        
+        if(this.dir === 1) {
+            image(imgs.gun, this.x + 11 + (25 * this.dir), this.y + 22, 25, 37 / 2);
+        }
+        
+        if(this.dir === -1) {
+            pushMatrix();
+                translate(this.x + 41 + (25 * this.dir), this.y + 22);
+                scale(-1, 1);
+                image(imgs.gun, 0, 0, 25, 37 / 2);
+            popMatrix();
+        }
+        
+    }
+    
+};
+
+// player on the menu
+player.prototype.draw2 = function() {
+    
+    if (abs(this.xV) > 1) {
+        
+        if (this.dir === -1) {
+            
+            pushMatrix();
+                translate(this.x + 112.5, this.y);
+                scale(-1, 1);
+                
+                image([imgs.astronut1, imgs.astronut2, imgs.astronut3, imgs.astronut4, imgs.astronut5, imgs.astronut6, imgs.astronut7][this.imgIdx], 0, 0, 110, 140);
+                
+            popMatrix();
+            
+        }
+        else {
+            image([imgs.astronut1, imgs.astronut2, imgs.astronut3, imgs.astronut4, imgs.astronut5, imgs.astronut6, imgs.astronut7][this.imgIdx], this.x - 5, this.y, 110, 140);
+        }
+        
+        if (frameCount % 10 === 0) {
+            
+            if (this.imgIdx > 5) {
+                this.imgDesc = false;
+            }
+            
+            if (this.imgIdx < 1) {
+                this.imgDesc = true;
+            }
+            
+            if (this.imgDesc) {
+                this.imgIdx++;
+            }
+            else {
+                this.imgIdx--;
+            }
+            
+        }
+        
+    }
+    else {
+        
+        if (this.dir === -1) {
+            
+            pushMatrix();
+                translate(this.x + 112.5, this.y);
+                scale(-1, 1);
+                
+                image(imgs.astronut, 0, 0, 110, 140);
+                
+            popMatrix();
+            
+        }
+        else {
+            image(imgs.astronut, this.x - 5, this.y, 110, 140);
+        }
+        
+    }
+    
+};
+
+// moving on the menu
+player.prototype.move2 = function() {
+    
+    if (keys[this.controls[1]]) {
+        this.xV = -5;
+        this.dir = -1;
+    }
+    
+    if (keys[this.controls[2]]) {
+        this.xV = 5;
+        this.dir = 1;
+    }
+    
+    this.x += this.xV;
+    this.y += this.yV;
+    this.xV *= 0.82;
+    
+    if (keys[this.controls[0]] && this.jump) {
+        this.yV = -5;
+        this.jump = false;
+    }
+    
+    this.y += this.yV;
+    this.yV += 0.25;
+    
+    if(this.x > 600) {
+        this.x = -100;
+    }
+    if(this.x < -100) {
+        this.x = 600;
+    }
+    
+    // hit the bottom
+    this.y = constrain(this.y, 0, 350);
+    if(this.y === 350) {
+        this.jump = true;
+        this.yV = 0;
+    }
+    
+};
+
+// collisions >_>
+player.prototype.collideX = function() {
+    
+    for (var i = 0; i < blocks.length; i++) {
+        
+        if (rectCollide(this.x, this.y, 45, 70, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type.toLowerCase() !== "a" && blocks[i].type !== "#" && blocks[i].type.toLowerCase() !== "r" ) {
+            
+            if (this.x > blocks[i].x + 32.5) {
+                this.x = blocks[i].x + 70;
+                this.xV = 0;
+            }
+            
+            else if (this.x < blocks[i].x + 32.5) {
+                this.x = blocks[i].x - 45;
+                this.xV = 0;
+            }
+            
+        }
+        
+    }
+    
+};
+
+// more collisions >_>
+player.prototype.collideY = function() {
+    
+    for (var i = 0; i < blocks.length; i++) {
+        
+        if (rectCollide(floor(this.x), floor(this.y), 45, 70, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type.toLowerCase() !== "a" && blocks[i].type !== "#" && blocks[i].type.toLowerCase() !== "r") {
+            
+            if (this.y < blocks[i].y + 32.5) {
+                
+                this.jump = true;
+                this.y = blocks[i].y - 70;
+                
+                // particles
+                if(this.yV > 1) {
+                    
+                    switch(blocks[i].type) {
+                        
+                        // top block
+                        case "y":
+                            
+                            for(var j = 0; j < 15; j++) {
+                                
+                                particles.push(new particle({
+                                    
+                                    x: this.x + random(0, 70),
+                                    y: this.y + random(66, 74),
+                                    
+                                    col: random(83, 103),
+                                    
+                                    dispersement: 0,
+                                    
+                                    siz: random(2, 5),
+                                    
+                                    type: "rect",
+                                    
+                                    blockCol: false,
+                                    
+                                    cY: true,
+                                    
+                                }));
+                                
+                            }
+                            
+                        break;
+                        
+                        // normal dirt-esque-ground block
+                        case "x":
+                            
+                            for(var j = 0; j < 15; j++) {
+                                
+                                particles.push(new particle({
+                                    
+                                    x: this.x + random(0, 70),
+                                    y: this.y + random(66, 74),
+                                    
+                                    col: random(158, 178),
+                                    
+                                    dispersement: 0,
+                                    
+                                    siz: random(2, 5),
+                                    
+                                    type: "rect",
+                                    
+                                    blockCol: false,
+                                    
+                                    cY: true,
+                                    
+                                }));
+                                
+                            }
+                            
+                        break;
+                        
+                    }
+                    
+                }
+                
+                // this too
+                this.yV = 0;
+                
+            }
+            
+            else if (this.y > blocks[i].y + 32.5) {
+                this.yV = 0.1;
+                this.y = blocks[i].y + 70;
+            }
+            
+        }
+        
+    }
+    
+};
+
+// for special blocks
+player.prototype.specialCollide = function() {
+    
+    for (var i = 0; i < blocks.length; i++) {
+        
+        // trampoline
+        if (rectCollide(this.x, this.y + 1, 45, 70, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type === "t") {
+            
+            this.jump = true;
+            this.yV = -13;
+            
+        }
+        
+        // acid / portal
+        // idk why i tried to combine these
+        if (rectCollide(this.x, this.y - 1, 45, 69, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type.toLowerCase() === "a" || rectCollide(this.x, this.y - 1, 45, 69, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type === "#") {
+            
+            if (blocks[i].type === "#") {
+                
+                if(enemies.length === 0) {
+                    
+                    level++;
+                    if(level >= levels.length) {
+                        page = "win";
+                    }
+                    
+                    setup();
+                    
+                }
+                
+                // because i needed to add this
+                else if(!this.portal) {
+                    
+                    notifications.push(new notification("you must kill\nevery alien"));
+                    this.portal = true;
+                    
+                }
+                
+            }
+            else {
+                notifications.push(new notification("you fell on\nhot acid"));
+                setup();
+            }
+            
+        }
+        
+    }
+    
+};
+
+// move player
+player.prototype.move = function() {
+    
+    if (keys[this.controls[1]]) {
+        this.xV = -5;
+        this.dir = -1;
+    }
+    
+    if (keys[this.controls[2]]) {
+        this.xV = 5;
+        this.dir = 1;
+    }
+    
+    this.x += this.xV;
+    this.xV *= 0.8;
+    this.x = round(this.x);
+    
+    this.collideX();
+    
+    if (keys[this.controls[0]] && this.jump) {
+        this.yV = -8.85;
+        this.jump = false;
+    }
+    
+    this.specialCollide();
+    
+    this.y += this.yV;
+    this.yV += 0.25;
+    this.y = round(this.y);
+    
+    this.collideY();
+    
+    if(page !== "win") {
+        
+        if (keys[82]) {
+            setup();
+        }
+        
+        // not actually possible in game, hopefully, but just in case
+        if (this.y > levels[level].length * 70 - 250) {
+            setup();
+            notifications.push(new notification("you fell off"));
+        }
+        
+        // shoot a gun
+        if (keys[this.controls[4]] && this.gun === 1 && this.gunDelay >= 15) {
+            
+            this.gunDelay = 0;
+            this.gunCache--;
+            
+            bullets.push(new bullet(this.x + 37 + (25 * this.dir), this.y + 27.5, this.dir, true));
+            
+        }
+        
+    }
+    
+    // :D
+    if(frameCount % 245 === 0) {
+        this.portal = false;
+    }
+    
+};
+
+player.prototype.full = function() {
+    this.draw();
+    this.move();
+};
+
+player.prototype.menu = function() {
+    this.draw2();
+    this.move2();
+};
+
+// yep
+setup();
+
+// to find if the player is near
+pet.prototype.detect = function() {
+    
+    if (dist(this.x, this.y, Player.x, Player.y) < 1000 && dist(this.x, this.y, Player.x, Player.y) > 100) {
+        this.targeted = true;
+    }
+    else {
+        this.targeted = false;
+    }
+    
+};
+
+// collide x >_>
+pet.prototype.collideX = function() {
+    
+    for (var i = 0; i < blocks.length; i++) {
+        
+        if (rectCollide(this.x, this.y, 35, 70, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type.toLowerCase() !== "a" && blocks[i].type !== "#" && blocks[i].type.toLowerCase() !== "r") {
+            
+            if (this.x > blocks[i].x + 15) {
+                this.x = blocks[i].x + 70;
+            }
+            
+            if (this.x < blocks[i].x + 15) {
+                this.x = blocks[i].x - 35;
+            }
+            
+        }
+        
+    }
+    
+};
+
+// collide again >_>
+pet.prototype.collideY = function() {
+    
+    for (var i = 0; i < blocks.length; i++) {
+        
+        if (rectCollide(this.x, this.y, 35, 70, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type.toLowerCase() !== "a" && blocks[i].type !== "#" && blocks[i].type.toLowerCase() !== "r") {
+            
+            if (this.y < blocks[i].y + 25) {
+                this.jump = true;
+                this.yV = 0;
+                this.y = blocks[i].y - 70;
+            }
+            
+            else if (this.y > blocks[i].y + 25) {
+                this.yV = 0.1;
+                this.y = blocks[i].y + 70;
+            }
+            
+        }
+        
+    }
+    
+};
+
+// special blocks :D
+pet.prototype.specialCollide = function() {
+    
+    for (var i = 0; i < blocks.length; i++) {
+        
+        // trampoline
+        if (rectCollide(this.x, this.y + 1, 35, 71, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type === "t") {
+            
+            this.jump = true;
+            this.yV = -9.5;
+            
+        }
+        
+        // still don't know why i combined it
+        if (rectCollide(this.x, this.y - 1, 35, 69, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type.toLowerCase() === "a" || rectCollide(this.x, this.y - 1, 35, 69, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type === "#") {
+            
+            if (blocks[i].type === "#") { // portal
+                level++;
+            }
+            
+            else {
+                notifications.push(new notification("your pet fell on\nhot acid"));
+            }
+            
+            setup();
+            
+        }
+        
+    }
+    
+};
+
+// move the pet
+pet.prototype.move = function() {
+    
+    // move
+    if (this.targeted) {
+        
+        if (Player.x > this.x) {
+            this.xV = min(Player.x - this.x, 4.5);
+        }
+        
+        if (Player.x < this.x) {
+            this.xV = min(this.x - Player.x, -4.5);
+        }
+        
+        if (abs(Player.x - this.x) < 4.5) {
+            this.xV = 0;
+        }
+        
+    }
+    
+    // move more
+    this.x += this.xV;
+    this.x = round(this.x);
+    this.xV *= 0.8;
+    
+    this.collideX();
+    
+    // more moving
+    if (this.targeted) {
+        if (Player.y < this.y && this.jump) {
+            this.yV = -8.5;
+            this.jump = false;
+        }
+    }
+    
+    // moving is fun
+    this.yV += 0.2;
+    
+    this.specialCollide();
+    
+    // moving is great
+    this.y += this.yV;
+    this.y = round(this.y);
+    this.collideY();
+    
+    if (this.y > levels[level].length * 70 - 250) {
+        notifications.push(new notification("your pet\nfell off"));
+        setup();
+    }
+    
+};
+
+// helpful big command
+pet.prototype.draw = function() {
+    
+    image(imgs.petImg, this.x, this.y + sin(frameCount * 1.45) * 8, 35, 70);
+    
+};
+
+// full stuff
+pet.prototype.full = function() {
+    
+    if (this.inLevel) {
+        
+        this.detect();
+        this.move();
+        this.draw();
+        
+    }
+    
+};
+
+// enemy
+enemy.prototype.detect = function() {
+    
+    if (dist(this.x, this.y, Player.x, Player.y) < 1000) {
+        
+        this.targeted = true;
+        
+        // if there are no bullets left,
+        // the enemy will flee
+        if (this.bulletsShot > this.bulletCapacity) {
+            this.targeted = null;
+        }
+        
+    }
+    else {
+        this.targeted = false;
+    }
+    
+};
+
+// i <3 collisions >_>
+enemy.prototype.collideX = function() {
+    
+    for (var i = 0; i < blocks.length; i++) {
+        
+        if (rectCollide(this.x, this.y, 45, 70, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type.toLowerCase() !== "r") {
+            
+            if (this.x > blocks[i].x + 15) {
+                this.x = blocks[i].x + 70;
+            }
+            
+            if (this.x < blocks[i].x + 15) {
+                this.x = blocks[i].x - 45;
+            }
+            
+        }
+        
+    }
+    
+};
+
+// collisions ar the best >_>
+enemy.prototype.collideY = function() {
+    
+    for (var i = 0; i < blocks.length; i++) {
+        
+        if (rectCollide(this.x, this.y, 45, 70, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type.toLowerCase() !== "r") {
+            
+            if (this.y < blocks[i].y + 25) {
+                this.jump = true;
+                this.yV = 0;
+                this.y = blocks[i].y - 70;
+            }
+            else if (this.y > blocks[i].y + 25) {
+                this.yV = 0.1;
+                this.y = blocks[i].y + 70;
+            }
+            
+        }
+        
+    }
+    
+};
+
+// special blox
+enemy.prototype.specialCollide = function() {
+    
+    // bounce
+    for (var i = 0; i < blocks.length; i++) {
+        
+        if (rectCollide(this.x, this.y + 1, 45, 71, blocks[i].x, blocks[i].y, 70, 70) && blocks[i].type === "t") {
+            
+            this.jump = true;
+            this.yV = -7.5;
+            
+        }
+        
+    }
+    
+};
+
+// move enemy
+enemy.prototype.move = function() {
+    
+    // i like to move it move it
+    if (this.targeted) {
+        
+        if (Player.x > this.x) {
+            this.xV = min(Player.x - this.x, 4);
+            this.dir = 1;
+        }
+        
+        if (Player.x < this.x) {
+            this.xV = min(this.x - Player.x, -4);
+            this.dir = -1;
+        }
+        
+        if (abs(Player.x - this.x) < 4.5) {
+            this.xV = 0;
+        }
+        
+    }
+    
+    // when the enemy is a chicken with its head cut off
+    if (this.targeted === null) {
+        
+        if (Player.x < this.x) {
+            this.xV = 4;
+            this.dir = 1;
+        }
+        
+        if (Player.x > this.x) {
+            this.xV = -4;
+            this.dir = -1;
+        }
+        
+    }
+    
+    // more moving
+    this.x += this.xV;
+    this.x = round(this.x);
+    this.xV *= 0.8;
+    this.collideX();
+    
+    if (this.targeted) {
+        
+        // more jumping too :D
+        if (Player.y < this.y && this.jump) {
+            this.yV = -9;
+            this.jump = false;
+        }
+        
+        // shoot bullets
+        if (this.bulletReload > 30 && this.bulletsShot <= this.bulletCapacity) {
+            
+            bullets.push(new bullet(this.x + 22.5 + (45 * this.dir), this.y + 27, this.dir, false));
+            this.bulletReload = 0;
+            this.bulletsShot++;
+            
+        }
+        
+        this.bulletReload++;
+        
+    }
+    
+    // moving + collisions
+    this.yV += 0.2;
+    this.specialCollide();
+    this.y += this.yV;
+    this.y = round(this.y);
+    this.collideY();
+    
+};
+
+// draw enemy
+enemy.prototype.draw = function() {
+
+    image(imgs.alien, this.x, this.y + sin(frameCount * 1.25) * 4, 45, 70);
+    
+    if (this.bulletsShot <= this.bulletCapacity) {
+        
+        if(this.dir === 1) {
+            image(imgs.gun, this.x + 17 + (25 * this.dir), this.y + 22, 25, 37 / 2);
+        }
+        
+        if(this.dir === -1) {
+            
+            pushMatrix();
+                translate(this.x + 28 + (25 * this.dir), this.y + 22);
+                scale(-1, 1);
+                image(imgs.gun, 0, 0, 25, 37 / 2);
+            popMatrix();
+            
+        }
+        
+    }
+    
+};
+
+// full enemy
+enemy.prototype.full = function() {
+    
+    this.detect();
+    this.move();
+    this.draw();
+    
+};
+
+// pause background
+var pauseBck;
+
+// buttons
+var buttons = {
+    
+    // read
+    pause: new Button({
+        
+        x: 20,
+        y: 20,
+        
+        w: 60,
+        h: 60,
+        
+        show: function() {
+            
+            strokeWeight(2);
+            stroke(235);
+            fill(0, 50);
+            rect(20, 20, 60, 60, 15);
+            
+            noStroke();
+            fill(255, 225);
+            rect(35, 35, 10, 30, 1);
+            rect(55, 35, 10, 30, 1);
+            
+        },
+        
+        clicky: function() {
+            
+            pauseBck = get();
+            
+            page = "pause";
+            
+        },
+        
+    }),
+    
+    // un read
+    unpause: new Button({
+        
+        x: 150,
+        y: 450,
+        
+        w: 300,
+        h: 100,
+        
+        show: function() {
+            
+            strokeWeight(2);
+            stroke(235);
+            fill(0, 50);
+            rect(150, 450, 300, 100);
+            
+            noStroke();
+            fill(255);
+            pxlTxt("u n p a u s e", 190, 475, 3);
+            
+        },
+        
+        clicky: function() {
+            page = "gm";
+        },
+        
+    }),
+    
+    // guess what this button does
+    begin: new Button({
+        
+        x: 175,
+        y: 200,
+        
+        w: 250,
+        h: 100,
+        
+        // no function
+        show: function() {
+        },
+        
+        clicky: function() {
+            
+            page = "gm";
+            
+            Player.x = 0;
+            Player.y = 0;
+            
+        },
+        
+    }),
+    
+    // outline
+    /*
+        demo: new Button({
+        x: ,
+        y: ,
+        w: ,
+        h: ,
+        show: function() {
+        },
+        clicky: function() {
+        },
+    }),
+    */
+    
+};
+
+
+// full draw function
+function draw() {
+    
+    try {
+        
+        switch (page) {
+            
+            // loading screen
+            case "load":
+                
+                load();
+                
+                background(55);
+                fill(255);
+                pxlTxt("Loading...", 100, 120, 8);
+                
+                fill(220);
+                rect(0, 525, curLoad / (Object.keys(imgs)).length * 600, 75);
+                
+            break;
+            
+            // menu
+            case "maine":
+                
+                image(imgs.bck, 0, 0, 600, 600);
+                image(imgs.title, -50, -100, 700, 700);
+                image(imgs.btn, 175, 200, 250, 100);
+                
+                // the button hover fx
+                if(cursorCollide(175, 200, 250, 100)) {
+                    handCursor = true;
+                    image(imgs.btn2, 175, 200, 250, 100);
+                }
+                
+                // draw the player
+                Player.menu();
+                
+                // the ground
+                for(var i = 0; i < 10; i++) {
+                    image(imgs.top, i * (600 / 10), 490, 600 / 10, 600 / 10);
+                    image(imgs.norm, i * (600 / 10), 490 + (600 / 10), 600 / 10, 600 / 10);
+                }
+                
+                buttons.begin.draw();
+                
+            break;
+            
+            // the game
+            case "gm":
+                
+                // win
+                if(level >= levels.length) {
+                    page = "win";
+                }
+                
+                // so no bug
+                if(page !== "win") {
+                    
+                    image(imgs.bck, 0, 0, 600, 600);
+                    
+                    pushMatrix();
+                        translate(cam.x, cam.y);
+                        
+                        // for the cam & player limits
+                        constran = [];
+                        for (var j = 0; j < levels[level].length; j++) {
+                            constran.push(levels[level][j].length * 70);
+                        }
+                        
+                        // cave backgrounds
+                        fill(170);
+                        
+                        switch(level) {
+                            
+                            case 10:
+                                rect(0, 210, 3000, 3000);
+                                rect(1700, 140, 1000, 1000);
+                            break;
+                            
+                            case 11:
+                            case 12:
+                                rect(0, 0, 3000, 3000);
+                            break;
+                            
+                            case 13:
+                                rect(0, 560, 3000, 3000);
+                            break;
+                            
+                            case 14:
+                                rect(0, 1120, 3000, 3000);
+                                rect(840, 630, 3000, 3000);
+                                
+                        }
+                        
+                        // draw blocks
+                        for (var i = 0; i < blocks.length; i++) {
+                            blocks[i].draw();
+                        }
+                        
+                        // draw messages
+                        for (var i = 0; i < msgs.length; i++) {
+                            fill(0);
+                            msgs[i].draw();
+                        }
+                        
+                        // draw guns
+                        for (var i = 0; i < guns.length; i++) {
+                            
+                            guns[i].full();
+                            
+                            if (guns[i].die) {
+                                guns.splice(i, 1);
+                            }
+                            
+                        }
+                        
+                        // draw bullets
+                        for (var i = 0; i < bullets.length; i++) {
+                            
+                            bullets[i].full();
+                            
+                            if (bullets.length > i) {
+                                
+                                if (bullets[i].die || bullets[i].x < 0 || bullets[i].x > (max)(constran) + 100) {
+                                    bullets.splice(i, 1);
+                                }
+                                
+                            }
+                            
+                        }
+                        
+                        // draw enemyes
+                        for (var i = 0; i < enemies.length; i++) {
+                            
+                            enemies[i].full();
+                            enemies[i].x = constrain(enemies[i].x, 0, (max)(constran) - 45);
+                            
+                        }
+                        
+                        // draw player
+                        Player.full();
+                        
+                        Player.x = constrain(Player.x, 0, (max)(constran) - 45);
+                        
+                        // pet
+                        Pet.full();
+                        
+                        // draw particles
+                        for (var i = particles.length - 1; i > 0; i--) {
+                            
+                            particles[i].run();
+                            
+                            if (particles[i].o <= 0 || particles[i].die) {
+                                particles.splice(i, 1);
+                            }
+                            
+                        }
+                    
+                    popMatrix();
+                    
+                    // notifications
+                    for (var i = notifications.length - 1; i > 0; i--) {
+                        notifications[i].draw();
+                        
+                        if (notifications[i].x > 650) {
+                            notifications.splice(i, 1);
+                        }
+                        
+                    }
+                    
+                    if (Player.gun) {
+                        
+                        fill(255);
+                        pxlTxt("Blaster reload", 10, 13, 1.4);
+                        pxlTxt("Ammo clip", 34, 45, 1.75);
+                        
+                        quad(150, 12.5, 140, 35, 250, 35, 260, 12.5);
+                        quad(150, 47.5, 140, 70, 250, 70, 260, 47.5);
+                        fill(0);
+                        
+                        Player.gunDelay++;
+                        
+                        if (Player.gunCache <= 0) {
+                            Player.gunDelay -= 0.89;
+                        }
+                        
+                        if (Player.gunDelay > 15) {
+                            
+                            Player.gunDelay = 15;
+                            
+                            if (Player.gunCache === 0) {
+                                Player.gunCache = 10;
+                            }
+                            
+                        }
+                        quad(155, 17.5, 149, 30, (Player.gunDelay / 15 * 96) + 149, 30, (Player.gunDelay / 15 * 97) + 154, 17.5);
+                        
+                        // this is fancy right?
+                        for (var j = 0; j < Player.gunCache; j++) {
+                            quad(j * 10 + 155, 52.5, j * 10 + 148, 65, j * 10 + 155, 65, j * 10 + 162, 52.5);
+                        }
+                    }
+                    
+                    // move camera
+                    cam.x += (cam.x + Player.x - 272.5) / -10;
+                    cam.y += (cam.y + Player.y - 272.5) / -10;
+                    
+                    cam.x = round(cam.x);
+                    cam.y = round(cam.y);
+                    
+                    cam.x = constrain(cam.x, -(max)(constran) + 600, 0);
+                    
+                    // read
+                    buttons.pause.draw();
+                
+                }
+                
+            break;
+            
+            // paused
+            case "pause":
+                
+                image(pauseBck, 0, 0, 600, 600);
+                
+                noStroke();
+                fill(0, 80);
+                rect(0, 0, 600, 600);
+                
+                fill(255);
+                pxlTxt("PAUSED", 100, 100, 8.86);
+                
+                pxlTxt(lvlHints[level], 80, 250, 2.4);
+                
+                buttons.unpause.draw();
+                
+            break;
+            
+            // read
+            case "win":
+                
+                image(imgs.bck, 0, 0, 600, 600);
+                
+                noStroke();
+                fill(0, 35);
+                rect(0, 0, 600, 600);
+                
+                image(imgs.win, 0, 0, 600, 600);
+                
+                image(imgs.helpfultext, 10, 150, 580, 400);
+                
+            break;
+            
+        }
+        
+    }
+    
+    // justin case
+    catch (e) {
+        _clearLogs();
+        println("Tell SP what you were doing when this occurred: " + e);
+    }
+    
+    // cursor
+    if (handCursor) {
+        cursor(HAND);
+    }
+    else {
+        cursor(ARROW);
+    }
+    handCursor = false;
+    
+    // interaction
+    clicked = false;
+    
+    // fill(0);
+    // pxlTxt(this.__frameRate.toFixed(1) + " FPS", 0, 150, 2);
+    
+}
+
+function keyPressed() {
+    
+    keys[keyCode] = true;
+    
+}
+
+function keyReleased() {
+    
+    keys[keyCode] = false;
+    
+}
+
+mouseClicked = function() {
+    
+    clicked = true;
+    
+};
+
+
+// }
+
+
