@@ -1,0 +1,2716 @@
+/**
+        
+           Contest: Movie Trailers & Posters
+    
+         I have completed 100% of Khan Academy's 
+        'Intro to JS' and have been programming 
+                 for 41 months (on KA).
+    
+          I would prefer to be placed in the
+                   Advanced bracket
+        
+        SP @Prodigy6 - 2022
+        
+        
+        
+        I present:
+        
+        Stop motion maker!!
+        
+        This program took far too long to make; and I had such big plans (most of which are unincluded). Nonetheless, I think that it's still pretty complete.
+        
+        There was supposed to be a sort of indepth slide editor, but it got scrapped due to an annoying bug where every time you use the marker tool, it would duplicate itself. I also fixed the said bug the day after I deleted the indepth slide editor (so that's yay)
+        
+        Any glitches, etc. that you find, please let me know! Constructive criticism is also greatly appreciated.
+        
+        @Tutorial {
+            
+            Table of contents .......... line of code
+            Starting off ............... 45
+            Alert boxes ................ 50
+            Color picker ............... 56
+            Backdrops .................. 64
+            Text tool .................. 77
+            Font selector .............. 88
+            Marker tool ................ 99
+            Sound ...................... 111
+            Finalizing ................. 118
+            
+            @Starting {
+                When you first load up the page, you will see a loading screen, my *beautiful* logo, and then this weird page with a lot of buttons on it. First off, select the "add a frame" button. Then, you can use the 4 buttons on the top to your enjoyment.
+                
+                See the table of contents for more help.
+            }
+            @Alert_box {
+                When selecting an action, changing a background, setting a font, among other things, you will sometimes see a white alert box with a red outline pop up.
+                
+                This is simply notifying you that an action has or hasn't happened -- e.g. you have successfully set your background.
+                
+            }
+            @Color_picker {
+                The color picker, in my opinion, is one of the best features. There are over 3 dozen color presets, plus an rgba color scale slider thingy (if you're unaware what that means then google it :)
+                
+                You move the sliders around to your preferred color, or select a preset, and then you can select "confirm", or if you don't want to change your color you can select "cancel"
+                
+                There is also the feature to set a preset, where you simply press the black button (on the bottom above the red cancel button). It will outline in white, then you simply select which preset to replace with the color in the sliders. If done correctly, you should see a little alert box pop up.
+            
+            }
+            @Backdrops {
+                This tool allows you to edit the background of your frame without having to modify it.
+                
+                This is a drawing tool. Basically, you draw on the screen with either the mouse, some sort of stylus, or your finger. (Do be warned though that on some devices there is a bug where if you use your finger you can then no longer use your mouse.)
+                The slider on the right indicates your stroke weight. This works as normal strokeWeight() does, just with a slider instead of typing it in.
+                
+                The big outlined circle is the color selector. You select it to change the color (see above for more details).
+                
+                To complete it, you simply press the big green button that says "Confirm".
+                
+                To use your backdrop, hover over your preferred slide, select the settings icon, press "set backdrop", scroll through your backdrops (if you have multiple) and then when the backdrop you see is the one you want, you can press "confirm", or if you want it on all slides, you can press "set for all slides".
+            }
+            @Text_tool {
+                Your text tool is very useful in many instances.
+                
+                First off, you can press the button that says "Insert Text Here", which will take you to a text editor page. Simply select "Confirm", and then apply your text!
+                
+                To change the x and y coordinates of your text, simply hover over the big box, then you will see a plus sign with your cursor in the crosshair. (This is for alignment purposes.) Simply click on your preferred spot, and you will see your text appear.
+                
+                The colored circle is your color selector. If you click on it then it will open the color selector page (see table of contents for more info).
+                
+                The last bit is where it says "Font: Arial", and then a bold and italics button. When you click on the font part, it will open the font page (see table of contents again), and if you click on either bold or italics, then it will bold or italicize your font (WHEN APPLICABLE -- not all fonts have bolding or italicizing)
+            }
+            @Font_selector {
+                The font selector will start off with a loading screen. Basically, every frame it checks if a font from the font list will run on your device. If it will, then it says "okay, all good", and moves on. If it won't, it will save the font in a list, and then afterward it moves through the font list, getting rid of all the fonts that have been flagged.
+                
+                Now, the font list has the font, displayed, with a scrollbar to go through the fonts. This is fairly self explanitory.
+                
+                There's also a search bar feature, where basically only the fonts whose name includes your search will show up (you might want to scroll through everything to be sure first).
+                
+                If you want a custom font, one not already in the preselected list, then you can type in the search bar and then press the "Check for custom font" button. This does another check, and if usable, then it adds it to your font list for use!
+                
+                When done, press the "Confirm" button, to return back to the text page to use your font!
+            }
+            @Marker_tool {
+                The marker tool is perhaps the most versatile of all of the tools. It allows you to draw on the scren, make whatever shapes you want.
+                
+                Firstly, make sure that whichever frame you want to draw on is selected (it should have a white outline0.
+                
+                When you click on the box and drag your finger, mouse, etc. around, then you draw.
+                
+                The slider on the right indicates your stroke weight. This works as normal strokeWeight() does, just with a slider instead of typing it in.
+                
+                The big outlined circle is the color selector. You select it to change the color (see above for more details).
+                
+                To complete it, you simply press the big green button that says "Confirm".
+        }
+            @Sound {
+                The sound tool is simple.
+                
+                Basically, you scroll through the list of Khan Academy sounds, select which one you want, and then hit "confirm".
+                
+                The selected sound will then play in your finalized version.
+            }
+            @Finalizing {
+                The final step in your stop motion!
+                
+                When you click the green button, an odd black box will pop up on the bottom of your screen. This allows you to highlight it. Click on it and press Ctrl + A (or Command + A for macbook users). Then, open up a new program (https://khanacademy.org/computer-programming/new/pjs) and paste the code in.
+                
+                There might be a few weird extra words at the end (an X, a bunch of A's,  etc). If Oh Noes starts complaining about them, then just delete them -- they are not a part of this program.
+                
+                That's basically it! You're free to enjoy your program.
+            }
+        }
+
+**/
+
+// code {
+
+
+/** Variables **/
+
+// fps
+var leFramePerSec = 30;
+
+// when you're using the "move left" or "move right" buttons
+var slideMove;
+
+// the loading screen for the thumbnails
+var thumbnailLoad = 0;
+
+// font loading stuff
+var fontLoadStart = 30,
+    fontLoadNum = 0,
+    toSpliceFL = [];
+    
+var backdropBigArray = [];
+
+// font configure stuff
+var fontBold = false,
+    fontItalic = false,
+    selectedFontWithBoldAndItalics = "";
+    
+// list of backdrops
+var backdrops = [];
+
+// the list of icons
+var icons = {
+    trashcan: "",
+    backdrop: "",
+    draw: "",
+    txt: "",
+    souund: "",
+    settings: "",
+};
+
+// scrolling variables
+// controls some part of the scrolling on some page
+var scroller = 0,
+    soundScroll = 0,
+    fontListScrl = 0;
+
+// the drawing variables
+// these are the separate lineses. (this way they won't get mixed up)
+var backdropLines = [],
+    markerLines = [];
+    
+// for the drawing and for the slider
+var mouseIsBeingPressed = false;
+
+var txtStats = [-1000, 0, 0, 0];
+var backgroundWhenBoxOpen;
+// color variables
+var selectedCol = color(255, 0, 0),
+    colorChangeMode = false,
+    colorPickerBack = "",
+    colPresets = [
+        [color(0), true],
+        [color(45), true],
+        [color(90), true],
+        [color(135), true],
+        [color(180), true],
+        [color(255), true],
+        [color(150, 0, 0), true],
+        [color(0, 150, 0), true],
+        [color(0, 150, 150), true],
+        [color(0, 0, 150), true],
+        [color(150, 0, 150), true],
+        [color(150, 150, 0), true],
+        [color(200, 0, 0), true],
+        [color(0, 200, 0), true],
+        [color(0, 200, 200), true],
+        [color(0, 0, 200), true],
+        [color(200, 0, 200), true],
+        [color(200, 200, 0), true],
+        [color(255, 0, 0), true],
+        [color(0, 255, 0), true],
+        [color(0, 255, 255), true],
+        [color(0, 0, 255), true],
+        [color(255, 0, 255), true],
+        [color(255, 255, 0), true],
+        [color(255, 100, 100), true],
+        [color(100, 255, 100), true],
+        [color(70, 255, 255), true],
+        [color(70, 70, 255), true],
+        [color(255, 70, 255), true],
+        [color(255, 255, 70), true],
+        [color(255, 150, 150), true],
+        [color(150, 255, 150), true],
+        [color(150, 255, 255), true],
+        [color(150, 150, 255), true],
+        [color(255, 150, 255), true],
+        [color(255, 255, 150), true],
+        [color(255, 200, 200), true],
+        [color(200, 255, 200), true],
+        [color(200, 255, 255), true],
+        [color(200, 200, 255), true],
+        [color(255, 150, 255), true],
+        [color(255, 255, 200), true],
+    ];
+
+// the backdrop index to apply
+var backdropApply = 0;
+
+// the slider
+var slider = function(x, y, w, dimTyp, startsAt) {
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.dimTyp = dimTyp; // 0 = horizontal; 1 = vertical
+    this.sliderIn = false;
+    this.thing = startsAt || 0;
+    this.startsAt = startsAt;
+};
+
+slider.prototype.draw = function() {
+    
+    // must look nice
+    strokeWeight(1.5);
+    stroke(0);
+    fill(255);
+    
+    // the type of rect
+    if(this.dimTyp === 0) {
+        rect(this.x, this.y + 5, this.w, 10, 1000);
+    }
+    else {
+        rect(this.x + 5, this.y + 5, 10, this.w, 1000);
+    }
+    
+    // the draggy ellipse thingy
+    strokeWeight(3);
+    if(this.dimTyp === 0) {
+        ellipse(this.thing + this.x, this.y + 10, 30, 30);
+        if(dist(mouseX, mouseY, this.thing + this.x, this.y + 10) < 15 || this.sliderIn) {
+            fill(0, 30);
+            ellipse(this.thing + this.x, this.y + 10, 30, 30);
+            if(mouseIsBeingPressed) {
+                this.sliderIn = true;
+            }
+        }
+        if(this.sliderIn) {
+            this.thing = mouseX - this.x;
+        }
+    }
+    else {
+        ellipse(this.x + 10, this.thing + this.y, 30, 30);
+        if(dist(mouseX, mouseY, this.x + 10, this.thing + this.y) < 15 || this.sliderIn) {
+            fill(0, 30);
+            ellipse(this.x + 10, this.thing + this.y, 30, 30);
+            if(mouseIsBeingPressed) {
+                this.sliderIn = true;
+            }
+        }
+        if(this.sliderIn) {
+            this.thing = mouseY - this.y;
+        }
+    }
+    
+    // if its being dragged
+    if(!mouseIsBeingPressed) {
+        this.sliderIn = false;
+    }
+    
+    // outputting
+    this.thing = constrain(this.thing, 0, this.w);
+    return this.thing;
+};
+
+/** sliders **/
+var frameScroll = new slider(30, 560, 540, 0);
+var weightScroll = new slider(400, 315, 125, 0, 10); // strokeweight
+var sliderR = new slider(410, 75, 255, 1, 255), // colors
+    sliderG = new slider(445, 75, 255, 1, 0),
+    sliderB = new slider(480, 75, 255, 1, 0),
+    sliderA = new slider(515, 75, 255, 1, 255);
+var fontSlider = new slider(470, 100, 400, 1);
+var rotSlider = new slider(400, 210, 125, 0, 0);
+var txtSizSlider = new slider(400, 150, 125, 0, 19);
+var soundSlider = new slider(510, 100, 400, 1);
+
+// text variables
+var defaultMsg = "Insert Text Here",
+    txtMsg = defaultMsg.split("");
+
+// font variables
+var selectedFont = "Arial",
+    fontList = "Arial&Agency FB&Algerian&Comic Sans MS&Cursive&Trebuchet MS&Bahnschrift&Montserrat&Ink Free&Bradley Hand ITC&Britannic&Broadway&Cambria&Calibri&Brush Script MT&Candara&Centaur&Century&Century Gothic&Impact&Arial Black&Monospace&Cooper&Copperplate Gothic&Courier New&Curlz MT&Edwardian Script ITC&Franklin Gothic&Franklin Gothic Book&Garamond&Georgia&Gigi&Gill Sans MT&Haettenschweiler&Harlow Solid&Harrington&Imprint MT Shadow&Dosis&Informal Roman&Jokerman&Juice Itc&Kristen Itc&Leelawadee&Lucida Bright&Lucida Calligraphy&Lucida Console&Lucida Fax&Lucida Handwriting&Lucida Sans&Magneto&Matura MT Script Capitals&Mistral&Modern No. 20&Monotype Corsiva&Niagara Solid&Niagara Engraved&Old English Text MT&Onyx&Palace Script MT&Palatino Linotype&Papyrus&Parchment&Perpetua&Playbill&Poor Richard&Stencil&Pristina&Rage&Rockwell&Script MT&Segoe Print&Segoe UI Light&Segoe Script&Showcard Gothic&Snap ITC&Sylfaen&Tahoma&Tempus Sans ITC&Tw Cen MT&Verdana&Viner Hand ITC&Vivaldi&Vladimir Script&Ravie&Berlin Sans FB&Bell MT&Bauhaus 93&Baskerville Old Face&Blackadder ITC&Bodoni MT&Bookman Old Style&Calisto MT&Colonna MT &Chiller&Barlow&Barlow Condensed&Cambria Math&Cascadia Mono&Caveat&Consolas&Cormorant Infant&Doulos SIL&Ebrima&Gabriola&Lato&Lucida Sans Unicode&Noto Sans&Noto Serif&Oswald&Raleway&Roboto&Roboto Slab&Zilla Slab".split("&"),
+    fontWorks = false,
+    fontListString = "";
+fontList.sort();
+
+// for the preview page
+var previewTimer = 0;
+
+// the list of all the sounds
+// pretty mundane
+var sounds = [
+    {
+        name: "no sound",
+        category: "",
+        sound: "no sound",
+        soundStr: "\"\"",
+    },
+    {
+        name: "battle-magic",
+        category: "rpg",
+        sound: getSound("rpg/battle-magic"),
+        soundStr: "getSound(\"rpg/battle-magic\")",
+    },
+    {
+        name: "battle-spell",
+        category: "rpg",
+        sound: getSound("rpg/battle-spell"),
+        soundStr: "getSound(\"rpg/battle-spell\")",
+    },
+    {
+        name: "battle-swing",
+        category: "rpg",
+        sound: getSound("rpg/battle-swing"),
+        soundStr: "getSound(\"rpg/battle-swing\")",
+    },
+    {
+        name: "coin-jingle",
+        category: "rpg",
+        sound: getSound("rpg/coin-jingle"),
+        soundStr: "getSound(\"rpg/coin-jingle\")",
+    },
+    
+    {
+        name: "metal-clink",
+        category: "rpg",
+        sound: getSound("rpg/metal-clink"),
+        soundStr: "getSound(\"rpg/metal-clink\")",
+    },
+    
+    {
+        name: "door-open",
+        category: "rpg",
+        sound: getSound("rpg/door-open"),
+        soundStr: "getSound(\"rpg/door-open\")",
+    },
+    {
+        name: "giant-hyah",
+        category: "rpg",
+        sound: getSound("rpg/giant-hyah"),
+        soundStr: "getSound(\"rpg/giant-hyah\")",
+    },
+    {
+        name: "giant-no",
+        category: "rpg",
+        sound: getSound("rpg/giant-no"),
+        soundStr: "getSound(\"rpg/giant-no\")",
+    },
+    {
+        name: "giant-yah",
+        category: "rpg",
+        sound: getSound("rpg/giant-yah"),
+        soundStr: "getSound(\"rpg/giant-yah\")",
+    },
+    
+    
+    {
+        name: "hit-clop",
+        category: "rpg",
+        sound: getSound("rpg/hit-clop"),
+        soundStr: "getSound(\"rpg/hit-clop\")",
+    },
+    {
+        name: "hit-splat",
+        category: "rpg",
+        sound: getSound("rpg/hit-splat"),
+        soundStr: "getSound(\"rpg/hit-splat\")",
+    },
+    {
+        name: "hit-thud",
+        category: "rpg",
+        sound: getSound("rpg/hit-thud"),
+        soundStr: "getSound(\"rpg/hit-thud\")",
+    },
+    {
+        name: "hit-whack",
+        category: "rpg",
+        sound: getSound("rpg/hit-whack"),
+        soundStr: "getSound(\"rpg/hit-whack\")",
+    },
+    
+    
+    {
+        name: "metal-chime",
+        category: "rpg",
+        sound: getSound("rpg/metal-chime"),
+        soundStr: "getSound(\"rpg/metal-chime\")",
+    },
+    {
+        name: "step-heavy",
+        category: "rpg",
+        sound: getSound("rpg/step-heavy"),
+        soundStr: "getSound(\"rpg/step-heavy\")",
+    },
+    {
+        name: "water-bubble",
+        category: "rpg",
+        sound: getSound("rpg/water-bubble"),
+        soundStr: "getSound(\"rpg/water-bubble\")",
+    },
+    {
+        name: "water-slosh",
+        category: "rpg",
+        sound: getSound("rpg/water-slosh"),
+        soundStr: "getSound(\"rpg/water-slosh\")",
+    },
+    {
+        name: "boom1",
+        category: "retro",
+        sound: getSound("retro/boom1"),
+        soundStr: "getSound(\"retro/boom1\")",
+    },
+    {
+        name: "boom2",
+        category: "retro",
+        sound: getSound("retro/boom2"),
+        soundStr: "getSound(\"retro/boom2\")",
+    },
+    {
+        name: "coin",
+        category: "retro",
+        sound: getSound("retro/coin"),
+        soundStr: "getSound(\"retro/coin\")",
+    },
+    {
+        name: "hit1",
+        category: "retro",
+        sound: getSound("retro/hit1"),
+        soundStr: "getSound(\"retro/hit1\")",
+    },
+    {
+        name: "hit2",
+        category: "retro",
+        sound: getSound("retro/hit2"),
+        soundStr: "getSound(\"retro/hit2\")",
+    },
+    {
+        name: "jump1",
+        category: "retro",
+        sound: getSound("retro/jump1"),
+        soundStr: "getSound(\"retro/jump1\")",
+    },
+    {
+        name: "jump2",
+        category: "retro",
+        sound: getSound("retro/jump2"),
+        soundStr: "getSound(\"retro/jump2\")",
+    },
+    {
+        name: "laser1",
+        category: "retro",
+        sound: getSound("retro/laser1"),
+        soundStr: "getSound(\"retro/laser1\")",
+    },
+    {
+        name: "laser2",
+        category: "retro",
+        sound: getSound("retro/laser2"),
+        soundStr: "getSound(\"retro/laser2\")",
+    },
+    {
+        name: "laser3",
+        category: "retro",
+        sound: getSound("retro/laser3"),
+        soundStr: "getSound(\"retro/laser3\")",
+    },
+    {
+        name: "laser4",
+        category: "retro",
+        sound: getSound("retro/laser4"),
+        soundStr: "getSound(\"retro/laser4\")",
+    },
+    {
+        name: "rumble",
+        category: "retro",
+        sound: getSound("retro/rumble"),
+        soundStr: "getSound(\"retro/rumble\")",
+    },
+    {
+        name: "thruster-short",
+        category: "retro",
+        sound: getSound("retro/thruster-short"),
+        soundStr: "getSound(\"retro/thruster-short\")",
+    },
+    {
+        name: "thruster-long",
+        category: "retro",
+        sound: getSound("retro/thruster-long"),
+        soundStr: "getSound(\"retro/thruster-long\")",
+    },
+    {
+        name: "whistle1",
+        category: "retro",
+        sound: getSound("retro/whistle1"),
+        soundStr: "getSound(\"retro/whistle1\")",
+    },
+    {
+        name: "whistle2",
+        category: "retro",
+        sound: getSound("retro/whistle2"),
+        soundStr: "getSound(\"retro/whistle2\")",
+    },
+];
+
+// searching variables in the font page
+var keyIsBeingTyped = false,
+    isCurrentlySearching = false,
+    searching = [];
+
+// page
+var page = "loady";
+
+// mouse variables
+var clicked = false,
+    overButton = false;
+
+// selected frame
+var selectedIdx = 0;
+
+// selected sound
+var selectedSound = 0;
+
+// selected frame on the settings page
+var settingsPageIdx = null;
+
+// the text function
+var txt = function(config) {
+    
+    // for the finalizing thingy
+    this.type = "txt";
+    
+    this.x = config.x || 300;
+    this.y = config.y || 300;
+    
+    this.font = config.font || "Arial";
+    this.bolded = config.bolded || false;
+    this.italicized = config.italicized || false;
+    
+    this.msg = config.msg || "Insert Text";
+    this.rot = config.rot || 0;
+    this.col = config.col || color(0);
+    this.siz = config.siz || 10;
+};
+
+// text drawing
+txt.prototype.draw = function() {
+    if(this.siz !== 0) {
+        textSize(this.siz);
+        fill(this.col);
+        
+        // font stuff
+        if(this.bolded && this.italicized) {
+            textFont(createFont(this.font + " Bold Italics"));
+        }
+        else if(this.bolded) {
+            textFont(createFont(this.font + " Bold"));
+        }
+        else if(this.italicized) {
+            textFont(createFont(this.font + " Italics"));
+        }
+        else {
+            textFont(createFont(this.font));
+        }
+        
+        pushMatrix();
+        translate(this.x + 100, this.y + 100);
+        rotate(this.rot);
+        text(this.msg.join(""), 0, 0);
+        popMatrix();
+        
+    }
+};
+
+// drawing function
+var drawing = function(img, longArray) {
+    this.type = "draw";
+    this.img = img || getImage("avatars/questionmark");
+    this.longArray = longArray; // for finalizing
+};
+drawing.prototype.draw = function() {
+    
+    // very complicated
+    image(this.img, 100, 100, 300, 300);
+};
+
+
+var frame = function() {
+    
+    this.pic = getImage("avatars/questionmark");
+    this.hasBeenCustomizedYet = false;
+    this.dropidx = -1;
+    this.drop = "";
+    this.things = [];
+    this.sound = 0; // index of the array
+    
+};
+
+// my button function replacement
+var cursorCollide = function(x, y, w, h) {
+    return mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h;
+};
+
+// alert function
+var alert = function(msg) {
+    
+    this.msg = msg;
+    this.y = -61;
+    this.timer = 0;
+    
+};
+
+alert.prototype.draw = function() {
+    
+    fill(255);
+    strokeWeight(2);
+    stroke(200, 0, 0);
+    rect(200, this.y, 200, 60);
+    
+    fill(200, 0, 0);
+    textAlign(CENTER, CENTER);
+    textSize(12);
+    text(this.msg, 200, this.y - 2.5, 200, 60);
+    
+    this.timer ++;
+    if(this.timer < 17) {
+        this.y += 3.95;
+    }
+    if(this.timer > 167) {
+        this.y -= 3.95;
+    }
+    
+    if(clicked && cursorCollide(200, this.y, 200, 60) && this.timer < 165) {
+        this.timer = 167;
+    }
+    
+};
+
+// alerts
+var alerts = [];
+
+// frame
+var frames = [];
+
+// loading screen
+var loadTimer = 0;
+
+
+draw = function() {
+    textFont(createFont("Trebuchet MS"));
+    switch(page) {
+        
+        // loading screen
+        case "loady":
+            
+            background(0, 0);
+            noStroke();
+            
+            switch(loadTimer) {
+                
+                // trashcan
+                case 1:
+                    
+                    noFill();
+                    strokeWeight(25);
+                    stroke(185, 92, 92);
+                    
+                    rect(100, 150, 200, 200, 0, 0, 50, 50);
+                    rect(80, 90, 240, 60, 50, 50, 0, 0);
+                    rect(160, 50, 80, 40, 50, 50, 0, 0);
+                    
+                    line(200, 200, 200, 300);
+                    line(150, 200, 150, 300);
+                    line(250, 200, 250, 300);
+                    
+                    icons.trashcan = get(20, 20, 360, 360);
+                break;
+                
+                // backdrop
+                case 2:
+                    
+                    fill(200);
+                    for(var i = 0; i < 7; i++) {
+                        arc(i* 50 + 20, 274, 80, 80, 180, 360);
+                    }
+                    
+                    ellipse(80, 60, 100, 100);
+                    
+                    // tree
+                    rect(200, 100, 30, 140);
+                    for(var i = 0; i < 6; i++) {
+                        ellipse(sin(i * 60) * 30 + 215, cos(i * 60) * 30 + 120, 40, 40);
+                    }
+                    
+                    icons.backdrop = get(20, 20, 300, 252);
+                break;
+                
+                // marker
+                case 3:
+                    fill(200);
+                    
+                    pushMatrix();
+                    rotate(-130);
+                    translate(-387, -120);
+                    
+                    rect(140, 95, 50, 150);
+                    triangle(140, 95, 190, 95, 165, 55);
+                    fill(0);
+                    triangle(148, 80, 182, 80, 165, 55);
+                    
+                    popMatrix();
+                    
+                    icons.draw = get(20, 20, 300, 252);
+                break;
+                
+                // text
+                case 4:
+                    
+                    // t
+                    textFont(createFont("Times new Roman"));
+                    textSize(40);
+                    textAlign(CENTER, CENTER);
+                    textSize(200);
+                    fill(200);
+                    text("T", 170, 145);
+                    
+                    // ridiculously specific lines and thing around the t
+                    noFill();
+                    strokeWeight(4);
+                    stroke(200);
+                    rect(80, 55, 10, 10);
+                    rect(250, 55, 10, 10);
+                    rect(80, 230, 10, 10);
+                    rect(250, 230, 10, 10);
+                    line(90, 60, 249, 60);
+                    line(90, 235, 249, 235);
+                    line(85, 65, 85, 229);
+                    line(255, 65, 255, 229);
+                    
+                    icons.txt = get(20, 20, 300, 252);
+                    
+                break;
+                
+                // sound
+                case 5:
+                    
+                    fill(200);
+                    rect(70, 96, 50, 100, 5);
+                    quad(118, 96, 118, 196, 188, 236, 188, 56);
+                    
+                    noFill();
+                    strokeWeight(8);
+                    stroke(200);
+                    arc(188, 146, 75, 75, 300, 421);
+                    arc(188, 146, 120, 120, 300, 421);
+                    arc(188, 146, 180, 180, 300, 421);
+                    
+                    icons.souund = get(20, 20, 300, 252);
+                    
+                break;
+                
+                // settings
+                case 6:
+                    
+                    fill(0);
+                    noStroke();
+                    rect(0, 80, 240, 40);
+                    rect(305, 80, 95, 40);
+                    rect(0, 180, 90, 40);
+                    rect(155, 180, 255, 40);
+                    rect(0, 280, 240, 40);
+                    rect(305, 280, 95, 40);
+                    
+                    rect(250, 55, 45, 90, 500);
+                    rect(100, 155, 45, 90, 500);
+                    rect(250, 255, 45, 90, 500);
+                    
+                    icons.settings = get(20, 20, 400, 400);
+                    
+                break;
+                case 7:
+                    page = "maine";
+                break;
+            }
+            loadTimer ++;
+        break;
+    
+    // maine page
+    case "maine":
+
+        background(50);
+        
+        // new frame
+        if(cursorCollide(frames.length * 170 + 20 + scroller, 400, 150, 150)) {
+            overButton = true;
+            fill(0, 20);
+            rect(frames.length * 170 + 20 + scroller, 400, 150, 150);
+            
+            if(clicked) {
+                frames.push(new frame());
+                if(frames.length === 1) {
+                    selectedIdx = 0;
+                }
+            }
+            
+        }
+        
+        // add a frame button
+        if(frames.length === 0) {
+            
+            // plus
+            fill(80);
+            rect(270, 30, 300, 300);
+            fill(200);
+            rect(410, 90, 20, 140);
+            rect(350, 150, 140, 20);
+            
+            textFont(createFont("SP Custom Bold"));
+            textAlign(CENTER, CENTER);
+            textSize(25);
+            text("Add a frame", 420, 270);
+            
+            if(cursorCollide(270, 30, 300, 300)) {
+                overButton = true;
+                fill(255, 10);
+                rect(270, 30, 300, 300);
+                if(clicked) {
+                    selectedIdx = 0;
+                    frames.push(new frame());
+                }
+            }
+            
+        }
+        
+        // if already frame have
+        else {
+            
+            fill(80);
+            rect(270, 30, 300, 300);
+            image(frames[selectedIdx].pic, 270, 30, 300, 300);
+        }
+        
+        // buttons
+        fill(80);
+        rect(30, 30, 100, 84);
+        rect(150, 30, 100, 84);
+        rect(30, 136, 100, 84);
+        rect(150, 136, 100, 84);
+        rect(30, 242, 100, 84);
+        rect(150, 242, 100, 84);
+        
+        fill(200);
+        textSize(20);
+        image(icons.backdrop, 30, 31, 100, 84);
+        image(icons.draw, 0, 31 + 85, 150, 126);
+        image(icons.txt, 150, 30, 100, 84);
+        image(icons.souund, 150, 31 + 108, 100, 84);
+        text("Preview", 80, 284);
+        text("Finish", 200, 284);
+        
+        // preview
+        if(cursorCollide(30, 242, 100, 84)) {
+            overButton = true;
+            fill(0, 20);
+            rect(30, 242, 100, 84);
+            if(clicked) {
+                if(frames.length > 0) {
+                    page = "preview";
+                    alerts.push(new alert("Preview has begun. Click at any time to exit."));
+                }
+                else {
+                    alerts.push(new alert("You need one more scene first!"));
+                }
+            }
+        }
+        
+        // finish
+        if(cursorCollide(150, 242, 100, 84)) {
+            overButton = true;
+            fill(0, 20);
+            rect(150, 242, 100, 84);
+            if(clicked) {
+                if(frames.length > 0) {
+                    page = "finish";
+                }
+                else {
+                    alerts.push(new alert("You need one more scene first!"));
+                }
+            }
+        }
+        
+        // backdrop
+        if(cursorCollide(30, 31, 100, 84)) {
+            overButton = true;
+            fill(255, 10);
+            rect(30, 31, 100, 84);
+            if(clicked) {
+                page = "drawingtool";
+            }
+        }
+        
+        // vVv these 3 all need at least 1 frame vVv
+        
+        // marker
+        if(cursorCollide(30, 136, 100, 84)) {
+            overButton = true;
+            fill(255, 10);
+            rect(30, 136, 100, 84);
+            if(clicked) {
+                if(frames.length > 0) {
+                    page = "marker";
+                }
+                else {
+                    alerts.push(new alert("You must create at least one frame first!"));
+                }
+            }
+        }
+        
+        // text tool
+        if(cursorCollide(150, 31, 100, 84)) {
+            overButton = true;
+            fill(255, 10);
+            rect(150, 31, 100, 84);
+            if(clicked) {
+                if(frames.length > 0) {
+                    page = "txttool";
+                }
+                else {
+                    alerts.push(new alert("You must create at least one frame first!"));
+                }
+            }
+        }
+        
+        // sound
+        if(cursorCollide(150, 136, 100, 84)) {
+            overButton = true;
+            fill(255, 10);
+            rect(150, 136, 100, 84);
+            if(clicked) {
+                if(frames.length > 0) {
+                    page = "soundpg";
+                }
+                else {
+                    alerts.push(new alert("You must create at least one frame first!"));
+                }
+            }
+        }
+        
+        // all le frames
+        for(var i = 0; i < frames.length; i++) {
+            
+            fill(200);
+            rect(i * 170 + 20 + scroller, 400, 150, 150);
+            image(frames[i].pic, i * 170 + 20 + scroller, 400, 150, 150);
+            
+            fill(140, 200);
+            rect(i * 170 + 20 + scroller, 520, 40, 30);
+            fill(0, 200);
+            text((i + 1), i * 170 + 40 + scroller, 535);
+            
+            // settings + trashcan
+            if(cursorCollide(i * 170 + 20 + scroller, 400, 150, 150)) {
+                overButton = true;
+                cursor(HAND);
+                fill(0, 25);
+                rect(i * 170 + 108 + scroller, 400, 62, 30);
+                
+                image(icons.trashcan, i * 170 + 108 + scroller, 399, 30, 30);
+                image(icons.settings, i * 170 + 140 + scroller, 403, 25, 30);
+                
+                if(cursorCollide(i * 170 + 109 + scroller, 400, 28, 30)) {
+                    fill(0, 5);
+                    rect(i * 170 + 109 + scroller, 400, 28, 30);
+                    if(clicked) {
+                        settingsPageIdx = i;
+                        page = "delete";
+                    }
+                }
+                
+                else if(cursorCollide(i * 170 + 139 + scroller, 400, 28, 30)) {
+                    fill(0, 5);
+                    rect(i * 170 + 139 + scroller, 400, 28, 30);
+                    if(clicked) {
+                        page = "settings";
+                        settingsPageIdx = i;
+                    }
+                }
+                
+                // select it
+                else if(clicked) {
+                    selectedIdx = i;
+                }
+            }
+        }
+        
+        // outline selected index
+        stroke(255);
+        strokeWeight(5);
+        noFill();
+        rect(selectedIdx * 170 + 20 + scroller, 400, 150, 150);
+        
+        // other add a frame button
+        noStroke();
+        fill(200);
+        rect(frames.length * 170 + 20 + scroller, 400, 150, 150);
+        fill(50);
+        rect(frames.length * 170 + 85 + scroller, 430, 15, 70); 
+        rect(frames.length * 170 + 57 + scroller, 457.5, 70, 15);
+        textFont(createFont("SP Custom Bold"));
+        textAlign(CENTER, CENTER);
+        textSize(18);
+        text("Add a frame", frames.length * 170 + 95 + scroller, 520);
+        
+        // the scroll bar
+        if(frames.length >= 3) {
+            fill(230);
+            strokeWeight(2);
+            stroke(0);
+            frameScroll.draw();
+            scroller = -(frameScroll.thing / 540 * (frames.length - 2.4) * 170);
+        }
+        else {
+            scroller = 0;
+        }
+        noStroke();
+        clicked = false;
+        
+        // for other pages
+        if(frameCount % 10 === 0) {
+            backgroundWhenBoxOpen = get(0, 0, 600, 600);
+        }
+    break;
+    
+    // finalize
+    case "finish":
+        
+        background(50);
+        
+        fill(200);
+        textSize(50);
+        text("Final steps..!!", 300, 80);
+        
+        textSize(20);
+        text("As soon as you press the button below, your entire stop-motion code will be printed to your console. Copy it into a new program/spinoff, set the dimensions to 600x600, and then enjoy your masterpiece!\n\nHowever, be warned... there is no way to retain your progress after this. Thusly, as soon as you close this tab you will be unable to edit your stop motion.", 0, -25, 600, 600);
+        
+        fill(0, 200, 0);
+        rect(125, 435, 150, 100, 10);
+        fill(200, 0, 0);
+        rect(325, 435, 150, 100, 10);
+        fill(200);
+        textSize(30);
+        text("Confirm", 200, 485);
+        text("Cancel", 400, 485);
+        
+        if(cursorCollide(125, 435, 150, 100)) {
+            fill(0, 20);
+            rect(125, 435, 150, 100, 10);
+            overButton = true;
+            // yikes
+            if(clicked) {
+                _clearLogs();
+                println("/**\n    Made with SP's STOP MOTION MAKER!\n    Create your own at khanacademy.org/cs/i/6424723842449408\n**/\n\n// use this to change your frames per second. apply the formula fps=60/var\nvar inBetweenFrames = 30;\n\nvar page = \"loading\";\nvar txt = function(config) {\n    this.x = config.x || 300;\n    this.y = config.y || 300;\n    this.font = config.font || \"Arial\";\n    this.msg = config.msg || \"Insert Text\";\n    this.rot = config.rot || 0;\n    this.bolded = config.bolded || false;\n    this.italicized = config.italicized || false;\n    this.col = config.col || color(0);\n    this.siz = config.siz || 10;\n};\ntxt.prototype.draw = function() {\n    textSize(this.siz);\n    fill(this.col);\n    if(this.bolded && this.italicized) {\n        textFont(createFont(this.font + \" Bold Italics\"));\n    }\n    else if(this.bolded) {\n        textFont(createFont(this.font + \" Bold\"));\n    }\n    else if(this.italicized) {\n        textFont(createFont(this.font + \" Italics\"));\n    }\n    else {\n        textFont(createFont(this.font));\n    }\n    pushMatrix();\n    translate(this.x, this.y);\n    rotate(this.rot);\n    text(this.msg, 0, 0);\n    popMatrix();\n};\nvar drawing = function(longarraything) {\n    this.longarraything = longarraything;\n};\ndrawing.prototype.draw = function() {\n    for(var i = 0; i < this.longarraything.length; i+=6) {\n        strokeWeight(this.longarraything[i+4] * 2);\n        stroke(this.longarraything[i+5]);\n        line(this.longarraything[i] * 2 - 150, this.longarraything[i + 1] * 2 - 150, this.longarraything[i + 2] * 2 - 150, this.longarraything[i + 3] * 2 - 150);\n    }\n};\nvar finalFrames = [];\nvar frameBackDrops = [];\nvar loadingNum = 0;\nvar framesCounted = 0;\nvar soundList = [");
+                for(var i = 0; i < sounds.length; i++) {
+                    println("    {\n        name: \"" + sounds[i].name + "\",");
+                    println("    category: \"" + sounds[i].category + "\",");
+                    println("    sound: " + sounds[i].soundStr + ",");
+                    println("},");
+                }
+                println("];\nvar frames = [\n");
+                for(var i = 0; i < frames.length; i++) {
+                    println("    [\n");
+                    for(var j = 0; j < frames[i].things.length; j++) {
+                        if(frames[i].things[j].type === "txt") {
+                            println("        new txt({\n");
+                            println("            x: " + (frames[i].things[j].x * 2 - 150) + ",\n");
+                            println("            y: " + (frames[i].things[j].y * 2 - 150) + ",\n");
+                            println("            font: \"" + frames[i].things[j].font + "\",\n");
+                            println("            msg: \"" + frames[i].things[j].msg.join("") + "\",\n");
+                            println("            rot: " + frames[i].things[j].rot + ",\n");
+                            println("            bolded: " + frames[i].things[j].bolded + ",\n");
+                            println("            italicized: " + frames[i].things[j].italicized + ",\n");
+                            println("            col: " + frames[i].things[j].col + ",\n");
+                            println("            siz: " + (frames[i].things[j].siz * 2) + ",\n");
+                            println("    }),");
+                        }
+                        if(frames[i].things[j].type === "draw") {
+                            println("        new drawing([\n            " + frames[i].things[j].longArray + "\n        ]),");
+                        }
+                    }
+                    println("    ],");
+                }
+                println("];\n\n");
+                println("var frameBackDrops = [\n");
+                for(var j = 0; j < backdropBigArray.length; j++) {
+                    println("    new drawing([\n        " + backdropBigArray[j] + "\n]),");
+                }
+                println("];\nvar backdropByFrame = [\n");
+                for(var i = 0; i < frames.length; i++) {
+                    println("    " + frames[i].dropidx + ",");
+                }
+                println("];\nvar soundsByFrame = [");
+                for(var i = 0; i < frames.length; i++) {
+                    println("    " + frames[i].sound + ",");
+                }
+                println("];\ndraw = function() {\n    switch(page) {\n        case \"loading\":\n            background(0, 0);\n            for(var i = 0; i < backdropByFrame.length; i++) {\n                if(backdropByFrame[i] !== -1) {\n                    frameBackDrops[backdropByFrame[i]].draw();\n            }\n             }\n            for(var i = 0; i < frames[loadingNum].length; i++) {\n                frames[loadingNum][i].draw();\n}\n            loadingNum ++;\n            if(loadingNum >= frames.length) {\n             page = \"finalproduct\";\n            }\n            finalFrames.push(get(0, 0, 600, 600));\n            background(50);\n            textSize(50);\n            textSize(80);\n            textAlign(CENTER, CENTER);\n            fill(220);\n            text(\"Loading...\", 300, 125);\n            noFill();\n            strokeWeight(30);\n            stroke(220);\n            arc(300, 400, 250, 250, 0, loadingNum / frames.length *  360);\n            textSize(40);\n            text((loadingNum / frames.length * 100).toFixed(1) + \"%\", 300, 400);\n        break;\n        case \"finalproduct\":\n            background(255);\n            image(finalFrames[framesCounted], 0, 0, 600, 600);\n            if(frameCount % inBetweenFrames === 0) {\n                framesCounted ++;\n                if(soundsByFrame[framesCounted] !== 0) {\n                    playSound(soundList[soundsByFrame[framesCounted]].sound);\n                }\n            }\n            if(framesCounted >= frames.length) {\n                page = \"end\";\n            }\n        break;\n        case \"end\":\n            background(50);\n            textSize(100);\n            textAlign(CENTER, CENTER);\n            fill(220);\n            textFont(createFont(\"Arial\"));\n            text(\"Finished!\", 300, 125);\n            textSize(60);\n            text(\"Hope you enjoyed!\", 300, 300);\n            textSize(30);\n            text(\"(Click to restart)\", 300, 500);\n            if(mouseIsPressed) {\n                framesCounted = 0;\n                page = \"finalproduct\";\n            }\n        break;\n    }\n};\n\nif(width !== 600) {\n    throw {\n        message: \"Please set the width to 600!\"\n    };\n}\nif(height !== 600) {\n    throw {\n        message: \"Please set the height to 600!\"\n};\n}");
+                page = "maine";
+            }
+        }
+        
+        if(cursorCollide(325, 435, 150, 100)) {
+            fill(0, 20);
+            rect(325, 435, 150, 100, 10);
+            overButton = true;
+            if(clicked) {
+                page = "maine";
+            }
+        }
+        
+    break;
+    
+    // preview
+    case "preview":
+        background(255);
+        
+        // maintains a good 20 fps
+        if(frameCount % 5 === 0) {
+            previewTimer ++;
+        }
+        
+        image(frames[previewTimer].pic, 0, 0, 600, 600);
+        
+        // sound
+        if(frames[previewTimer].sound !== 0) {
+            playSound(sounds[frames[previewTimer].sound]);
+        }
+        
+        if(clicked || previewTimer >= frames.length - 1) {
+            page = "maine";
+            alerts.push(new alert("Preview has finished."));
+            previewTimer = 0;
+        }
+        
+        // bar @ bottom
+        fill(0, 40);
+        rect(0, 560, previewTimer / frames.length * 600, 40);
+        
+    break;
+    
+    // delete frame
+    case "delete":
+        
+        image(backgroundWhenBoxOpen, 0, 0, width, height);
+        fill(0, 100);
+        rect(0, 0, width, height);
+        
+        fill(80);
+        rect(100, 150, 400, 300, 50);
+        
+        fill(255);
+        textSize(20);
+        textFont(createFont("Trebuchet MS"));
+        textAlign(CENTER, CENTER);
+        text("Would you like to delete this slide?", 300, 210);
+        
+        image(frames[settingsPageIdx].pic, 100, 230, 200, 200);
+        
+        // little number in corner
+        fill(140, 200);
+        rect(100, 390, 60, 45);
+        fill(0, 200);
+        textSize(30);
+        textFont(createFont("SP Custom Bold"));
+        text((settingsPageIdx + 1), 130, 390 + (45 / 2));
+        
+        // x button
+        textSize(40);
+        text("x", 465, 175);
+        fill(0, 200, 0, 200);
+        
+        if(cursorCollide(445, 160, 40, 40)) {
+            overButton = true;
+            fill(0, 15);
+            rect(445, 160, 40, 40);
+            if(clicked) {
+                page = "maine";
+            }
+        }
+        
+        // confirm
+        fill(0, 200, 0, 200);
+        rect(300, 350, 175, 75, 10);
+        textSize(40);
+        fill(200);
+        text("Confirm", 300 + (175 / 2), 350 + (75 / 2));
+        
+        if(cursorCollide(300, 350, 175, 75)) {
+            overButton = true;
+            fill(0, 20);
+            rect(300, 350, 175, 75, 10);
+            
+            // if delete fr
+            if(clicked) {
+                page = "maine";
+                selectedIdx = settingsPageIdx + 1;
+                frames.splice(settingsPageIdx, 1);
+            }
+            
+        }
+        
+        // makes sure the program doesn't crash
+        if(selectedIdx >= frames.length) { 
+            selectedIdx = frames.length - 1;
+        }
+        if(frames.length === 0) {
+            selectedIdx = null;
+        }
+        
+    break;
+    
+    // settings
+    case "settings":
+        image(backgroundWhenBoxOpen, 0, 0, width, height);
+        fill(0, 100);
+        rect(0, 0, width, height);
+        
+        fill(80);
+        rect(100, 150, 400, 300, 50);
+        fill(255);
+        textSize(35);
+        textFont(createFont("Trebuchet MS"));
+        textAlign(CENTER, CENTER);
+        text("Settings", 300, 190);
+        
+        // x button
+        textSize(40);
+        text("x", 465, 175);
+        if(cursorCollide(445, 160, 40, 40)) {
+            overButton = true;
+            fill(0, 15);
+            rect(445, 160, 40, 40);
+            if(clicked) {
+                page = "maine";
+            }
+        }
+        
+        // buttons
+        fill(200);
+        rect(150, 225, 300, 70, 10);
+        rect(150, 307.5, 300, 70, 10);
+        rect(150, 390, 145, 45, 10);
+        rect(305, 390, 145, 45, 10);
+        
+        fill(50);
+        textSize(32);
+        text("Duplicate slide", 300, 260);
+        text("Set Backdrop", 300, 342.5);
+        textSize(22);
+        text("< Move Left", 222.5, 412.5);
+        text("Move Right >", 377.5, 412.5);
+        
+        // duplicate
+        if(cursorCollide(150, 225, 300, 70)) {
+            fill(0, 20);
+            rect(150, 225, 300, 70, 10);
+            overButton = true;
+            if(clicked) {
+                
+                // duplicates everything
+                frames.push(new frame());
+                frames[frames.length - 1].hasBeenCustomizedYet = frames[settingsPageIdx].hasBeenCustomizedYet;
+                frames[frames.length - 1].drop = frames[settingsPageIdx].drop;
+                frames[frames.length - 1].dropidx = frames[settingsPageIdx].dropidx;
+                
+                // this seems inefficient but is my fix to a bug
+                for(var i = 0; i < frames[settingsPageIdx].things.length; i++) {
+                    frames[frames.length - 1].things.push(frames[settingsPageIdx].things[i]);
+                }
+                
+                frames[frames.length - 1].sound = frames[settingsPageIdx].sound;
+                selectedIdx = frames.length - 1;
+                page = "loading framez";
+                alerts.push(new alert("Slide duplicated."));
+            }
+        }
+        
+        // backdrop things
+        if(cursorCollide(150, 307.5, 300, 70)) {
+            fill(0, 20);
+            rect(150, 307.5, 300, 70, 10);
+            overButton = true;
+            if(clicked) {
+                if(backdrops.length > 0) {
+                    page = "backdropsettings";
+                }
+                else {
+                    alerts.push(new alert("You have no backdrops!"));
+                }
+            }
+        }
+        
+        // move left
+        if(cursorCollide(150, 390, 145, 45)) {
+            fill(0, 20);
+            rect(150, 390, 145, 45, 10);
+            overButton = true;
+            if(clicked) {
+                if(settingsPageIdx === 0) {
+                    alerts.push(new alert("You can't move this one any farther!"));
+                }
+                else {
+                    
+                    // uses a sort of bubble sort mechanic
+                    slideMove = frames[settingsPageIdx];
+                    frames[settingsPageIdx] = frames[settingsPageIdx - 1];
+                    frames[settingsPageIdx - 1] = slideMove;
+                    page = "maine";
+                    alerts.push(new alert("Successfully moved slide to the left"));
+                }
+            }
+        }
+        
+        // move right
+        if(cursorCollide(305, 390, 145, 45)) {
+            fill(0, 20);
+            rect(305, 390, 145, 45, 10);
+            overButton = true;
+            if(clicked) {
+                if(settingsPageIdx === frames.length - 1) {
+                    alerts.push(new alert("You can't move this one any farther!"));
+                }
+                
+                else {
+                    
+                    // uses a sort of bubble sort mechanic
+                    slideMove = frames[settingsPageIdx + 1];
+                    frames[settingsPageIdx + 1] = frames[settingsPageIdx];
+                    frames[settingsPageIdx] = slideMove;
+                    page = "maine";
+                    alerts.push(new alert("Successfully moved slide to the right"));
+                }
+            }
+        }
+        
+    break;
+    
+    // backdrop
+    case "backdropsettings":
+        image(backgroundWhenBoxOpen, 0, 0, width, height);
+        fill(0, 100);
+        rect(0, 0, width, height);
+        
+        fill(80);
+        rect(100, 150, 400, 300, 50);
+        fill(255);
+        textSize(35);
+        textFont(createFont("Trebuchet MS"));
+        textAlign(CENTER, CENTER);
+        text("Apply backdrop", 300, 195);
+        
+        image(backdrops[backdropApply], 110, 240, 180, 180);
+        
+        // x button
+        textSize(40);
+        text("x", 465, 175);
+
+        // all slides
+        fill(200);
+        rect(390, 240, 85, 100, 10);
+        fill(50);
+        textSize(17);
+        text("Set for\nall slides", 432.5, 290);
+        
+        if(cursorCollide(390, 240, 85, 100)) {
+            fill(0, 20);
+            rect(390, 240, 85, 100, 10);
+            overButton = true;
+            
+            // page which refreshes every backdrop
+            if(clicked) {
+                frames[settingsPageIdx].drop = backdrops[backdropApply];
+                frames[settingsPageIdx].dropidx = backdropApply;
+                page = "refresh loady";
+            }
+        }
+        fill(200);
+        
+        // scroll through backdrops
+        if(backdrops.length > 1) {
+            
+            rect(300, 240, 80, 45, 10);
+            rect(300, 295, 80, 45, 10);
+            
+            fill(50);
+            textSize(30);
+            textFont(createFont("Arial Bold"));
+            text(">", 340, 262.5);
+            text("<", 340, 317.5);
+            
+            // move left
+            if(cursorCollide(300, 240, 80, 45, 10)) {
+                overButton = true;
+                fill(0, 20);
+                rect(300, 240, 80, 45, 10);
+                if(clicked) {
+                    backdropApply ++;
+                    if(backdropApply >= backdrops.length) {
+                        backdropApply = 0;
+                    }
+                }
+            }
+            
+            // move right
+            if(cursorCollide(300, 295, 80, 45, 10)) {
+                overButton = true;
+                fill(0, 20);
+                rect(300, 295, 80, 45, 10);
+                if(clicked) {
+                    backdropApply --;
+                    if(backdropApply < 0) {
+                        backdropApply = backdrops.length - 1;
+                    }
+                }
+            }
+        }
+        
+        // if back
+        if(cursorCollide(445, 160, 40, 40)) {
+            overButton = true;
+            fill(0, 15);
+            rect(445, 160, 40, 40);
+            if(clicked) {
+                page = "maine";
+            }
+        }
+        
+        // confirm button
+        textFont(createFont("Trebuchet MS"));
+        fill(0, 200, 0, 200);
+        rect(300, 350, 175, 75, 10);
+        textSize(40);
+        fill(200);
+        text("Confirm", 300 + (175 / 2), 350 + (75 / 2));
+        
+        // if just normal selected
+        if(cursorCollide(300, 350, 175, 75)) {
+            overButton = true;
+            fill(0, 20);
+            rect(300, 350, 175, 75, 10);
+            
+            if(clicked) {
+                if(frames[settingsPageIdx].drop !== backdrops[backdropApply]) {
+                    frames[settingsPageIdx].drop = backdrops[backdropApply];
+                    frames[settingsPageIdx].dropidx = backdropApply;
+                    alerts.push(new alert("Slide " + (settingsPageIdx + 1) + " backdrop changed."));
+                    selectedIdx = settingsPageIdx;
+                    page = "loading framez";
+                }
+                
+                else {
+                    alerts.push(new alert("Slide " + (settingsPageIdx + 1) + " already has that backdrop!"));
+                    page = "maine";
+                }
+            }
+        }
+        
+        // so it doesn't crash
+        if(selectedIdx >= frames.length) { 
+            selectedIdx = frames.length - 1;
+        }
+        if(frames.length === 0) {
+            selectedIdx = null;
+        }
+        
+    break;
+    
+    // backdrop tool
+    case "drawingtool":
+        
+        image(backgroundWhenBoxOpen, 0, 0, width, height);
+        fill(0, 100);
+        rect(0, 0, width, height);
+        
+        fill(50);
+        rect(50, 50, 500, 500, 30);
+        strokeWeight(5);
+        stroke(200);
+        fill(255);
+        rect(75, 75, 300, 300);
+        
+        // seleced color
+        fill(selectedCol);
+        strokeWeight(3);
+        stroke(255);
+        ellipse(462.5, 150, 125, 125);
+        
+        // stroke weight
+        strokeWeight(weightScroll.thing / (5 / 3));
+        point(462.5, 260);
+        
+        noStroke();
+        
+        // i my attempt at making it easier to read
+        fill(255);
+        textAlign(CENTER, CENTER);
+        if(weightScroll.thing > 15) {
+            fill(0);
+    }
+        
+        textSize(18);
+        text(floor(weightScroll.thing / (5 / 3)), 462.5, 275);
+        fill(255);
+        strokeWeight(1);
+        stroke(0);
+        weightScroll.draw();
+        fill(255);
+        textSize(15);
+        text("Your stroke weight", 462.5, 351);
+        
+        // color picker button
+        if(dist(mouseX, mouseY, 462.5, 150) < 65) {
+            overButton = true;
+            fill(0, 30);
+            noStroke();
+            ellipse(462.5, 150, 125, 125);
+            if(clicked) {
+                colorPickerBack = page;
+                page = "colorpicker";
+            }
+    }
+        
+        // push() backdrop lines
+        if(cursorCollide(75, 75, 300, 300) && mouseIsBeingPressed) {
+            backdropLines.push([
+                constrain(mouseX, 75, 375), 
+                constrain(mouseY, 75, 375),
+                constrain(pmouseX, 75, 375),
+                constrain(pmouseY, 75, 375),
+                constrain((weightScroll.thing / (5 / 3)), 1, 75),
+                selectedCol]
+            );
+    }
+        
+        // draw said lines
+        for(var i = 0; i < backdropLines.length; i++) {
+            strokeCap(ROUND);
+            strokeWeight(backdropLines[i][4]);
+            stroke(backdropLines[i][5]);
+            line(backdropLines[i][0], backdropLines[i][1], backdropLines[i][2], backdropLines[i][3]);
+    }
+        
+        // confirm  / cancel / undo / clear
+        noStroke();
+        fill(0, 200, 0);
+        rect(100, 410, 180, 100, 10);
+        fill(200, 0, 0);
+        rect(320, 410, 180, 100, 10);
+        fill(255, 200);
+        textSize(30);
+        text("Confirm", 190, 460);
+        text("Cancel", 410, 460);
+        fill(200);
+        text("↺", 420, 382);
+        textSize(15);
+        text("Clear", 490, 382);
+        
+        // cancel
+        if(cursorCollide(320, 410, 180, 100)) {
+            fill(0, 20);
+            rect(320, 410, 180, 100, 10);
+            overButton = true;
+            if(clicked) {
+                page = "maine";
+                alerts.push(new alert("No backdrop was created."));
+            }
+    }
+        
+        // confirm
+        if(cursorCollide(100, 410, 180, 100)) {
+            fill(0, 20);
+            rect(100, 410, 180, 100, 10);
+            overButton = true;
+            if(clicked) {
+                backdrops.push(get(75, 75, 300, 300));
+                backdropBigArray.push([backdropLines]);
+                alerts.push(new alert("Backdrop successfully created."));
+                page = "maine";
+            }
+        }
+        
+        // undo
+        if(cursorCollide(390, 362, 60, 40)) {
+            fill(255, 20);
+            rect(390, 362, 60, 40, 5);
+            overButton = true;
+            if(clicked) {
+                backdropLines.splice(backdropLines.length - 15, 15);
+            }
+    }
+        
+        // clear
+        if(cursorCollide(460, 362, 60, 40)) {
+            fill(255, 20);
+            rect(460, 362, 60, 40, 5);
+            overButton = true;
+            if(clicked) {
+                backdropLines = [];
+            }
+    }
+        
+        // redoes outline
+        noFill();
+        strokeWeight(5);
+        stroke(200);
+        rect(75, 75, 300, 300);
+        noStroke();
+    
+    break;
+    
+    // color picking page
+    case "colorpicker":
+        
+        image(backgroundWhenBoxOpen, 0, 0, width, height);
+        fill(0, 100);
+        rect(0, 0, width, height);
+        
+        // sliders
+        noStroke();
+        fill(50);
+        rect(50, 50, 500, 500, 30);
+        fill(255);
+        strokeWeight(2);
+        stroke(0);
+        sliderR.draw();
+        sliderG.draw();
+        sliderB.draw();
+        sliderA.draw();
+        
+        noStroke();
+        fill(220);
+        textSize(17);
+        text("R\n" + sliderR.thing + ",", 415, 370);
+        text("G\n" + sliderG.thing + ",", 450, 370);
+        text("B\n" + sliderB.thing + ",", 485, 370);
+        text("A\n" + sliderA.thing, 520, 370);
+        fill(sliderR.thing, sliderG.thing, sliderB.thing, sliderA.thing);
+        
+        // color presets list
+        noStroke();
+        rect(405, 410, 120, 120, 5);
+        for(var i = 0; i < 6; i++) {
+            for(var j = 0; j < 7; j++) {
+                fill(colPresets[i + j * 6][0]);
+                rect(i * 48 + 80, j * 48 + 80, 43, 43);
+                if(cursorCollide(i * 48 + 80, j * 48 + 80, 43, 43)) {
+                    overButton = true;
+                    
+                    // determines if it is light or dark (so which hover effect)
+                    if(red(colPresets[j * 6 + i][0]) + green(colPresets[j * 6 + i][0]) + blue(colPresets[j * 6 + i][0]) < 300) {
+                        fill(255, 30);
+                        rect(i * 48 + 80, j * 48 + 80, 43, 43);
+                    }
+                    else {
+                        fill(0, 30);
+                        rect(i * 48 + 80, j * 48 + 80, 43, 43);
+                    }
+                    if(clicked) {
+                        if(colorChangeMode) {
+                            if(colPresets[j * 6 + i][0] === color(sliderR.thing, sliderG.thing, sliderB.thing, sliderA.thing)) {
+                                alerts.push(new alert("This color is already your selected color!"));
+                            }
+                            else {
+                                alerts.push(new alert("color(" + red(colPresets[j * 6 + i][0]) + "," + green(colPresets[j * 6 + i][0]) + "," + blue(colPresets[j * 6 + i][0]) + "," + alpha(colPresets[j * 6 + i][0]) + ") changed to color(" + sliderR.thing + "," + sliderG.thing + "," + sliderB.thing + "," + sliderA.thing + ")"));
+                                colPresets[j * 6 + i][0] = color(sliderR.thing, sliderG.thing, sliderB.thing, sliderA.thing);
+                            }
+                            colorChangeMode = false;
+                        }
+                        else {
+                            sliderR.thing = red(colPresets[j * 6 + i][0]);
+                            sliderG.thing = green(colPresets[j * 6 + i][0]);
+                            sliderB.thing = blue(colPresets[j * 6 + i][0]);
+                            sliderA.thing = alpha(colPresets[j * 6 + i][0]);
+                        }
+                    }
+                }
+            }
+        }
+        
+        // confirm / cancel
+        strokeWeight(1);
+        stroke(0);
+        textSize(24);
+        fill(0, 200, 0);
+        rect(75, 430, 150, 95, 10);
+        fill(0);
+        text("Confirm", 150, 477.5);
+        fill(200, 0, 0);
+        rect(237.5,470, 150, 55, 10);
+        fill(255);
+        text("Cancel", 312.5, 497.5);
+        
+        // if change color
+        if(colorChangeMode) {
+            stroke(255);
+            strokeWeight(2);
+    }
+        
+        // change color
+        fill(0);
+        rect(237.5, 430, 150, 35, 10);
+        noStroke();
+        textSize(16);
+        fill(255);
+        text("Change color", 312.5, 447.5);
+        
+        // set color
+        if(cursorCollide(75, 430, 150, 95)) {
+            overButton = true;
+            fill(0, 15);
+            rect(75, 430, 150, 95, 10);
+            if(clicked) {
+                selectedCol = color(sliderR.thing, sliderG.thing, sliderB.thing, sliderA.thing);
+                page = colorPickerBack;
+                alerts.push(new alert("Color successfully set."));
+            }
+        }
+        
+        // dont set color
+        if(cursorCollide(237.5, 470, 150, 55)) {
+            overButton = true;
+            fill(0, 15);
+            rect(237.5, 470, 150, 55, 10);
+            if(clicked) {
+                page = colorPickerBack;
+                alerts.push(new alert("Color setting cancelled."));
+            }
+    }
+        
+        // change color change mode
+        if(cursorCollide(237.5, 430, 150, 35)) {
+            overButton = true;
+            fill(255, 20);
+            rect(237.5, 430, 150, 35, 10);
+            if(clicked) {
+                colorChangeMode = !colorChangeMode;
+            }
+    }
+    
+    break;
+    
+    // sounds
+    case "soundpg":
+        
+        image(backgroundWhenBoxOpen, 0, 0, width, height);
+        fill(0, 100);
+        rect(0, 0, width, height);
+        
+        fill(50);
+        rect(50, 50, 500, 500, 30);
+        
+        fill(200);
+        textSize(50);
+        text("Sounds", 300, 100);
+        
+        textSize(25);
+        
+        // displays all the sounds
+        for(var i in sounds) {
+            if(soundScroll + i * 40 + 137 > 125 && soundScroll + i * 40 + 137 < 500) {
+                
+                if(selectedSound === i) {
+                    fill(255, 15);
+                    strokeWeight(2);
+                    stroke(255);
+                    rect(215, i * 40 + 137 + soundScroll, 285, 32);
+                    noStroke();
+                }
+                
+                fill(200);
+                if(sounds[i].sound !== "no sound") {
+                    image(icons.souund, 160, i * 40 + 137 + soundScroll, 40, 33.6);
+                
+                }
+                
+                text(sounds[i].category, 260, i * 40 + 150 + soundScroll);
+                text(sounds[i].name, 400, i * 40 + 150 + soundScroll);
+                
+                if(cursorCollide(160, i * 40 + 137 + soundScroll, 41, 33.6)) {
+                    overButton = true;
+                    fill(255, 15);
+                    rect(160, i * 40 + 137 + soundScroll, 41, 33.6);
+                    if(clicked) {
+                        playSound(sounds[i].sound);
+                    }
+                }
+                
+                if(cursorCollide(215, i * 40 + 137 + soundScroll, 285, 32)) {
+                    overButton = true;
+                    fill(255, 15);
+                    rect(215, i * 40 + 137 + soundScroll, 285, 32);
+                    if(clicked) {
+                        selectedSound = i;
+                    }
+                }
+            }
+        }
+        
+        // slider
+        soundSlider.draw();
+        soundScroll = -((soundSlider.thing / 400) * (40 * (sounds.length - 10)));
+        
+        // button
+        noStroke();
+        fill(0, 200, 0);
+        rect(60, 450, 95, 70, 10);
+        fill(0);
+        textSize(20);
+        text("Confirm", 107.5, 485);
+        if(cursorCollide(60, 450, 95, 70)) {
+            fill(0, 15);
+            rect(60, 450, 95, 70, 10);
+            overButton = true;
+            if(clicked) {
+                frames[selectedIdx].sound = selectedSound;
+                selectedSound = 0;
+                page = "maine";
+            }
+        }
+        
+    break;
+    case "marker":
+        
+        image(backgroundWhenBoxOpen, 0, 0, width, height);
+        fill(0, 100);
+        rect(0, 0, width, height);
+        
+        fill(50);
+        rect(50, 50, 500, 500, 30);
+        strokeWeight(5);
+        stroke(200);
+        fill(255);
+        rect(75, 75, 300, 300);
+        
+        if(frames[selectedIdx].hasBeenCustomizedYet) {
+            image(frames[selectedIdx].pic, 75, 75, 300, 300);
+        }
+        
+        // color ellipse
+        fill(selectedCol);
+        strokeWeight(3);
+        stroke(255);
+        ellipse(462.5, 150, 125, 125);
+        
+        // stroke weight
+        strokeWeight(weightScroll.thing / (5 / 3));
+        point(462.5, 260);
+        fill(255);
+        textAlign(CENTER, CENTER);
+        if(weightScroll.thing > 15) {
+            fill(0);
+        }
+        textSize(18);
+        text(floor(weightScroll.thing / (5 / 3)), 462.5, 275);
+        weightScroll.draw();
+        
+        fill(255);
+        textSize(15);
+        text("Your stroke weight", 462.5, 351);
+        
+        // color button
+        if(dist(mouseX, mouseY, 462.5, 150) < 65) {
+            overButton = true;
+            fill(0, 30);
+            noStroke();
+            ellipse(462.5, 150, 125, 125);
+            if(clicked) {
+                colorPickerBack = page;
+                page = "colorpicker";
+            }
+        }
+        
+        // draw
+        if(cursorCollide(75, 75, 300, 300) && mouseIsBeingPressed) {
+            markerLines.push([
+                constrain(mouseX, 75, 375), 
+                constrain(mouseY, 75, 375),
+                constrain(pmouseX, 75, 375),
+                constrain(pmouseY, 75, 375),
+                constrain((weightScroll.thing / (5 / 3)), 1, 75),
+                selectedCol]
+            );
+        }
+        
+        for(var i = 0; i < markerLines.length; i++) {
+            strokeCap(ROUND);
+            strokeWeight(markerLines[i][4]);
+            stroke(markerLines[i][5]);
+            line(markerLines[i][0], markerLines[i][1], markerLines[i][2], markerLines[i][3]);
+        }
+        
+        // buttons
+        noStroke();
+        fill(0, 200, 0);
+        rect(100, 410, 180, 100, 10);
+        fill(200, 0, 0);
+        rect(320, 410, 180, 100, 10);
+        fill(255, 200);
+        textSize(30);
+        text("Confirm", 190, 460);
+        text("Cancel", 410, 460);
+        fill(200);
+        text("↺", 420, 382);
+        textSize(15);
+        text("Clear", 490, 382);
+        
+        // cancel
+        if(cursorCollide(320, 410, 180, 100)) {
+            fill(0, 20);
+            rect(320, 410, 180, 100, 10);
+            overButton = true;
+            if(clicked) {
+                page = "maine";
+                alerts.push(new alert("No drawing was created."));
+            }
+        }
+        
+        // confirm
+        if(cursorCollide(100, 410, 180, 100)) {
+            fill(0, 20);
+            rect(100, 410, 180, 100, 10);
+            overButton = true;
+            if(clicked) {
+                alerts.push(new alert("Drawing success."));
+                page = "loading drawing";
+            }
+        }
+        
+        // undo
+        if(cursorCollide(390, 362, 60, 40)) {
+            fill(255, 20);
+            rect(390, 362, 60, 40, 5);
+            overButton = true;
+            if(clicked) {
+                markerLines.splice(markerLines.length - 15, 15);
+            }
+        }
+        
+        // clear
+        if(cursorCollide(460, 362, 60, 40)) {
+            fill(255, 20);
+            rect(460, 362, 60, 40, 5);
+            overButton = true;
+            if(clicked) {
+                markerLines = [];
+            }
+        }
+        
+        // reoutline
+        noFill();
+        strokeWeight(5);
+        stroke(200);
+        rect(75, 75, 300, 300);
+        
+        noStroke();
+    break;
+    
+    // font picker
+    case "fontpicker":
+        
+        image(backgroundWhenBoxOpen, 0, 0, width, height);
+        fill(0, 100);
+        rect(0, 0, width, height);
+        fill(50);
+        rect(50, 50, 500, 500, 30);
+        
+        // display font list
+        noStroke();
+        fill(200);
+        textSize(15);
+        textAlign(CENTER, CENTER);
+        
+        for(var i = 0; i < fontList.length; i++) {
+            textFont(createFont(fontList[i]));
+            if(i * 20 + 100.1 + fontListScrl > 100 && i * 20 + 100 + fontListScrl < 525) {
+                
+                // sir ching
+                if((searching.join("").toLowerCase()).includes((fontList[i]).toLowerCase()) || ((fontList[i]).toLowerCase()).includes(searching.join("").toLowerCase())) {
+                    fill(255);
+                    text(fontList[i], 300, i * 20 + 100 + fontListScrl + 10);
+                    noStroke();
+                    if(cursorCollide(190, i * 20 + 100 + fontListScrl, 220, 20)) {
+                        noStroke();
+                        overButton = true;
+                        fill(255, 10);
+                        rect(190, i * 20 + 100 + fontListScrl, 220, 20);
+                        if(clicked) {
+                            selectedFont = fontList[i];
+                        }
+                    }
+                }
+            }
+        }
+        
+        // slider
+        if(fontList.length > 20) {
+            fontSlider.draw();
+        }
+        
+        // search bar
+        textFont(createFont("Trebuchet MS"));
+        noStroke();
+        fill(200);
+        rect(150, 65, 300, 30, 10);
+        if(cursorCollide(150, 65, 300, 30)) {
+            fill(0, 20);
+            rect(150, 65, 300, 30, 10);
+            overButton = true;
+            if(clicked) {
+                isCurrentlySearching = true;
+            }
+        }
+        else if(clicked) {
+            isCurrentlySearching = false;
+        }
+        
+        // type in search bar
+        fill(0);
+        if(isCurrentlySearching) {
+            if(keyIsBeingTyped) {
+                
+                if(key.code === BACKSPACE) {
+                    searching.pop();
+                    fontWorks = false;
+                }
+                
+                else if(key.code !== ENTER) {
+                    searching.push(key.toString());
+                    fontWorks = false;
+                }
+                
+            }
+        }
+        
+        // selected font
+        textSize(14);
+        fill(200);
+        text("Selected Font:\n" + selectedFont, 45, 160, 160, 300);
+        text("Keep in mind that fonts might not work on all devices.", 50, 80, 150, 300);
+        
+        // custom font checker
+        rect(75, 460, 110, 60, 5);
+        fill(0);
+        textSize(15);
+        text("Check for     \ncustom font", 130, 490);
+        
+        // question mark
+        noFill();
+        strokeWeight(1.5);
+        stroke(200, 0, 0);
+        ellipse(167.5, 479, 20, 20);
+        textFont(createFont("Arial Black"));
+        fill(200, 0, 0);
+        textSize(13);
+        text("?", 167.5, 479);
+        
+        // back to searching
+        textFont(createFont("Trebuchet MS"));
+        fill(0);
+        textSize(20);
+        if(frameCount % 80 > 40 && isCurrentlySearching) {
+            text(searching.join("") + "|", 300, 80);
+        }
+        else {
+            text(searching.join(""), 300, 80);
+        }
+        
+        // back to question mark
+        if(dist(mouseX, mouseY, 167.5, 479) < 10) {
+            fill(255);
+            rect(mouseX, mouseY, 156, 36);
+            fill(0);
+            textSize(9.5);
+            text("This checks if what you have in\nthe search bar is usable as a font", mouseX + 78, mouseY + 18);
+        }
+        
+        // the font checker
+        else if(cursorCollide(75, 460, 110, 60)) {
+            noStroke();
+            fill(0, 20);
+            rect(75, 460, 110, 60, 5);
+            overButton = true;
+            
+            // my *ingenious* idea
+            if(clicked) {
+                textSize(400);
+                textFont(createFont(searching.join("")));
+                
+                // checks
+                if(textWidth("this is a test message to determine if this font works!! :)") !== 9737) {
+                    
+                    // already have
+                    if((fontListString.toLowerCase()).includes(searching.join("").toLowerCase())) {
+                        alerts.push(new alert("You already have this font loaded!"));
+                    }
+                    
+                    // if it does work
+                    else {
+                        fontWorks = true;
+                        alerts.push(new alert("This font will work -- you may now add it if you please."));
+                    }
+                }
+                
+                // if confused
+                else {
+                    alerts.push(new alert("You don't have this font... try checking your spelling and making sure it runs on Khan."));
+                }
+                
+                // checking
+                // looks more professional
+                overButton = false;
+                fill(50);
+                rect(50, 50, 500, 500, 30);
+                fill(200);
+                textSize(60);
+                text("Checking...", 300, 300);
+                textSize(15);
+                text("(This may take a moment)", 300, 350);
+            }
+        }
+        
+        // confirm button
+        fill(255);
+        noStroke();
+        fill(0, 200, 0);
+        rect(75, 370, 110, 60, 5);
+        fill(0);
+        text("Confirm", 130, 400);
+        
+        if(cursorCollide(75, 370, 110, 60)) {
+            fill(0, 20);
+            rect(75, 370, 110, 60, 5);
+            overButton = true;
+            if(clicked) {
+                page = "txttool";
+            }
+        }
+        
+        // back to custom font
+        if(fontWorks) {
+            
+            textFont(createFont(searching.join("")));
+            fill(200);
+            rect(75, 125, 110, 60, 5);
+            fill(0);
+            textSize(15);
+            text("+Custom Font", 80, 101, 100, 100);
+            
+            // if add
+            if(cursorCollide(75, 125, 110, 60)) {
+                fill(0, 20);
+                rect(75, 125, 110, 60, 5);
+                overButton = true;
+                if(clicked) {
+                    fontList.push(searching.join(""));
+                    fontListString += ("" + (searching.join("").toString()) + "");
+                    alerts.push(new alert("Success!! Font \"" + searching.join("") + "\" has been added to your list!"));
+                    searching = [];
+                    fontWorks = false;
+                }
+            }
+        }
+        
+        // sorts it at interval, just for professional lookingness
+        if(frameCount % 120 === 0) {
+            fontList.sort();
+        }
+        
+        fontListScrl = -((fontSlider.thing / 400) * ((fontList.length - 22) * 20));
+        
+    break;
+    
+    // loading fonts
+    case "fontpicker load":
+        
+        image(backgroundWhenBoxOpen, 0, 0, width, height);
+        fill(0, 100);
+        rect(0, 0, width, height);
+        
+        // my *ingenious* idea again
+        textSize(400);
+        textFont(createFont(fontList[fontLoadNum]));
+        if(textWidth("this is a test message to determine if this font works!! :)") === 9737 && frameCount % 3 === 2) {
+            toSpliceFL.push(fontLoadNum);
+    }
+        else {
+            fontListString += fontList[fontLoadNum];
+    }
+    
+        fill(50);
+        rect(50, 50, 500, 500, 30);
+        
+        fill(200);
+        textFont(createFont("Trebuchet MS"));
+        textSize(45);
+        textAlign(CENTER, CENTER);
+        text("Loading fonts...", 300, 250);
+        
+        // looks more professional again
+        textSize(30);
+        text((fontLoadNum + 1) + " / " + (fontList.length) + "\n" + fontList[fontLoadNum], 300, 400);
+        
+        // loading bar
+        fill(255, 150);
+        rect(50, 450, (fontLoadNum * (500 / fontList.length)), 50);
+        
+        // it needs to go slower because otherwise it would be kinda buggy (i'm guessing it is giving too much info per frame, so it just cuts off at what it can do per frame and then ignores the rest.)
+        if(frameCount % 3 === 0 && fontLoadStart < 0) {
+            fontLoadNum ++;
+        }
+        if(fontLoadNum >= fontList.length) {
+            for(var i = toSpliceFL.length - 1; i > 0; i--) {
+                fontList.splice(toSpliceFL[i], 1);
+            }
+            
+            // because they don't cheat the system
+            fontList.push("Arial");
+            fontListString += "Arial";
+            fontList.push("Arial Black");
+            fontListString += "Arial Black";
+            
+            fontList.sort();
+            
+            page = "fontpicker";
+            
+        }
+        
+        fontLoadStart --;
+    break;
+    
+    // text tool
+    case "txttool":
+        
+        image(backgroundWhenBoxOpen, 0, 0, width, height);
+        fill(0, 100);
+        rect(0, 0, width, height);
+        fill(50);
+        rect(50, 50, 500, 500, 30);
+        
+        strokeWeight(5);
+        stroke(200);
+        fill(255);
+        rect(75, 75, 300, 300);
+        
+        if(frames[selectedIdx].hasBeenCustomizedYet) {
+            image(frames[selectedIdx].pic, 75, 75, 300, 300);
+        }
+        
+        rotSlider.draw();
+        txtSizSlider.draw();
+        
+        // text statistics
+        textSize(15);
+        fill(200);
+        textAlign(CENTER, CENTER);
+        text("Text Size - " + (txtSizSlider.thing / 2 + 0.5), 462.5, 180);
+        text("Text Rotation - " + floor(rotSlider.thing * 2.88) + "°", 462.5, 240);
+        
+        // message
+        textSize(15);
+        text("\"" + txtMsg.join("") + "\"", 462.5, 110);
+        
+        noStroke();
+        
+        // this is a lovely variable name
+        textFont(createFont(selectedFontWithBoldAndItalics));
+        
+        // draws the text preview
+        if(cursorCollide(75, 75, 300, 300)) {
+            
+            fill(0);
+            rect(mouseX - 1, 75, 2, 300);
+            rect(75, mouseY - 1, 300, 2);
+            
+            // if it's too light colored to see
+            if(alpha(selectedCol) >= 127) {
+                fill(red(selectedCol), green(selectedCol), blue(selectedCol), 127.5);
+            }
+            else {
+                fill(selectedCol);
+            }
+            
+            textSize(txtSizSlider.thing / 2);
+            pushMatrix();
+            translate(mouseX, mouseY);
+            rotate(rotSlider.thing * 2.88);
+            text(txtMsg.join(""), 0, 0);
+            popMatrix();
+            
+            if(clicked) {
+                txtStats[0] = mouseX;
+                txtStats[1] = mouseY;
+            }
+            
+        }
+        
+        // the actual text
+        fill(selectedCol);
+        textSize(txtSizSlider.thing / 2);
+        pushMatrix();
+        translate(txtStats[0], txtStats[1]);
+        rotate(rotSlider.thing * 2.88);
+        text(txtMsg.join(""), 0, 0);
+        popMatrix();
+        
+        // if outlined
+        // + font changeys
+        textSize(14);
+        noFill();
+        strokeWeight(1.5);
+        stroke(255);
+        
+        if(fontBold && fontItalic) {
+            selectedFontWithBoldAndItalics = selectedFont + " Bold Italics";
+            rect(370, 450, 160, 40, 10);
+            rect(370, 500, 160, 40, 10);
+        }
+        
+        else if(fontBold) {
+            selectedFontWithBoldAndItalics = selectedFont + " Bold";
+            rect(370, 450, 160, 40, 10);
+        }
+        
+        else if(fontItalic) {
+            selectedFontWithBoldAndItalics = selectedFont + " Italics";
+            rect(370, 500, 160, 40, 10);
+        }
+        
+        else {
+            selectedFontWithBoldAndItalics = selectedFont;
+        }
+        
+        // the font
+        noStroke();
+        fill(200);
+        text("Font: " + selectedFont, 347.5, 365, 200, 100);
+        
+        // bold + italics text
+        textSize(20);
+        fill(255);
+        textFont(createFont(selectedFont + " Bold"));
+        text("Bold", 450, 470);
+        textFont(createFont(selectedFont + " Italics"));
+        text("Italics", 450, 520);
+        
+        // change said bold + italics + other buttons
+        // bold
+        if(cursorCollide(370, 450, 160, 40)) {
+            fill(255, 20);
+            rect(370, 450, 160, 40, 10);
+            overButton = true;
+            if(clicked) {
+                fontBold = !fontBold;
+            }
+        }
+        
+        // italics
+        if(cursorCollide(370, 500, 160, 40)) {
+            fill(255, 20);
+            rect(370, 500, 160, 40, 10);
+            overButton = true;
+            if(clicked) {
+                fontItalic = !fontItalic;
+            }
+        }
+        
+        // font picker
+        if(cursorCollide(350, 400, 200, 40)) {
+            fill(255, 20);
+            rect(350, 400, 200, 40, 10);
+            overButton = true;
+            if(clicked) {
+                if(fontLoadStart !== 30) {
+                    page = "fontpicker";
+                }
+                else {
+                    page = "fontpicker load";
+                }
+            }
+        }
+        
+        // text picker
+        if(cursorCollide(390, 90, 145, 40)) {
+            overButton = true;
+            fill(255, 20);
+            rect(390, 90, 145, 40, 10);
+            if(clicked) {
+                page = "txtpicker";
+            }
+        }
+        
+        // color picker
+        fill(selectedCol);
+        strokeWeight(3);
+        stroke(255);
+        ellipse(462.5, 330, 120, 120);
+        
+        if(dist(mouseX, mouseY, 462.5, 330) < 60) {
+            fill(255, 20);
+            ellipse(462.5, 330, 120, 120);
+            overButton = true;
+            
+            if(clicked) {
+                colorPickerBack = page;
+                page = "colorpicker";
+            }
+            
+        }
+        
+        // confirm & cancel buttons
+        textFont(createFont("Trebuchet MS"));
+        textSize(21);
+        noStroke();
+        fill(0, 200, 0);
+        rect(85, 430, 110, 70, 10);
+        fill(200, 0, 0);
+        rect(230, 430, 110, 70, 10);
+        fill(255);
+        text("Confirm", 140, 465);
+        text("Cancel", 285, 465);
+        
+        // the confirm btn
+        if(cursorCollide(85, 430, 110, 70)) {
+            fill(0, 20);
+            rect(85, 430, 110, 70, 10);
+            overButton = true;
+            if(clicked) {
+                
+                // uses config
+                
+                // just easier to put everything in
+                frames[selectedIdx].things.push(new txt({
+                    x: txtStats[0] - 75,
+                    y: txtStats[1] - 75,
+                    font: selectedFont,
+                    msg: txtMsg,
+                    rot: rotSlider.thing * 2.88,
+                    bolded: fontBold,
+                    italicized: fontItalic,
+                    col: selectedCol,
+                    siz: (txtSizSlider.thing / 2 + 0.5),
+                }));
+                
+                page = "loading framez";
+                alerts.push(new alert("Text \'" + txtMsg.join("") + "\' has been successfully added to frame " + (selectedIdx + 1)));
+            }
+        }
+        
+        // cancel btn
+        if(cursorCollide(230, 430, 110, 70)) {
+            fill(0, 20);
+            rect(230, 430, 110, 70, 10);
+            overButton = true;
+            if(clicked) {
+                page = "maine";
+            }
+        }
+        
+    break;
+    
+    // loading frames
+    // the z is intentional
+    case "loading framez":
+        
+        frames[selectedIdx].hasBeenCustomizedYet = true;
+        
+        // transparent backround
+        background(0, 0);
+        
+        // displays the 'drop
+        if(frames[selectedIdx].drop !== "") {
+            image(frames[selectedIdx].drop, 100, 100, 300, 300);
+        }
+        
+        // displays the rest of the things
+        // quite literally
+        for(var i in frames[selectedIdx].things) {
+            frames[selectedIdx].things[i].draw();
+        }
+        
+        // bundles it all up into a nice wholesome image
+        frames[selectedIdx].pic = get(100, 100, 300, 300);
+        
+        // other screen
+        background(50);
+        
+        textSize(60);
+        fill(200);
+        text("Please wait...", 300, 250);
+        
+        textSize(35);
+        text("Loading your\nframe thumbnails...", 300, 345);
+        
+        thumbnailLoad ++;
+        if(thumbnailLoad > 1) {
+            page = "maine";
+        }
+        
+    break;
+    
+    // refresh backdrop
+    case "refresh loady":
+        
+            frames[thumbnailLoad].hasBeenCustomizedYet = true;
+            background(0, 0);
+            image(frames[settingsPageIdx].drop, 100, 100, 300, 300);
+            
+            // draws the thumbnail
+            for(var i in frames[thumbnailLoad].things) {
+                
+                frames[thumbnailLoad].things[i].draw();
+                
+                // also updates this
+                frames[thumbnailLoad].dropidx = frames[settingsPageIdx].dropidx;
+            }
+            frames[thumbnailLoad].pic = get(100, 100, 300, 300);
+            
+            background(50);
+            
+            textSize(60);
+            fill(200);
+            text("Please wait...", 300, 250);
+            
+            textSize(35);
+            text("Loading your\nframe thumbnails...\n" + thumbnailLoad + "/" + frames.length, 300, 345);
+    
+            thumbnailLoad ++;
+            if(thumbnailLoad >= frames.length) {
+                page = "maine";
+            }
+            
+    break;
+    
+    // loading the drawing
+    case "loading drawing":
+        
+        // transparent
+        background(0, 0);
+        
+        for(var i = 0; i < markerLines.length; i++) {
+            strokeCap(ROUND);
+            strokeWeight(markerLines[i][4]);
+            stroke(markerLines[i][5]);
+            line(markerLines[i][0], markerLines[i][1], markerLines[i][2], markerLines[i][3]);
+        }
+        
+        // image pushing
+        frames[selectedIdx].things.push(new drawing(get(75, 75, 300, 300), markerLines));
+        
+        background(50);
+        
+        textSize(60);
+        fill(200);
+        text("Please wait...", 300, 250);
+        
+        textSize(35);
+        text("Loading your\ndrawings", 300, 345);
+        
+        thumbnailLoad ++;
+        if(thumbnailLoad > 0) {
+            page = "loading framez";
+        }
+        
+    break;
+    
+    // the text box typey thingy
+    case "txtpicker":
+        
+        image(backgroundWhenBoxOpen, 0, 0, width, height);
+        fill(0, 100);
+        rect(0, 0, width, height);
+        
+        fill(50);
+        rect(50, 50, 500, 500, 30);
+        fill(200);
+        
+        // the blinking cursor thingy (what is that called?)
+        textSize(40);
+        if(frameCount % 80 > 40) {
+            text(txtMsg.join(""), 300, 250);
+        }
+        else {
+            text(txtMsg.join("") + "|", 300, 250);
+        }
+        
+        // key typing thingy
+        if(keyIsBeingTyped) {
+            if(key.code === BACKSPACE) {
+                txtMsg.pop();
+                fontWorks = false;
+            }
+            else if(key.code !== ENTER && textWidth(txtMsg.join("") + "|") < 450) {
+                txtMsg.push(key.toString());
+                fontWorks = false;
+            }
+        }
+        
+        // confirm button
+        fill(0, 200, 0);
+        rect(200, 400, 200, 100, 10);
+        fill(200);
+        textSize(30);
+        text("Confirm", 300, 450);
+        if(cursorCollide(200, 400, 200, 100)) {
+            overButton = true;
+            fill(0, 20);
+            rect(200, 400, 200, 100, 10);
+            if(clicked) {
+                page = "txttool";
+                alerts.push(new alert("Text successfully set"));
+            }
+        }
+        
+    break;
+    }
+    
+    // draw alerts
+    for(var i in alerts) {
+        alerts[i].draw();
+        if(alerts[i].y < -65) {
+            alerts.splice(i, 1);
+        }
+    }
+    
+    // resets random variables
+    if(frameCount % 5 === 0) {
+        if(page !== "refresh loady") {
+            thumbnailLoad = 0;
+        }
+        if(page !== "marker" && page !== "colorpicker") {
+            markerLines = [];
+        }
+        if(page !== "preview") {
+            previewTimer = 0;
+        }
+    }
+    noStroke();
+    
+    // key & mouse vars
+    keyIsBeingTyped = false;
+    
+    if(overButton) {
+        cursor(HAND);
+    }
+    else {
+        cursor(ARROW);
+    }
+    
+    if(mouseIsPressed) {
+        mouseIsBeingPressed = true;
+    }
+    if(!mouseIsPressed) {
+        mouseIsBeingPressed = false;
+    }
+    
+    clicked = false;
+    overButton = false;
+    
+    // fps counter
+    fill(255);
+    textSize(10);
+    text(this.__frameRate.toFixed(1) + " FPS", 565, 585);
+
+};
+
+// clicky
+mouseClicked = function() {
+    clicked = true;
+};
+
+// typey
+keyTyped = function() {
+    keyIsBeingTyped = true;
+};
+
+// }
