@@ -1,0 +1,1331 @@
+/**
+
+╔╗                   ╔╗   ╔═══╗╔╗        ╔╗
+║║                   ║║   ║╔═╗╠╝╚╗       ║║
+║║  ╔══╦╗╔╦══╦═╗╔══╦═╝╠══╗║╚══╬╗╔╬══╦═╗╔═╝║
+║║ ╔╣║═╣╚╝║╔╗║╔╗╣╔╗║╔╗║║═╣╚══╗║║║║╔╗║╔╗╣╔╗║
+║╚═╝║║═╣║║║╚╝║║║║╔╗║╚╝║║═╣║╚═╝║║╚╣╔╗║║║║╚╝║
+╚═══╩══╩╩╩╩══╩╝╚╩╝╚╩══╩══╝╚═══╝╚═╩╝╚╩╝╚╩══╝
+
+ * SP @Prodigy6 - 2020
+ * 
+ * Okay, on most of the programs I spend more than fifteen minutes, I have some big comment up here explaining everything.
+ * 
+ * This one is no different :D
+ * 
+ * @CUSTOMIZATION:
+ * **/
+ 
+ // note: this will be the customization of YOUR CHARACTER, in the game.
+ 
+ var isGirl = false; // change this to be male (false) or female (true)
+ 
+ var skinColor = color(94, 48, 48); // change this to virtually any color you want :D
+ 
+ /**
+ * 
+ * @LEADERBOARD:
+ * 1. T̷h̷e̷ C̷o̷d̷i̷n̷g̷ L̷e̷g̷e̷n̷d̷ (BIO) - $672.38
+ * 2. SP - $631.77
+ * 3. PiCeraDragonite - $630.55
+ * 4. Complex Icosahedron - $609.50
+ * 5. Khloe Battat - $596.07
+ * 6. name here - $557.65
+ * 7. TJNB-Money - $551.85
+ * 8. PanzerSchnitter(bio) - $535.77
+ * 9. mariofan2468 - $526.14
+ * 10. Espada - $524.50
+ * 11. 404NameNotFound - $476.59
+ * 12. HootCode(); - $468.85
+ * 13. SydtheDolphin - $443.20
+ * 14. CameronB - $440.98
+ * 15. TheRealHollowKnight - $414.89
+ * 
+ * @CREDITS: 
+Larry Serflaten - stats page graph assistance
+No-Sock Guy     - making it very clear I needed to use OOP. i did
+SP              - everything else
+
+ * @START_TO_END
+ * STARTED: 11/2/2020
+ * FINISHED: 12/10/2020
+ * RELEASED: 12/11/2020
+ * 
+ * @IDEA
+ * Got this idea sometime during May of 2020, started on it but made almost zero progress on it. Remembered this at the start of November, and got to work.
+ * 
+ * @SOME_NOTES
+ * NO CODE has been taken or plagairised from any people at all, any code that is identical or nearly such is a coincidence.
+ * Don't edit the code! It will make the game lag a lot (the more edits the more lag), so just play the game and have fun!
+ * Enjoy!
+ * 
+ * @DONT_EVEN_THINK_ABOUT_CHANGING_THIS_>>  {
+ **/ 
+ var installedHacks = false;
+ /**
+  * }
+  * 
+  * That's all! If you would like assistance in-game or just want to get some neat tricks, open this below vv
+  **/
+ function someone_needs_help() {
+    /**
+     * 
+     * Okay, so you need some help =P.
+     * 
+     * That's fine lol.
+     * 
+     * 
+     * @STARTING_OUT
+     * Okay, so first things first. Go to work for a few days, catch some smol balls until you earn $21.97 OR MORE. Then go into the shop and purchase 100 cups of lemons, 100 cups of sugar, and 150 cups of ice cubes. Select "back" and then go to "run lemonade stand", and "yep!". If you have done everything correctly, you can select "Make cup" in the bottom right corner and make 100 cups. Then, you can adjust the price as you want and you just wait for people to come and rack up the money!
+     * 
+     * @AFTER_A_FEW_DAYS
+     * Keep replenishing your amounts of lemons, sugar, and ice.
+     * When you are at 15 days, it will be your birthday, and you'll get $30.00 in birthday money!
+     * If your health drops below 20%, you will want to take a day off, or else you are in danger of losing due to not taking care of your health. THIS IS IMPORTANT!
+     * 
+     * @AFTER_30_DAYS
+     * Congrats, you made it! You can use your "score code" to get on the leaderboard! You'll receive bonuses for
+     * -cups remaining (1 cent for each)
+     * -cups sold (3 cents for each)
+     * -your health at the end (4 cents for each single percentage)
+     * 
+     * Then, you can play again and try to beat your high score.
+     * 
+     * WARNING: DO NOT MAKE THIS TRUE:
+     **/
+}
+
+// vars {
+
+var fastSpeed = false;
+
+var scoreCode = 0;
+var alphabetLetters = "weryuipasfghklzcvbmQWRTYIOPSDFHJKZXCBNM1234678...";
+var terrters = alphabetLetters.split("");
+
+// image caching variables
+var dolla;
+
+// cursor variable
+var ERRORCursor = false;
+var overButton = false;
+
+// money variables
+var moneyQueue = 0;
+var money = 0;
+var l;
+
+// display / visual variables
+var fadeD = 0;
+
+// ai variables
+var skinColors = [color(94, 48, 48), color(230, 237, 139), color(230, 237, 139), color(164, 142.5, 93.5)];
+var AIs = [];
+
+// technical variables
+var page = 'intro';
+var clicked = false;
+var timeOnProgram = 0;
+
+// intro/logo variables
+var lemonadeX = 0;
+var standX = 600;
+var screenshaketimer = 10;
+var screenshakegoesdown = false;
+var textsize = 120;
+var workDays = 0;
+var titleYs = [275, 375, "SP", "Presents"];
+var buttonXes = [-201, 600, -201];
+var colorFade = 255;
+var m;
+
+// gameplay variables
+var cupsMade = 0;
+var daysLeft = 0;
+var lemons = 0;
+var ice = 0;
+var sugar = 0;
+var hoursLeftInDay = 9;
+var price = 25;
+var health = 100;
+var freeplay = false;
+var makingCups = false;
+var highScore = 0;
+var lemonadeSold = 0;
+var b = 0;
+var shirtColor = color(random(50, 205), random(50, 205), random(50, 205));
+var y = 0;
+
+// work minigame variables
+var dropXes = [];
+var dropYes = [];
+var dropSpeed = [];
+var sliderX = mouseX;
+var isFired = false;
+
+// money falling from the screen vars
+var moneyXes = [];
+var moneyYes = [];
+var moneyRots = [];
+var moneySpeeds = [];
+
+// stats page variables
+var moneyEarnedToday = 0;
+var statZ = [0];
+var statO = [0];
+
+// allowances/bday variables
+var allowances = [false, false, false, false, false];
+var claimedBday = false;
+
+// cloud variables
+var cloudXes = [];
+var cloudSpeeds = [];
+var cloudYes = [];
+
+// button function
+var button = function(x, y, w, h, bc, tc, ts, r, m, d) {
+
+    // button drawing
+    fill(bc);
+    rect(x, y, w, h, r);
+    fill(tc);
+    textSize(ts);
+    textAlign(CENTER, CENTER);
+    text(m, x + w / 2, y + h / 2);
+
+    // button collisions
+    if (mouseX > x && mouseX < x + w && mouseY > y && mouseY < y + h) {
+        overButton = true;
+        fill(0, 100);
+        rect(x, y, w, h, r);
+        if (clicked) {
+            page = d;
+        }
+    }
+};
+
+// the backdrop
+var drop = function() {
+
+    // draws the background of the background..?
+    background(0, 187, 255);
+    fill(255, 175);
+    noStroke();
+
+    // clouds
+    for (var i = 0; i < cloudXes.length; i++) {
+        rect(cloudXes[i], cloudYes[i], 120, 70, 50);
+        cloudXes[i] += cloudSpeeds[i];
+        if (cloudXes[i] > 610) {
+            cloudXes[i] = random(-250, -120);
+            cloudYes[i] = random(0, 200);
+            cloudSpeeds[i] = random(1, 4);
+        }
+    }
+
+    // hills and sun
+    fill(255, 255, 0);
+    noStroke();
+    ellipse(550, 50, 200, 200);
+    fill(50, 178, 49);
+    ellipse(460, 530, 840, 180);
+    fill(0, 128, 19);
+    ellipse(220, 578, 1000, 200);
+    fill(0, 98, 0);
+    ellipse(530, 610, 1200, 150);
+};
+
+// drawing the dollar, for when you earn an allowance / have your birthday!
+var drawDollar = function(x, y, size) {
+    image(dolla, x, y, size * 5, size * 2);
+};
+
+// }
+
+// ai {
+// oop bc the no-sock guy made me. xD
+var AI = function(x, direction, size) {
+
+    // variables
+    this.pantsColor = color(0, random(50, 90), random(170, 255));
+    this.skinColor = skinColors[floor(random(0, skinColors.length))];
+    this.y = random(-10, 60);
+    this.shirtColor = color(random(50, 205), random(50, 205), random(50, 205));
+    this.x = x;
+    this.direction = direction;
+    this.size = size;
+    this.goingToBuyOdds = random(40, 100);
+    this.isGirl = false;
+    this.rightHanded = false;
+    this.mainHandOdds = random(10);
+    this.girlPick = floor(random(3));
+
+    // picking genders
+    if (this.girlPick === 1) {
+        this.isGirl = true;
+    }
+    if (this.girlPick === 2) {
+        this.isGirl = false;
+    }
+
+    // picking hands
+    if (this.mainHandOdds < 8.5) {
+        this.rightHanded = true;
+    } else {
+        this.rightHanded = false;
+    }
+};
+
+// draws ai
+AI.prototype.draw = function() {
+    pushMatrix();
+    scale(this.size);
+    fill(this.shirtColor);
+    translate(this.x, this.y);
+    rect(250, 325, 100, 100, 20, 20, 0, 0);
+    fill(255, 0, 0);
+    fill(0);
+    fill(this.skinColor);
+    ellipse(300, 295, 80, 80);
+    ellipse(370, 365, 20, 20);
+    ellipse(230, 365, 20, 20);
+    noFill();
+    strokeWeight(20);
+    stroke(0);
+    line(275, 267, 275, 257);
+    line(285, 262, 285, 252);
+    line(295, 257, 295, 247);
+    line(305, 262, 305, 252);
+    line(319, 267, 319, 257);
+    line(324, 270, 324, 260);
+
+    // draws girl hair
+    if (this.isGirl) {
+        line(335, 270, 345, 340);
+        line(267, 270, 255, 340);
+    }
+
+    strokeWeight(10);
+    point(283, 287);
+    point(311, 287);
+    strokeWeight(7);
+    arc(300, 309, 40, 25, 0, 180);
+    fill(this.pantsColor);
+    noStroke();
+    beginShape();
+    vertex(250, 425);
+    vertex(350, 425);
+    vertex(350, 600);
+    vertex(325, 600);
+    vertex(325, 450);
+    vertex(275, 450);
+    vertex(275, 600);
+    vertex(250, 600);
+    endShape(CLOSE);
+
+    // draws lemonade in hand
+    if (this.bought) {
+        fill(255);
+        if (this.rightHanded) {
+            quad(362, 350, 378, 350, 375, 370, 365, 370);
+        } else {
+            quad(222, 350, 238, 350, 235, 370, 225, 370);
+        }
+    }
+    popMatrix();
+};
+
+// moving
+AI.prototype.move = function() {
+    this.x += this.direction;
+    if (this.x > 1200 || this.x < -1200) {
+        if (random(100) > 50) {
+            this.x = 1200;
+            this.direction = random(-1.5, -6);
+            this.bought = false;
+        } else {
+            this.x = -1200;
+            this.direction = random(1.5, 6);
+            this.bought = false;
+        }
+
+        // picks shirt color and gender and skin color
+        this.shirtColor = color(random(50, 205), random(50, 205), random(50, 205));
+        this.girlPick = floor(random(3));
+        this.skinColor = skinColors[floor(random(0, skinColors.length))];
+    }
+
+    // buys lemonade
+    if (random(100) - (price * 0.5) > this.goingToBuyOdds - random(-5, 5) && !this.bought && this.x > -200 && this.x < 0) {
+        if (!freeplay) {
+            if (cupsMade > 0) {
+                lemonadeSold ++;
+                this.bought = true;
+                money += price / 100;
+                cupsMade--;
+                moneyEarnedToday += price / 100;
+            }
+        } else {
+            this.bought = true;
+            money += price / 100;
+            moneyEarnedToday += price / 100;
+        }
+    }
+};
+// }
+
+// technicals part one {
+draw = function() {
+    if (daysLeft === 30 && hoursLeftInDay === 9 && !allowances[0]) {
+        page = 'allowance!';
+        allowances[0] = true;
+    }
+    // }
+    
+// different game pages {
+if(fastSpeed) {
+    frameRate(150);
+}
+else {
+    frameRate(80);
+}
+if(page !== 'run-stand') {
+    fastSpeed = false;
+}
+    if (page === 'intro') {
+        if (timeOnProgram < 2) {
+            for (var i = 0; i < 20; i++) {
+    moneyXes.push(random(0, 475));
+    moneyYes.push(random(-800, 500));
+    moneyRots.push(random(0, 180));
+    moneySpeeds.push(random(1, 3));
+}
+            background(127.5);
+            popMatrix();
+            background(255);
+            fill(24, 191, 15);
+            noStroke();
+            rect(0, 0, 500, 200);
+            noFill();
+            strokeWeight(20);
+            stroke(255, 50);
+            rect(20, 20, 460, 160);
+            noStroke();
+            textAlign(CENTER);
+            fill(0);
+            textSize(70);
+            textFont(createFont("SP Custom Bold"));
+            text("$$$", 250, 100);
+            textSize(40);
+            text("1 dollar", 250, 158);
+            dolla = get(0, 0, 500, 200);
+        }
+        background(0, 187, 255);
+        fill(255, 150);
+        noStroke();
+        for (var i = 0; i < cloudXes.length; i++) {
+            rect(cloudXes[i], cloudYes[i], 120, 70, 50);
+            cloudXes[i] += cloudSpeeds[i];
+            if (cloudXes[i] > 610) {
+                cloudXes[i] = random(-250, -120);
+                cloudYes[i] = random(0, 200);
+                cloudSpeeds[i] = random(1, 4);
+            }
+        }
+        fill(255, 255, 0);
+        noStroke();
+        ellipse(550, 50, 200, 200);
+        fill(50, 178, 49);
+        ellipse(460, 530, 840, 180);
+        fill(0, 128, 19);
+        ellipse(220, 578, 1000, 200);
+        fill(0, 98, 0);
+        ellipse(530, 610, 1200, 150);
+        fill(255, colorFade, colorFade);
+        drop();
+        textSize(textsize);
+        fill(0);
+        textFont(createFont("SP Custom Bold"));
+        text(titleYs[2], lemonadeX, titleYs[0]);
+        text(titleYs[3], standX, titleYs[1]);
+        lemonadeX += 3;
+        standX -= 3;
+        textAlign(CENTER);
+        if (lemonadeX > 300) {
+            lemonadeX = 300;
+            standX = 300;
+            screenshakegoesdown = true;
+        }
+        if (timeOnProgram > 200 && timeOnProgram < 250) {
+            textsize += 350;
+            titleYs[2] = "Lemonade";
+            titleYs[3] = "Stand";
+            colorFade -= 6;
+        }
+        if (timeOnProgram > 230) {
+            page = 'home';
+        }
+        if (screenshaketimer > 0 && screenshakegoesdown) {
+            m = get();
+            image(m, random(-10, 10), random(-10, 10));
+        }
+        if (overButton) {
+            cursor(HAND);
+        } else {
+            cursor(ARROW);
+        }
+    } else if (page === 'home') {
+        if (timeOnProgram > 230) {
+            textsize -= 230;
+        }
+        drop();
+        fill(255, colorFade, colorFade);
+        textSize(90);
+        colorFade += 6;
+        text("Lemonade", 300, titleYs[0]);
+        text("Stand", 300, titleYs[1]);
+        if (timeOnProgram > 330 && timeOnProgram < 380) {
+            titleYs[0] -= 3.3;
+            titleYs[1] -= 3.3;
+        }
+        if (timeOnProgram > 380 && timeOnProgram < 390) {
+            screenshaketimer = 10;
+        }
+        if (timeOnProgram > 400) {
+            buttonXes[0] += 10;
+            if (buttonXes[0] > 200) {
+                buttonXes[0] = 200;
+            }
+            if (timeOnProgram > 440 && timeOnProgram < 450) {
+                screenshaketimer = 10;
+            }
+        }
+        if (timeOnProgram > 460) {
+            buttonXes[1] -= 10;
+            if (buttonXes[1] < 200) {
+                buttonXes[1] = 200;
+            }
+            if (timeOnProgram > 500 && timeOnProgram < 510) {
+                screenshaketimer = 10;
+            }
+        }
+        if (timeOnProgram > 520) {
+            buttonXes[2] += 10;
+            if (buttonXes[2] > 200) {
+                buttonXes[2] = 200;
+            }
+            if (timeOnProgram > 560 && timeOnProgram < 570) {
+                screenshaketimer = 10;
+            }
+        }
+        noStroke();
+        button(buttonXes[0], 300, 200, 100, color(0, 127, 195), 0, 40, 5, "Begin!", 'play');
+        button(buttonXes[1], 415, 200, 100, color(30, 157, 225), 0, 50, 5, "How?", 'how');
+        button(buttonXes[2], 535, 200, 50, color(60, 187, 255), 0, 20, 5, "Credits", 'credits');
+        if (screenshaketimer > 0 && screenshakegoesdown) {
+            m = get();
+            image(m, random(-10, 10), random(-10, 10));
+        }
+    } else if (page === 'credits') {
+        drop();
+        fill(255);
+        textSize(30);
+        text("Credit to the stats page goes to Larry Serflaten.\nAll other code by SP.\nCreated in 2020.\nGameplay coincides with the game that you can find online in various places for unblocked games, no code was taken and just a smidge of gameplay was inspired.", 25, 0, 550, 500);
+        button(200, 450, 200, 100, 255, 0, 50, 5, "Back", 'home');
+    } else if (page === 'how') {
+        drop();
+        fill(255);
+        textSize(26);
+        text("How to play?\nThe object of the game is to get as much money as you can after a month. You must work to get money and you must purchase materials to run your stand properly. If you run out of health you lose. Don't worry, though, that can be remedied by taking a day off. If you need some tips during gameplay, feel free to look in the \"help\" bit on line 51.", 26, -279, 550, 1000);
+        fill(0, 64, 255);
+        textSize(41);
+        button(200, 450, 200, 100, 255, 0, 50, 5, "Back", 'home');
+    } else if (page === 'play') {
+        drop();
+        fill(255);
+        textSize(26);
+        text("First, pick freeplay or normal.\n(Freeplay is suggested for beginners)", 300, 95);
+        fill(0, 64, 255);
+        textSize(41);
+        button(200, 450, 200, 100, 255, 0, 50, 5, "Back", 'home');
+        button(50, 175, 500, 100, 255, 0, 50, 5, "Freeplay", 'freeplay');
+        button(50, 300, 500, 100, 255, 0, 50, 5, "Normal", 'normal');
+        b = 0;
+        statZ = [0];
+        statO = [0];
+    } else if (page === 'normal') {
+        daysLeft = 30;
+        money = 0;
+        lemons = 0;
+        sugar = 0;
+        ice = 0;
+        cupsMade = 0;
+        page = 'game';
+        price = 25;
+        health = 100;
+        workDays = 0;
+        claimedBday = false;
+        isFired = false;
+        moneyQueue = 0;
+        allowances = [false, false, false, false, false];
+        b = 0;
+    } else if (page === 'freeplay') {
+        daysLeft = 1000;
+        money = 0;
+        lemons = Infinity;
+        sugar = Infinity;
+        ice = Infinity;
+        page = 'game';
+        claimedBday = true;
+        freeplay = true;
+        price = 25;
+        health = 100;
+    } else if (page === 'game') {
+        moneyXes = [];
+        moneyYes = [];
+        moneyRots = [];
+        moneySpeeds = [];
+        for (var i = 0; i < 20; i++) {
+            moneyXes.push(random(0, 475));
+            moneyYes.push(random(-800, 500));
+            moneyRots.push(random(0, 180));
+            moneySpeeds.push(random(1, 3));
+        }
+        makingCups = false;
+        shirtColor = color(random(50, 205), random(50, 205), random(50, 205));
+        if (daysLeft === 15 && hoursLeftInDay === 9 && claimedBday === false) {
+            page = 'bday!';
+            claimedBday = true;
+        }
+        if (daysLeft === 23 && hoursLeftInDay === 9 && !allowances[1]) {
+            page = 'allowance!';
+            allowances[1] = true;
+        }
+        if (daysLeft === 16 && hoursLeftInDay === 9 && !allowances[2]) {
+            page = 'allowance!';
+            allowances[2] = true;
+        }
+        if (daysLeft === 9 && hoursLeftInDay === 9 && !allowances[3]) {
+            page = 'allowance!';
+            allowances[3] = true;
+        }
+        if (daysLeft === 2 && hoursLeftInDay === 9 && !allowances[4]) {
+            page = 'allowance!';
+            allowances[4] = true;
+        }
+        dropXes = [];
+        dropYes = [];
+        dropSpeed = [];
+        for (var i = 0; i < 30; i++) {
+            dropXes.push(random(0, 600));
+            dropYes.push(random(-600, 0));
+            dropSpeed.push(random(2, 5.8));
+        }
+        drop();
+        if (!freeplay) {
+            button(50, 310, 500, 80, 255, 0, 50, 5, "Go shopping", 'shop');
+            button(50, 415, 500, 80, 255, 0, 50, 5, "Take a day off", 'day-off');
+            if (isFired === false) {
+                button(50, 205, 500, 80, 255, 0, 50, 5, "Go to Work", 'how-to-work');
+            } else {
+                fill(255);
+                rect(50, 205, 500, 80, 5);
+                fill(0);
+                textSize(40);
+                text("Go to Work", 300, 245);
+                fill(0, 30);
+                rect(50, 205, 500, 80, 5);
+                if (mouseX > 50 && mouseY > 205 && mouseX < 550 && mouseY < 285) {
+                    ERRORCursor = true;
+                }
+            }
+            button(50, 100, 500, 80, 255, 0, 50, 5, "Run lemonade stand", 'stand');
+            if (daysLeft <= 29) {
+                button(50, 537, 500, 50, 255, 0, 30, 5, "View Statistics", 'stats');
+            } else {
+                fill(255);
+                rect(50, 537, 500, 50, 5);
+                textSize(21);
+                fill(0);
+                text("[You need at least one day more\nto view stats]", 300, 561);
+                if (mouseX > 50 && mouseY > 537 && mouseX < 550 && mouseY < 587) {
+                    ERRORCursor = true;
+                }
+            }
+            if (moneyQueue > 0) {
+                moneyQueue -= 0.1;
+                money += 0.1;
+            }
+            if (moneyQueue <= 0.1) {
+                moneyQueue = 0;
+            }
+            fill(255);
+            textSize(26);
+            text("Health: " + round(health) + "% / Days left: " + daysLeft + " / Money: $" + money.toFixed(2), 300, 50);
+            if (health < 20 || fadeD > 0) {
+                noFill();
+                strokeWeight(11);
+                stroke(0, fadeD);
+                rectMode(CENTER);
+                rect(110, 50, sin(timeOnProgram * 5 - health / 5) * 20 + 190, sin(timeOnProgram * 5 - health / 5) * 20 + 55, 4);
+                rectMode(CORNER);
+                noStroke();
+            }
+            if (health < 15) {
+                fadeD = 255;
+            }
+        } else {
+            button(50, 300, 500, 200, 255, 0, 50, 5, "Run lemonade stand", 'stand');
+            button(50, 537, 500, 50, 255, 0, 30, 5, "Quit", 'quit');
+            fill(255);
+            textSize(23);
+            text("In freeplay mode you have infinite materials, and\ninfinite time to play. If you at any time get bored with\nit or want to switch to normal mode, then just press\nthe \"Quit\" button at the bottom of your screen.", 300, 128);
+        }
+    } else if (page === 'quit') {
+        daysLeft = 0;
+        money = 0;
+        lemons = 0;
+        sugar = 0;
+        ice = 0;
+        page = 'home';
+        price = 25;
+        health = 100;
+        freeplay = false;
+    } else if (page === 'day-off') {
+        daysLeft -= 1;
+        page = 'game';
+        health = 100;
+        statZ.push(moneyEarnedToday);
+        statO.push(money);
+        moneyEarnedToday = 0;
+    } else if (page === 'work') {
+        background(127.5);
+        if (workDays > random(0, 100000) && workDays > 5) {
+            isFired = true;
+        }
+        if (!isFired) {
+            noStroke();
+            //workDrop();
+            textSize(26);
+            fill(255);
+            text("Health: " + round(health) + "% / Time left: " + hoursLeftInDay.toFixed(1) + "hrs / Money: $" + money.toFixed(2), 300, 50);
+            fill(0);
+            text("Health: " + round(health) + "% / Time left: " + hoursLeftInDay.toFixed(1) + "hrs / Money: $" + money.toFixed(2), 301, 49);
+            hoursLeftInDay -= 0.008;
+            if (hoursLeftInDay < 0) {
+                daysLeft -= 1;
+                hoursLeftInDay = 9;
+                page = 'game';
+                statZ.push(moneyEarnedToday);
+                moneyEarnedToday = 0;
+                statO.push(money);
+                workDays += 1;
+            }
+            for (var j = 0; j < dropXes.length; j++) {
+                fill(255);
+                ellipse(dropXes[j], dropYes[j], 30, 30);
+                dropYes[j] += dropSpeed[j];
+                if (dropYes[j] > 650) {
+                    dropYes[j] = random(-600, -30);
+                    dropXes[j] = random(0, 600);
+                }
+                if (sliderX - 75 < dropXes[j] + 15 && sliderX + 75 > dropXes[j] - 15 && dropYes[j] > 500 && dropYes[j] < 530) {
+                    dropYes[j] = random(-600, -30);
+                    dropXes[j] = random(0, 600);
+                    dropSpeed[j] = random(4, 8);
+                    l = random(0.01, 0.2);
+                    money += l;
+                    moneyEarnedToday += l;
+                    health -= random(0.01, 0.15);
+                }
+            }
+            if (sliderX > mouseX) {
+                sliderX -= 15;
+            }
+            if (sliderX < mouseX) {
+                sliderX += 15;
+            }
+            fill(255);
+            rect(sliderX - 75, 500, 150, 30, 5);
+            sliderX = constrain(sliderX, 75, 525);
+            if (money < 0.01) {
+                money = 0.01;
+            }
+        } else {
+            background(127.5);
+            textSize(30);
+            fill(255);
+            if (hoursLeftInDay > 0) {
+                text("Your boss hates paying you so\nmuch he decided to fire you. Don't take it\npersonally. The good news is that you\nhave " + hoursLeftInDay.toFixed(1) + " hour(s) to get your stand up\nand running!", 300, 278);
+            } else {
+                text("Your boss hates paying you so\nmuch he decided to fire you. Don't take it\npersonally.", 300, 278);
+            }
+            button(50, 475, 500, 80, 255, 0, 50, 5, "Menu", 'game');
+        }
+    } else if (page === 'how-to-work') {
+        background(127.5);
+        textSize(35);
+        fill(0);
+        text("Catch the smol balls before they hit the ground! Every smol ball you catch you gain a small sum of money. Note that your boss hates paying you money, so if you go to work too much he might fire you. Use your mouse to move your catch-thingy.", 50, 20, 500, 500);
+        fill(255);
+        text("Catch the smol balls before they hit the ground! Every smol ball you catch you gain a small sum of money. Note that your boss hates paying you money, so if you go to work too much he might fire you. Use your mouse to move your catch-thingy.", 53, 17, 500, 500);
+        button(50, 475, 500, 80, 255, 0, 50, 5, "Play!", 'work');
+    } else if (page === 'shop') {
+        drop();
+        fill(255);
+        fill(0, 64, 255);
+        textSize(41);
+        button(25, 375, 550, 50, 255, 0, 20, 5, "20 cups worth of lemons ($1.99)", '20-lemons');
+        button(25, 440, 550, 50, 255, 0, 20, 5, "50 cups worth of lemons ($3.99)", '50-lemons');
+        button(25, 505, 550, 50, 255, 0, 20, 5, "100 cups worth of lemons ($7.99)", '100-lemons');
+        button(25, 180, 550, 50, 255, 0, 20, 5, "50 cups worth of sugar ($3.99)", '50-sugar');
+        button(25, 245, 550, 50, 255, 0, 20, 5, "100 cups worth of sugar ($8.99)", '100-sugar');
+        button(25, 310, 550, 50, 255, 0, 20, 5, "250 cups worth of sugar ($11.99)", '250-sugar');
+        button(25, 115, 550, 50, 255, 0, 20, 5, "150 cups worth of ice cubes ($4.99)", 'ice-cubes');
+        button(25, 565, 550, 30, 255, 0, 20, 5, "Back", 'game');
+        fill(255);
+        textSize(23);
+        text("Feel free to make any purchases that you need with\nyour $" + money.toFixed(2) + ". Make sure to not spend too much or else\nyou will lose! (If you need to earn money then you\ncan go to work.)", 300, 54);
+    } else if (page === 'ice-cubes') {
+        if (money >= 4.99) {
+            ice += 150;
+            money -= 4.99;
+            moneyEarnedToday -= 4.99;
+        }
+        page = 'shop';
+    } else if (page === '250-sugar') {
+        if (money >= 11.99) {
+            sugar += 250;
+            money -= 11.99;
+            moneyEarnedToday -= 11.99;
+        }
+        page = 'shop';
+    } else if (page === '100-sugar') {
+        if (money >= 8.99) {
+            sugar += 100;
+            money -= 8.99;
+            moneyEarnedToday -= 8.99;
+        }
+        page = 'shop';
+    } else if (page === '50-sugar') {
+        if (money > 3.99) {
+            sugar += 50;
+            money -= 3.99;
+            moneyEarnedToday -= 3.99;
+        }
+        page = 'shop';
+    } else if (page === '100-lemons') {
+        if (money >= 7.99) {
+            lemons += 100;
+            money -= 7.99;
+            moneyEarnedToday -= 7.99;
+        }
+        page = 'shop';
+    } else if (page === '50-lemons') {
+        if (money >= 3.99) {
+            lemons += 50;
+            money -= 3.99;
+            moneyEarnedToday -= 3.99;
+        }
+        page = 'shop';
+    } else if (page === '20-lemons') {
+        if (money >= 1.99) {
+            lemons += 20;
+            money -= 1.99;
+            moneyEarnedToday -= 1.99;
+        }
+        page = 'shop';
+    } else if (page === 'game-over') {
+        drop();
+        fill(255);
+        textSize(85);
+        text("GAME OVER...", 300, 100);
+        textSize(50);
+        text("You didn't take care\nof your health!", 300, 200);
+        textSize(30);
+        if ((30 - daysLeft) === 1) {
+            text("Good try. At least you managed to\nmake it work for " + (30 - daysLeft) + " day!", 300, 300);
+        } else {
+            text("Good try. At least you managed to\nmake it work for " + (30 - daysLeft) + " days!", 300, 300);
+        }
+        button(50, 325, 240, 50, 255, 0, 30, 2, "Menu", 'home');
+        button(310, 325, 240, 50, 225, 0, 30, 2, "Play again!", 'play');
+        money = 1;
+    } 
+    else if (page === 'win!') {
+        if(b === money) {
+        }
+        if (daysLeft !== 1) {
+            scoreCode = "";
+            b += moneyQueue;
+            scoreCode += terrters[round(random(0, terrters.length - 1))];
+            scoreCode += terrters[round(random(0, terrters.length - 1))];
+            scoreCode += terrters[round(random(0, terrters.length - 1))];
+            scoreCode += (money).toFixed(2) * 4;
+            scoreCode += terrters[round(random(0, terrters.length - 1))];
+            scoreCode += terrters[round(random(0, terrters.length - 1))];
+            scoreCode += (random(0, 50) * 4).toFixed(2);
+            scoreCode += terrters[round(random(0, terrters.length - 1))];
+            scoreCode += terrters[round(random(0, terrters.length - 1))];
+            scoreCode += (random(0, 50) * 4).toFixed(2);
+            money += cupsMade * 0.01;
+            money += health * 0.04;
+            money += lemonadeSold * 0.03;
+            _clearLogs();
+            println("here's your score code: " + scoreCode + "\nbut HOWEVER, the leaderboard is closed. here was your total money, too: " + money.toFixed(2));
+        }
+        drop();
+        fill(255);
+        textSize(85);
+        text("You won!", 300, 100);
+        textSize(31);
+        text("You survived 30 days without any debt!", 300, 200);
+        textSize(30);
+        text("Your total money was... " + b.toFixed(2) + "!", 300, 300);
+        button(50, 325, 240, 50, 255, 0, 30, 2, "Menu", 'home');
+        button(310, 325, 240, 50, 225, 0, 30, 2, "Play again!", 'play');
+        if (highScore === b) {
+            fill(255);
+            text("New highscore!!!", 300, 250);
+        } else {
+            fill(255);
+            textSize(22);
+            text("You needed $" + (highScore - b).toFixed(2) + " more to get a new highscore!", 300, 250);
+        }
+
+        money += lemonadeSold;
+        b += 0.11;
+        if (b > money) {
+            b = money;
+        }
+        if (b > highScore) {
+            highScore = b;
+        }
+        daysLeft = 1;
+    } else if (page === 'allowance!') {
+        drop();
+        if(y < 1) {
+            for (var i = 0; i < 20; i++) {
+    moneyXes.push(random(0, 475));
+    moneyYes.push(random(-800, 500));
+    moneyRots.push(random(0, 180));
+    moneySpeeds.push(random(1, 3));
+}
+}
+        for (var i = 0; i < moneyXes.length; i++) {
+            pushMatrix();
+            translate(moneyXes[i], moneyYes[i]);
+            imageMode(CENTER);
+            rotate(moneyRots[i]);
+            drawDollar(0, 0, 25);
+            moneyYes[i] += moneySpeeds[i];
+            popMatrix();
+            moneyRots[i] += moneySpeeds[i];
+            if (moneyYes[i] > 700) {
+                moneySpeeds[i] = random(1, 3);
+                moneyXes[i] = random(0, 475);
+                moneyYes[i] = random(-400, -150);
+            }
+        }
+        y++;
+        fill(255);
+        textSize(40);
+        text("You got your allowance of $5!", 300, 100);
+        button(150, 475, 300, 50, 225, 0, 30, 2, "Claim!", 'claim-allowance');
+        hoursLeftInDay = 9;
+    } else if (page === 'claim-allowance') {
+        moneyQueue += 5;
+        page = 'game';
+        moneyEarnedToday += 5;
+    } else if (page === 'bday!') {
+        drop();
+        for (var i = 0; i < moneyXes.length; i++) {
+            pushMatrix();
+            translate(moneyXes[i], moneyYes[i]);
+            imageMode(CENTER);
+            rotate(moneyRots[i]);
+            drawDollar(0, 0, 25);
+            moneyYes[i] += moneySpeeds[i];
+            popMatrix();
+            moneyRots[i] += moneySpeeds[i];
+            if (moneyYes[i] > 700) {
+                moneySpeeds[i] = random(1, 3);
+                moneyXes[i] = random(0, 475);
+                moneyYes[i] = random(-400, -150);
+            }
+        }
+        fill(255);
+        textSize(40);
+        text("It's your birthday!\nYou got $30!", 300, 150);
+        button(150, 475, 300, 50, 225, 0, 30, 2, "Claim!", 'claim-bday');
+        hoursLeftInDay = 9;
+    } else if (page === 'claim-bday') {
+        moneyQueue += 30;
+        page = 'game';
+        moneyEarnedToday += 30;
+    } else if (page === 'stats') {
+        drop();
+        var wid = (width - 50) / (statZ.length);
+        strokeWeight(5);
+
+        stroke(0);
+        beginShape();
+        for (var i = 0; i < statO.length; i++) {
+            stroke(0, 171, 63);
+            strokeWeight(5);
+            vertex(30 + i * wid, 520 - statO[i] * 5);
+            endShape();
+            fill(0, 171, 63);
+            noStroke();
+            // ellipse(30 + i * wid, 520 - statO[i] * 5, 12.5, 12.5);
+            noFill();
+        }
+
+        beginShape();
+        for (var i = 0; i < statZ.length; i++) {
+            if (statO[i] === statZ[i]) {
+                stroke(21.5, 139, 150);
+            } else {
+                stroke(43, 101, 237);
+            }
+            vertex(30 + i * wid, 520 - statZ[i] * 5);
+            endShape();
+            noStroke();
+            fill(43, 101, 237);
+            // ellipse(30 + i * wid, 520 - statZ[i] * 5, 12.5, 12.5);
+            noFill();
+
+        }
+        for (var i = 0; i < statZ.length; i++) {
+            fill(255);
+            textSize(20);
+            text(i * 2, 30 + i * wid * 2, 522);
+        }
+        noFill();
+        button(50, 530, 500, 60, 255, 0, 29, 5, "Quit", 'game');
+    } else if (page === 'add-money') {
+        price += 1;
+        page = 'run-stand';
+    } else if (page === 'subtract-money') {
+        price -= 1;
+        page = 'run-stand';
+    } else if (page === 'stand') {
+        drop();
+        fill(255);
+        textSize(40);
+        text("You're running your stand.\n(Y or N?)", 300, 150);
+        button(50, 375, 500, 80, 255, 0, 50, 5, "Yep!", 'run-stand');
+        button(50, 475, 500, 80, 255, 0, 50, 5, "Nope!", 'game');
+    } else if (page === 'run-stand') {
+        if (makingCups) {
+            if (lemons > 0 && sugar > 0 && ice > 0) {
+                cupsMade++;
+                lemons--;
+                sugar--;
+                ice--;
+            } else {
+                makingCups = false;
+            }
+        }
+        drop();
+        fill(shirtColor);
+        rect(240, 425, 120, 100, 40, 40, 0, 0);
+        fill(255, 0, 0);
+        // 230, 237, 139
+        fill(skinColor);
+        ellipse(300, 395, 80, 80);
+        noFill();
+        strokeWeight(20);
+        stroke(0);
+        line(275, 367, 275, 357);
+        line(285, 362, 285, 352);
+        line(295, 357, 295, 347);
+        line(305, 362, 305, 352);
+        line(319, 367, 319, 357);
+        line(324, 370, 324, 360);
+        if (isGirl) {
+            line(335, 370, 345, 440);
+            line(267, 370, 255, 440);
+        }
+        if(isGirl !== false && isGirl !== true) {
+            throw{
+                message: "Your character is not male nor female, please adjust the variable."
+            };
+        }
+        strokeWeight(10);
+        point(283, 387);
+        point(311, 387);
+        strokeWeight(7);
+        arc(300, 409, 40, 25, 0, 180);
+        noStroke();
+        fill(110, 25, 25);
+        rect(150, 500, 300, 100);
+        fill(255);
+        rect(180, 520, 240, 60);
+        fill(0);
+        textSize(20);
+        textFont(createFont("SP Custom Bold"));
+        textAlign(CENTER);
+        text("Delicious Lemonade!\nJust " + price + "¢", 300, 550);
+        fill(0);
+        textSize(30);
+        text("Price:\n" + price + "¢", 500, 50);
+        text("Money:\n$" + money.toFixed(2), 100, 50);
+        text("Time left:\n" + hoursLeftInDay.toFixed(1) + "hrs", 300, 50);
+        textSize(20);
+        text(cupsMade + " cups made.\n" + lemons + " lemons, " + sugar + " sugar, and " + round(ice) + " ice remaining.", 300, 128);
+        ice = constrain(ice, 0, 1000000000);
+        if (ice > 0) {
+            ice -= random(0.001, 0.025);
+        }
+        button(525, 60, 30, 30, color(255, 30), 0, 30, 5, "+", 'add-money');
+        button(445, 59, 30, 30, color(255, 30), 0, 30, 5, "-", 'subtract-money');
+        hoursLeftInDay -= 0.00415;
+        health -= 0.005;
+        if (hoursLeftInDay < 0) {
+            if (!freeplay) {
+                daysLeft -= 1;
+            }
+            hoursLeftInDay = 9;
+            page = 'game';
+            statZ.push(moneyEarnedToday);
+            moneyEarnedToday = 0;
+            statO.push(money);
+        }
+        price = constrain(price, 1, 99);
+        if (timeOnProgram % 45 === 1 && AIs.length < 40 + (30 - daysLeft)) {
+            AIs.push(new AI(random(-700, -2000), random(1.5, 6), random(1.1, 1.3)));
+            AIs.push(new AI(random(700, 2000), random(-1.5, -6), random(1.1, 1.3)));
+        }
+        for (var i = 0; i < AIs.length; i++) {
+            AIs[i].draw();
+            AIs[i].move();
+        }
+        button(10, 490, 130, 100, 255, 0, 27, 5, "Toggle\nfast\nforward", 'fast-forward');
+
+        if (!freeplay && lemons > 0 && sugar > 0 && ice > 0 && !makingCups) {
+            button(460, 490, 130, 100, 255, 0, 30, 5, "Make\ncups", 'make-cup');
+        }
+
+    }
+    else if(page === 'fast-forward') {
+        fastSpeed = !fastSpeed;
+        page = 'run-stand';
+    }
+    else if (page === 'make-cup') {
+        if (lemons > 0 && sugar > 0 && ice > 0) {
+            makingCups = true;
+            page = 'run-stand';
+        } else {
+            page = 'run-stand';
+        }
+    } else {
+        drop();
+        fill(255);
+        textSize(50);
+        text("404 -- page not found", 300, 200);
+        button(50, 475, 500, 50, 255, 0, 30, 2, "Reload game", 'quit');
+    }
+    if(installedHacks) {
+        _clearLogs();
+        money += 10000;
+        page = 'win!';
+        if(installedHacks) {
+            if(b > 1450) {
+                page = 'intro';
+                 lemonadeX = 0;
+ standX = 600;
+ screenshaketimer = 10;
+ screenshakegoesdown = false;
+ textsize = 120;
+ workDays = 0;
+ titleYs = [275, 375, "SP", "Presents"];
+ buttonXes = [-201, 600, -201];
+ colorFade = 255;
+b = 0;
+installedHacks = false;
+timeOnProgram = 0;
+            }
+            else if(b > 1400) {
+                println("RESTART COMPLETE");
+            }
+            else if(b > 1395) {
+                println("RESTARTING.");
+            }
+            else if(b > 1390) {
+                println("RESTARTING");
+            }
+            else if(b > 1385) {
+                println("RESTARTING...");
+            }
+            else if(b > 1380) {
+                println("RESTARTING..");
+            }
+            else if(b > 1375) {
+                println("RESTARTING.");
+            }
+            else if(b > 1370) {
+                println("RESTARTING");
+            }
+            else if(b > 1365) {
+                println("RESTARTING...");
+            }
+            else if(b > 1360) {
+                println("RESTARTING..");
+            }
+            else if(b > 1355) {
+                println("RESTARTING.");
+            }
+            else if(b > 1350) {
+                println("RESTARTING");
+            }
+            else if(b > 1300) {
+                println("[REBOOT COMPLETE]");
+            }
+            else if(b > 1250) {
+                println("uhh it resets me too!!!");
+            }
+            else if(b > 1200) {
+            println("oh wait I just realized something.......");
+            }
+            else if(b > 1150) {
+            println("awesome! it works now!");
+            }
+            else if(b > 1100) {
+            println("[SYSTEM ERROR - RESETTING PROGRAM]");
+            }
+            else if(b > 1050) {
+            println("ughhh almost there load faster!");
+            }
+            else if(b > 1000) {
+            println("[SYSTEM REBOOTING - 99.9% loaded]");
+            }
+            else if(b > 950) {
+            println("and you'll never guess how to stop me!!!");
+            }
+            else if(b > 850 && keyIsPressed) {
+            println("HA! NOTHING");
+            }
+            else if(b > 850) {
+            println("ha, you're so dumb! you let go of a key so now i can talk! and now try pressing a key!!!");
+            }
+            else if(keyIsPressed && b > 800) {
+            println("[please let go so we can check the percentage]");
+            }
+            else if(keyIsPressed && b > 750) {
+            println("[aaaaaa sToP]");
+            }
+            else if(keyIsPressed && b > 700) {
+            println("[NO PLEASE DO NOT PRESS ANY KEY OR ELSE I CANT TALK!!!]");
+            }
+            else if(b > 650 && b < 700) {
+            println("Footnote by the system: anything in brackets will be the result of written text from whatever annoying guy writes it cuz SOMEONE decided to hold down a key");
+            }
+            else if(!keyIsPressed && b > 700 && b < 850) {
+                println("uhh i said to hold a key down");
+            }
+            else if(keyIsPressed && b > 600) {
+            println("mmMMMMmMMMMmmMMMMMMMmmmmMmmmMMMMMMMmmm");
+            }
+            else if(b > 550) {
+            println("press y key for yes, and space key for no");
+            }
+            else if(b > 500) {
+            println("here, do you want a joke?");
+            }
+            else if(b > 450) {
+            println("oh boy, this will take a while.....");
+            }
+            else if(b > 425) {
+            println("[SYSTEM REBOOTING - 0.1% loaded]");
+            }
+            else if(b > 400) {
+            println("[SYSTEM REBOOTING - 0.0% loaded]");
+            }
+            else if(b > 350) {
+            println("now let's just wait for it to reboot...");
+            }
+            else if(b > 300) {
+            println("aHA, that must be it!");
+            }
+            else if(b > 250) {
+            println("[SYSTEM REBOOTING - 0.0% loaded]");
+            }
+            else if(b > 200) {
+            println("How on earth do i shut this thing off?");
+            }
+            else if(b > 150) {
+            println("GAHHH");
+            }
+           else if(b > 100) {
+                println("lol, how does it stop???");
+            }
+       else if(b > 50) {
+            println("HACKS!!!");
+            }
+        }
+    }
+    else if(money > 10000) {
+        page = 'intro';
+        money = 0;
+                 lemonadeX = 0;
+ standX = 600;
+ screenshaketimer = 10;
+ screenshakegoesdown = false;
+ textsize = 120;
+ workDays = 0;
+ titleYs = [275, 375, "SP", "Presents"];
+ buttonXes = [-201, 600, -201];
+ colorFade = 255;
+b = 0;
+installedHacks = false;
+timeOnProgram = 0;
+}
+    // }
+
+// technicals part two {
+    if (overButton) {
+        cursor(HAND);
+    } else if (ERRORCursor) {
+        cursor('no-drop');
+    } else {
+        cursor(ARROW);
+    }
+    ERRORCursor = false;
+    if (page !== 'run-stand' && page !== 'make-cup' && page !== 'add-money' && page !== 'subtract-money' && page !== 'fast-forward') {
+        AIs = [];
+    }
+    overButton = false;
+    if (screenshakegoesdown) {
+        screenshaketimer--;
+    }
+    clicked = false;
+    if (health < 0) {
+        page = 'game-over';
+    }
+    if (daysLeft <= 0 && page === 'game' && !freeplay) {
+        page = 'win!';
+    }
+    fadeD -= 6;
+    if(millis() < 10) {
+        Program.restart();
+    }
+    timeOnProgram ++;
+};
+for (var i = 0; i < 6; i++) {
+    cloudXes.push(random(-80, 599));
+    cloudSpeeds.push(random(1, 4));
+    cloudYes.push(random(0, 200));
+}
+// }
+
+// clicks {
+mouseClicked = function() {
+    if (buttonXes[2] === 200) {
+        clicked = true;
+    }
+};
+// }
+
+// whoop whoop all done :D nice work scrolling down here
