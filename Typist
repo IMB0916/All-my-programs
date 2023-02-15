@@ -1,0 +1,945 @@
+/**
+ * 
+ * 
+ * TYPIST
+ * 
+ * SP @Prodigy6 - 2022
+ * 
+ * My 7th [real] game!
+ * A much more simpler game than some of my others, but honestly I think it's very fun and addictive.
+ * 
+ * Choose your list and go!! Type out the words as fast as you can and try to get 100% acc. ig
+ * Honestly, there's not much of a motivating factor in this, so I wouldn't be surprised if you get bored pretty quick. It would be cool if someone made a spinoff and added more themes!
+ * 
+ * Let me know your best typing speed, maybe i'll add a leaderboard?
+ * 
+ * Didn't really have time to clean up the code so be warned!! vv
+ * (probably try to do that later today)
+ * 
+ * EDIT:
+ * THE BUG WITH THE TEXT GOING OFF THE SCREEN SHOULD BE FIXED!! PLS LMK IF IT'S STILL NOT WORKING
+ * 
+ * HOW {
+ *  Click on one of the themes, then select your word amount and go! Type as fast and accurately as you can, and the timer starts as soon as you type a letter. Good luck!
+ * }
+ * 
+ * ugh fine i'll make it so you can change the sizes :\ now pls stop asking for it
+ **/
+// 1 = default, 2 = medium, 3 = small
+var text_size = 1;
+
+// {
+
+// logo vars 
+var imgs = [];
+var bck;
+var presents = [];
+var pMsg = ["P", "R", "E", "S", "E", "N", "T", "S"];
+var transImg, transImgX = 0.1;
+var logoTimer = 1;
+for (var i = 0; i < 8; i++) {
+    presents.push([i * 50 + 125, 525, 300, 615]);
+}
+
+// game vars
+var handCursor = false;
+var clicked = false;
+var keyIsBeingTyped = false;
+var gotWrong = false;
+var hasStarted = false;
+var witchWon = 0;
+var idx = 0;
+var idxFarOver = 0;
+var typedSoFar = "";
+var numIncorrect = 0;
+var timer = 0;
+var types = "qwertyuiopasdfghjklzcvbnm,. 1234567890-".split("");
+var wordsList = {
+    foods: "banana&apple&orange&kumquat&pizza&burger&salad&pasta&linguine&lasagna&nacho&taco&jelly&jam&onion&spinach&quesadilla&panini&sandwich&ham&turkey&lamb&mutton&pork&porkchop&poultry&mustard&ketchup&ranch&butter&condiment&cheese&havarti&provolone&cheddar&swiss&american&peach&pear&strawberry&chip&potato&dorito&donut&doughnut&pepperoni&parmesean&nugget&egg&fruit&vegetable&honeycrisp&radish&carrot&asparagus&pea&almond&peanut&chocolate&vanilla&candy&reese's&snickers&twix&skittles&dairy&yogurt&milk&oat&pie&cake&cookies&cupcake&brownie&water&juice&grape&bread&macaroni&cereal&plum&lemon&melon&tangerine&watermelon&canteloupe&cauliflower&broccoli&horseradish&cabbage&lettuce&mushroom&anchovies&sausage&kebab&rice&seafood&cod&herring&oyster&salmon&hazelnut".split("&"),
+    math: "zero&one&two&three&four&five&six&seven&eight&nine&ten&eleven&twelve&thirteen&fourteen&fifteen&sixteen&seventeen&eighteen&nineteen&twenty&thirty&forty&fifty&sixty&seventy&eighty&ninety&hundred&thousand&million&billion&trillion&quadrillion&add&subtract&divide&multiply&plus&minus&times&quotient&remainder&square&triangle&rectangle&rhombus&corner&vertice&angle&right&obtuse&acute&bisect&algebra&calculus&geometry&octagan&heptagon&hexagon&pentagon&trinomial&monomial&polynomial&binomial&quadratic&calculator&trigonometry&sine&cosine&tangent&sin&cos&tan&degrees&radians&factorial&exponent&root&cubed&squared&power&half&fraction&PEMDAS&parenthesis&percent&clock&dividend&divisor&conjugate&negative&pi&log&graph&absolute&area&volume&base&width&height&depth&milliliter&centimeter&liter&meter&teaspoon&tablespoon&measurement&number&line&point&plane&cup&pint&quart&gallon&inches&feet&yard&mile&kilometer&millimeter&kilogram&ounce&pound&ton&value&problem&inverse&arc&postulate&theorum&pythagorean&fibonacci&vector&parabola&matrix&permutation&combination&quarter&third&fifth&sixth&seventh&eighth&ninth&tenth&coefficient&numerator&denominator&decimal&division&multiplication&addition&subtraction&mean&median&mode&range&curve&circumference&radius&diameter&chord&cone&cylinder&sphere&pyramid&prism&polygon&diagonal&digit&equilateral&equiangular&histogram&hypotenuse&isoceles&scalene&segment&ray&midpoint&logarithm&sum&khan academy&0&1&2&3&4&5&7&6&8&9".split("&"),
+    sports: "football&touchdown&flag&overtime&field&post&pass&run&fumble&interception&quarter&all&sports&basketball&buzzer&dribble&travel&soccer&league&goal&red card&yellow card&player&run&bike&goalie&defense&offense&striker&forward&midfielder&power&center&guard&point&win&tie&lose&hockey&puck&stick&yard&review&referee&official&umpire&baseball&home run&pinch-hit&hit&run&single&double&triple&home plate&bat&fans&stands&bleachers&cheering&college&professional&major&minor&NFL&MLB&NBA&NHL&MLS&rugby&cricket&tennis&racket&badminton&volleyball&set&victory&bowling&strike&spare&pin&strikeout&cycling&biking&conversion&announcer&super bowl&bowl&world series&little league&peewee&punt&Olympics&golf&ace&hole in one&eagle&birdy&par&bogey&double bogey&triple bogey&racket&spike&skiing&snowboarding&ping pong&table tennis&cross country&track&field&track and field&hurdle&mile&kilometer&meter&dash&pool&archery&bow&arrow&target&fishing&frisbee&bocce ball&swim&polo&water&field&court&training&practice&home&away&neutral&rugby".split("&"),
+    coding: "Jessica&simulation&game&graphic&hotlist&avatar&JavaScript&HTML&SQL&tutorials&math&Sal&pamela&Khan&Academy&Khan Academy&Aqualine&Duskpin&Leaf&Leafers&Marcimus&Mr. Pants&Mr. Pink&Old Spice Man&Orange Juice Squid&Piceratops&Purple Pi&Spunky Sam&Starky&Hopper&Jumping Hopper&Cool Hopper&Error Buddy&OH NOES!&Winston&Baby Winston&coding&hotlist&community&math&history&trigonometry&geometry&addition&subtraction&English&grammar&Blobby&Area 52&Cacteye&Stelly&Sneak Peak&Eggleston&Scuttlebug&grammar&chemistry&science&biology&physics&discussion&questions&answers&SP&environment&Primosaur&Amelia&Ada&Grace&Johnny&Donald&Hal&leaf&CSS&vote&ProcessingJS&processingJS&Boggle&Seed&Seedling&Tree&Sapling&Ultimate".split("&"),
+    short: "I&a&to&it&is&if&I'd&I'm&ow&oh&or&ok&aw&as&ah&an&am&so&do&me&ox&go&he&hi&ha&be&by&no&up&my&wee&woe&why&and&pan&man&can&fan&tan&ran&run&dig&dug&end&egg&elm&elk&the&met&net&low&doe&eon&ion&pie&per&pew&few&sew&saw&sow&jug&lug&hug&mug&rug&pug&bug&tug&dew&red&peg&leg&wet&pet&kit&kin&rig&dog&cat&gun&cup&rod&fur&ewe&tar&yam&yak&yay&way&wed&led&sad&mad&lad&bad&tad&pad&fad&had&rad&own&pun&two&one&sum&cub&lit&fit&who&con&ick&win&bow&cod&fob&hub&mud&sam&rub&rue&row&fed&rut&yep&pay&pan&pat&par&tap&gum&hum&gut&vow&pow&foe&tad&had&zen&zed&wed&qat&bag&hag&yap&pay&hay&day&may&ray&jay&nay&row&bin&nun&ham&jam&sac&gel&get&sap".split("&"),
+    all: "I&a&to&it&is&if&I'd&I'm&ow&oh&or&ok&aw&as&ah&an&am&so&do&me&ox&go&he&hi&ha&be&by&no&up&my&wee&woe&why&and&pan&man&can&fan&tan&ran&run&dig&dug&end&egg&elm&elk&the&met&net&low&doe&eon&ion&pie&per&pew&few&sew&saw&sow&jug&lug&hug&mug&rug&pug&bug&tug&dew&red&peg&leg&wet&pet&kit&kin&rig&dog&cat&gun&cup&rod&fur&ewe&tar&yam&yak&yay&way&wed&led&sad&mad&lad&bad&tad&pad&fad&had&rad&own&pun&two&one&sum&cub&lit&fit&who&con&ick&win&bow&cod&fob&hub&mud&sam&rub&rue&row&fed&rut&yep&pay&pan&pat&par&tap&gum&hum&gut&vow&pow&foe&tad&had&zen&zed&wed&qat&bag&hag&yap&pay&hay&day&may&ray&jay&nay&row&bin&nun&ham&jam&sac&gel&get&sap&Jessica&simulation&game&graphic&hotlist&avatar&JavaScript&HTML&SQL&tutorials&math&Sal&pamela&Khan&Academy&Khan Academy&Aqualine&Duskpin&Leaf&Leafers&Marcimus&Mr. Pants&Mr. Pink&Old Spice Man&Orange Juice Squid&Piceratops&Purple Pi&Spunky Sam&Starky&Hopper&Jumping Hopper&Cool Hopper&Error Buddy&OH NOES!&Winston&Baby Winston&coding&hotlist&community&math&history&trigonometry&geometry&addition&subtraction&English&grammar&Blobby&Area 52&Cacteye&Stelly&Sneak Peak&Eggleston&Scuttlebug&grammar&chemistry&science&biology&physics&discussion&questions&answers&SP&environment&Primosaur&Amelia&Ada&Grace&Johnny&Donald&Hal&leaf&CSS&vote&ProcessingJS&processingJS&Boggle&Seed&Seedling&Tree&Sapling&Ultimate&football&touchdown&flag&overtime&field&post&pass&run&fumble&interception&quarter&all&sports&basketball&buzzer&dribble&travel&soccer&league&goal&red card&yellow card&player&run&bike&goalie&defense&offense&striker&forward&midfielder&power&center&guard&point&win&tie&lose&hockey&puck&stick&yard&review&referee&official&umpire&baseball&home run&pinch-hit&hit&run&single&double&triple&home plate&bat&fans&stands&bleachers&cheering&college&professional&major&minor&NFL&MLB&NBA&NHL&MLS&rugby&cricket&tennis&racket&badminton&volleyball&set&victory&bowling&strike&spare&pin&strikeout&cycling&biking&conversion&announcer&super bowl&bowl&world series&little league&peewee&punt&Olympics&golf&ace&hole in one&eagle&birdy&par&bogey&double bogey&triple bogey&racket&spike&skiing&snowboarding&ping pong&table tennis&cross country&track&field&track and field&hurdle&mile&kilometer&meter&dash&pool&archery&bow&arrow&target&fishing&frisbee&bocce ball&swim&polo&water&field&court&training&practice&home&away&neutral&rugby&zero&one&two&three&four&five&six&seven&eight&nine&ten&eleven&twelve&thirteen&fourteen&fifteen&sixteen&seventeen&eighteen&nineteen&twenty&thirty&forty&fifty&sixty&seventy&eighty&ninety&hundred&thousand&million&billion&trillion&quadrillion&add&subtract&divide&multiply&plus&minus&times&quotient&remainder&square&triangle&rectangle&rhombus&corner&vertice&angle&right&obtuse&acute&bisect&algebra&calculus&geometry&octagan&heptagon&hexagon&pentagon&trinomial&monomial&polynomial&binomial&quadratic&calculator&trigonometry&sine&cosine&tangent&sin&cos&tan&degrees&radians&factorial&exponent&root&cubed&squared&power&half&fraction&PEMDAS&parenthesis&percent&clock&dividend&divisor&conjugate&negative&pi&log&graph&absolute&area&volume&base&width&height&depth&milliliter&centimeter&liter&meter&teaspoon&tablespoon&measurement&number&line&point&plane&cup&pint&quart&gallon&inches&feet&yard&mile&kilometer&millimeter&kilogram&ounce&pound&ton&value&problem&inverse&arc&postulate&theorum&pythagorean&fibonacci&vector&parabola&matrix&permutation&combination&quarter&third&fifth&sixth&seventh&eighth&ninth&tenth&coefficient&numerator&denominator&decimal&division&multiplication&addition&subtraction&mean&median&mode&range&curve&circumference&radius&diameter&chord&cone&cylinder&sphere&pyramid&prism&polygon&diagonal&digit&equilateral&equiangular&histogram&hypotenuse&isoceles&scalene&segment&ray&midpoint&logarithm&sum&khan academy&0&1&2&3&4&5&7&6&8&9&banana&apple&orange&kumquat&pizza&burger&salad&pasta&linguine&lasagna&nacho&taco&jelly&jam&onion&spinach&quesadilla&panini&sandwich&ham&turkey&lamb&mutton&pork&porkchop&poultry&mustard&ketchup&ranch&butter&condiment&cheese&havarti&provolone&cheddar&swiss&american&peach&pear&strawberry&chip&potato&dorito&donut&doughnut&pepperoni&parmesean&nugget&egg&fruit&vegetable&honeycrisp&radish&carrot&asparagus&pea&almond&peanut&chocolate&vanilla&candy&reese's&snickers&twix&skittles&dairy&yogurt&milk&oat&pie&cake&cookies&cupcake&brownie&water&juice&grape&bread&macaroni&cereal&plum&lemon&melon&tangerine&watermelon&canteloupe&cauliflower&broccoli&horseradish&cabbage&lettuce&mushroom&anchovies&sausage&kebab&rice&seafood&cod&herring&oyster&salmon&hazelnut".split("&")
+};
+var messedUp = [];
+var toType = [];
+var leStats = [];
+var page = "load";
+var messedUpNice = [];
+for (var i in types) {
+    messedUpNice.push(0);
+}
+var toSwitch;
+
+function kaLogo(x, y, s) {
+    pushMatrix();
+    translate(x - 300, y - 300);
+    scale(s / 200);
+    noStroke();
+    fill(20, 191, 150);
+
+    // hexagon
+    beginShape();
+    for (var i = 0; i < 6; i++) {
+        vertex(sin(i * 60) * 50 + 300, cos(i * 60) * 50 + 300);
+    }
+    endShape(CLOSE);
+
+    fill(255);
+    ellipse(300, 280, 22.5, 22.5);
+
+    beginShape();
+    vertex(301, 315);
+    curveVertex(290, 302);
+    vertex(265, 290);
+    curveVertex(280, 322);
+    vertex(301, 335);
+    endShape(CLOSE);
+
+    beginShape();
+    vertex(299, 315);
+    curveVertex(310, 302);
+    vertex(335, 290);
+    curveVertex(320, 322);
+    vertex(299, 335);
+    endShape(CLOSE);
+    popMatrix();
+}
+
+function mathLogo(x, y, s) {
+    pushMatrix();
+    translate(x - 300, y - 300);
+    scale(s / 200);
+    noStroke();
+    fill(255);
+    rect(265, 275, 30, 7);
+    rect(276, 263, 7, 30);
+    rect(305, 275, 30, 7);
+    rect(265, 320, 30, 7);
+    ellipse(280, 312, 8, 8);
+    ellipse(280, 334, 8, 8);
+    rotate(45);
+    translate(175, -276);
+    rect(265, 275, 30, 7);
+    rect(276, 263, 7, 30);
+    popMatrix();
+}
+
+function mathLogoAlt(x, y, s) {
+    pushMatrix();
+    translate(x - 300, y - 300);
+    scale(s / 200);
+    noStroke();
+    fill(0);
+    rect(265, 275, 30, 7);
+    rect(276, 263, 7, 30);
+    rect(305, 275, 30, 7);
+    rect(265, 320, 30, 7);
+    ellipse(280, 312, 8, 8);
+    ellipse(280, 334, 8, 8);
+    rotate(45);
+    translate(175, -276);
+    rect(265, 275, 30, 7);
+    rect(276, 263, 7, 30);
+    popMatrix();
+}
+
+function shortLogo(x, y, s) {
+    pushMatrix();
+    translate(x - 300, y - 300);
+    scale(s / 200);
+    textFont(createFont("monospace"));
+    fill(255);
+    textSize(65);
+    textAlign(CENTER, CENTER);
+    text("it", 300, 300);
+    popMatrix();
+}
+
+function shortLogoAlt(x, y, s) {
+    pushMatrix();
+    translate(x - 300, y - 300);
+    scale(s / 200);
+    textFont(createFont("monospace"));
+    fill(0);
+    textSize(65);
+    textAlign(CENTER, CENTER);
+    text("it", 300, 300);
+    popMatrix();
+}
+
+function foodLogo(x, y, s) {
+    pushMatrix();
+    translate(x - 300, y - 300);
+    scale(s / 200);
+    noStroke();
+    scale(1.2);
+    translate(-50, -50);
+    rotate(45);
+    translate(132, -282);
+    fill(255);
+    rect(274, 260, 42, 11);
+    triangle(275, 270, 315, 270, 295, 320);
+    fill(181, 18, 157);
+    ellipse(300, 300, 10, 10);
+    ellipse(291, 279, 10, 10);
+    ellipse(279, 287, 10, 10);
+    ellipse(288, 308, 10, 10);
+    ellipse(308, 285, 10, 10);
+
+
+    popMatrix();
+}
+
+function foodLogoAlt(x, y, s) {
+    pushMatrix();
+    translate(x - 300, y - 300);
+    scale(s / 200);
+    noStroke();
+    scale(1.2);
+    translate(-50, -50);
+    rotate(45);
+    translate(132, -282);
+    fill(255);
+    rect(274, 260, 42, 11);
+    triangle(275, 270, 315, 270, 295, 320);
+    fill(246, 244, 174);
+    ellipse(300, 300, 10, 10);
+    ellipse(291, 279, 10, 10);
+    ellipse(279, 287, 10, 10);
+    ellipse(288, 308, 10, 10);
+    ellipse(308, 285, 10, 10);
+    popMatrix();
+}
+
+function sportsLogo(x, y, s) {
+    pushMatrix();
+    translate(x - 300, y - 300);
+    scale(s / 200);
+    noStroke();
+    fill(255, 115, 0);
+    ellipse(300, 300, 65, 65);
+    noFill();
+    strokeWeight(2);
+    stroke(0);
+    line(300, 268, 300, 332);
+    line(268, 300, 332, 300);
+    arc(330, 300, 40, 50, 110, 250);
+    arc(270, 300, 40, 50, -70, 70);
+
+    popMatrix();
+}
+
+function allLogo(x, y, s) {
+    pushMatrix();
+    translate(x - 320, y - 315);
+    scale(s / 180);
+    kaLogo(450, 430, 100);
+    rotate(-30);
+    mathLogo(237, 539, 100);
+    rotate(60);
+    sportsLogo(579, 242, 100);
+
+    popMatrix();
+}
+
+function allAlt(x, y, s) {
+    pushMatrix();
+    translate(x - 320, y - 315);
+    scale(s / 180);
+    kaLogo(450, 430, 100);
+    rotate(-30);
+    mathLogoAlt(237, 539, 100);
+    rotate(60);
+    sportsLogo(579, 242, 100);
+    popMatrix();
+}
+
+function cursorCollide(x, y, w, h) {
+    return mouseX > x && mouseY > y && mouseX < x + w && mouseY < y + h;
+}
+
+function Button(config) {
+    this.x = config.x;
+    this.y = config.y;
+    this.w = config.w;
+    this.h = config.h;
+    this.show = config.show;
+    this.clicky = config.clicky;
+}
+Button.prototype.draw = function() {
+    this.show();
+    if (cursorCollide(this.x, this.y, this.w, this.h)) {
+        handCursor = true;
+        if (clicked) {
+            this.clicky();
+        }
+    }
+};
+
+function MenuButton(config) {
+    this.x = config.x || 0;
+    this.y = config.y || 0;
+    this.w = config.w || 50;
+    this.h = config.h || 50;
+    this.show = config.display;
+    this.hover = config.hoverOver;
+    this.runClick = config.click;
+    this.logo = config.logo || "";
+    this.logoX = this.x + 182.5;
+    this.txt = config.txt;
+    this.txtOpacity = 0;
+    this.txtX = 250;
+    this.alt = config.alt;
+    this.list = config.list;
+}
+MenuButton.prototype.draw = function() {
+    this.show();
+    textFont(createFont("Montserrat Bold"));
+    if (cursorCollide(this.x, this.y, this.w, this.h)) {
+        handCursor = true;
+        this.txtOpacity += (255 - this.txtOpacity) / 40;
+        if (this.logoX > (this.x + 115)) {
+            this.logoX -= (this.logoX - (this.x + 115)) / 35;
+        }
+        if (clicked) {
+            this.runClick();
+        }
+    }
+    else {
+        if (this.logoX < (this.x + 182.5)) {
+            this.logoX += ((this.x + 182.5) - this.logoX) / 35;
+            this.txtOpacity -= (this.txtOpacity) / 40;
+        }
+    }
+    textSize(20);
+    fill(250, this.txtOpacity);
+    text(this.txt, this.x + 150, this.y + 50);
+    this.logo(this.logoX, this.y + 125, 150);
+
+    this.txtOpacity = constrain(this.txtOpacity, 0, 255);
+};
+var selectedNumWords = 50;
+var menuButtons = {
+    ka: new MenuButton({
+        x: 50,
+        y: 200,
+        w: 225,
+        h: 100,
+        logo: kaLogo,
+        alt: kaLogo,
+        list: wordsList.coding,
+        txt: "Khan Terms",
+        display: function() {
+            fill(50, 221, 180);
+            rect(50, 200, 225, 100, 10);
+        },
+        click: function() {
+            page = "beginThingy";
+            witchWon = menuButtons.ka;
+        }
+    }),
+    math: new MenuButton({
+        x: 50,
+        y: 325,
+        w: 225,
+        h: 100,
+        logo: mathLogo,
+        alt: mathLogoAlt,
+        list: wordsList.math,
+        txt: "Math Terms",
+        display: function() {
+            fill(101, 123, 232);
+            rect(50, 325, 225, 100, 10);
+        },
+        click: function() {
+            page = "beginThingy";
+            witchWon = menuButtons.math;
+        }
+    }),
+    short: new MenuButton({
+        x: 50,
+        y: 450,
+        w: 225,
+        h: 100,
+        logo: shortLogo,
+        list: wordsList.short,
+        txt: "Short Words",
+        alt: shortLogoAlt,
+        display: function() {
+            fill(200, 50, 50);
+            rect(50, 450, 225, 100, 10);
+        },
+        click: function() {
+            page = "beginThingy";
+            witchWon = menuButtons.short;
+        }
+    }),
+    food: new MenuButton({
+        x: 325,
+        y: 200,
+        w: 225,
+        h: 100,
+        logo: foodLogo,
+        alt: foodLogoAlt,
+        txt: "Food Terms",
+        list: wordsList.foods,
+        display: function() {
+            fill(181, 18, 157);
+            rect(325, 200, 225, 100, 10);
+        },
+        click: function() {
+            page = "beginThingy";
+            witchWon = menuButtons.food;
+        }
+    }),
+    sports: new MenuButton({
+        x: 325,
+        y: 325,
+        w: 225,
+        h: 100,
+        logo: sportsLogo,
+        txt: "Sports Terms",
+        list: wordsList.sports,
+        alt: sportsLogo,
+        display: function() {
+            fill(79, 150, 16);
+            rect(325, 325, 225, 100, 10);
+        },
+        click: function() {
+            page = "beginThingy";
+            witchWon = menuButtons.sports;
+        }
+    }),
+    all: new MenuButton({
+        x: 325,
+        y: 450,
+        w: 225,
+        h: 100,
+        logo: allLogo,
+        txt: "All Terms",
+        list: wordsList.all,
+        alt: allAlt,
+        display: function() {
+            noStroke();
+            fill(216, 120, 2);
+            rect(325, 450, 225, 100, 10);
+        },
+        click: function() {
+            page = "beginThingy";
+            witchWon = menuButtons.all;
+        }
+    }),
+};
+var buttons = {
+    backFromSettings: new Button({
+        x: 35,
+        y: 525,
+        w: 100,
+        h: 40,
+        show: function() {
+            fill(0, 50);
+            rect(35, 525, 100, 40, 5);
+            fill(255, 235);
+            textSize(30);
+            text("<", 85, 545);
+        },
+        clicky: function() {
+            page = "maine";
+        },
+    }),
+    backStrugWordz: new Button({
+        x: 35,
+        y: 525,
+        w: 100,
+        h: 40,
+        show: function() {
+            fill(0, 50);
+            rect(35, 525, 100, 40, 5);
+            fill(255, 235);
+            textSize(30);
+            text("<", 85, 545);
+        },
+        clicky: function() {
+            page = "done";
+        },
+    }),
+    set25: new Button({
+        x: 225 - (75 / 2),
+        y: 200,
+        w: 75,
+        h: 50,
+        show: function() {
+            strokeWeight(selectedNumWords === 25 ? 5 : 2);
+            stroke(0);
+            fill(255, 75);
+            rect(225 - (75 / 2), 200, 75, 50, 5, 0, 0, 5);
+            fill(0, 235);
+            textSize(30);
+            text("25", 225, 225);
+        },
+        clicky: function() {
+            selectedNumWords = 25;
+        },
+    }),
+    set50: new Button({
+        x: 262.5,
+        y: 200,
+        w: 75,
+        h: 50,
+        show: function() {
+            strokeWeight(selectedNumWords === 50 ? 5 : 2);
+            fill(255, 75);
+            rect(262.5, 200, 75, 50);
+            fill(0, 235);
+            textSize(30);
+            text("50", 300, 225);
+        },
+        clicky: function() {
+            selectedNumWords = 50;
+        },
+    }),
+    set100: new Button({
+        x: 300 + (75 / 2),
+        y: 200,
+        w: 75,
+        h: 50,
+        show: function() {
+            strokeWeight(selectedNumWords === 100 ? 5 : 2);
+            fill(255, 75);
+            rect(300 + (75 / 2), 200, 75, 50, 0, 5, 5, 0);
+            fill(0, 235);
+            textSize(30);
+            text("100", 375, 225);
+        },
+        clicky: function() {
+            selectedNumWords = 100;
+        },
+    }),
+    begin: new Button({
+        x: 200,
+        y: 450,
+        w: 200,
+        h: 100,
+        show: function() {
+            fill(255, 75);
+            rect(200, 450, 200, 100, 10);
+            fill(0, 235);
+            textSize(45);
+            text("START!", 300, 500);
+        },
+        clicky: function() {
+            for (var i = 0; i < selectedNumWords; i++) {
+                toType.push(witchWon.list[floor(random(0, witchWon.list.length))]);
+                if (i !== selectedNumWords - 1) {
+                    toType.push(" ");
+                }
+            }
+            page = "thing";
+        },
+    }),
+};
+var outlineText = function(msg, x, y) {
+    fill(0);
+    for (var i = -2; i < 3; i++) {
+        for (var j = -2; j < 3; j++) {
+            fill(0);
+            text(msg, x + i, y + j);
+        }
+    }
+    fill(255);
+    text(msg, x, y);
+};
+var img;
+var loadIdx = 0;
+frameRate(250);
+
+function draw() {
+    textFont(createFont("Montserrat Bold"));
+    try {
+        switch (page) {
+            case "load":
+                switch (loadIdx) {
+                    case 1:
+                        noStroke();
+                        for (var i = 0; i < 1; i += 0.01) {
+                            fill(lerpColor(color(255, 255, 195), color(232, 226, 135), i));
+                            rect(0, i * 1000, 600, 10);
+                        }
+                        img = get(0, 0, 600, 600);
+                        break;
+                    case 2:
+                        background(0, 0, 0, 0);
+                        fill(0);
+                        textSize(380);
+                        textAlign(CENTER, CENTER);
+                        text("SP", 295, 295);
+                        fill(127.5);
+                        text("SP", 300, 300);
+                        fill(255);
+                        text("SP", 305, 305);
+                        for (var i = 0; i < 30; i++) {
+                            for (var j = 0; j < 30; j++) {
+                                imgs.push([get(i * 30, j * 30, 30, 30), i * 30, j * 30, 0, 285, false]);
+                            }
+                        }
+                        break;
+                    case 3:
+                        noStroke();
+                        background(21, 0, 158);
+                        for (var i = 0; i < height; i += 10) {
+                            fill(0, 3);
+                            rect(0, i, width, height - i);
+                        }
+                        for (var i = 0; i < 600; i++) {
+                            fill(255);
+                            ellipse(random(0, width), random(0, height), random(0.5, 2.5), random(0.5, 2.5));
+                        }
+
+                        bck = get(0, 0, 600, 600);
+                        break;
+                    case 4:
+                        page = "logo";
+                        break;
+
+                }
+                loadIdx++;
+                background(222, 203, 250);
+                textSize(75);
+                textAlign(CENTER, CENTER);
+                outlineText("Loading...", 300, 175);
+                textSize(45);
+                outlineText(loadIdx + " / 5 completed", 300, 250);
+                break;
+            case "logo":
+                textFont(createFont("Montserrat Bold"));
+                image(bck, 0, 0);
+                imageMode(CENTER);
+                for (var i in imgs) {
+                    pushMatrix();
+                    translate(imgs[i][3] + 15, imgs[i][4]);
+                    image(imgs[i][0], 0, 0);
+                    popMatrix();
+                    if (imgs[i][5]) {
+                        imgs[i][3] += (imgs[i][1] - imgs[i][3]) / 10;
+                        imgs[i][4] += (imgs[i][2] - imgs[i][4]) / 10;
+                    }
+                }
+                if (logoTimer < 180) {
+                    imgs[logoTimer * 5][5] = true;
+                    imgs[logoTimer * 5 - 1][5] = true;
+                    imgs[logoTimer * 5 - 2][5] = true;
+                    imgs[logoTimer * 5 - 3][5] = true;
+                    imgs[logoTimer * 5 - 4][5] = true;
+                }
+                imageMode(CORNER);
+                if (logoTimer > 60) {
+                    for (var i in presents) {
+                        textSize(height / 15);
+                        textFont(createFont("Montserrat Bold"));
+                        fill(255);
+                        text(pMsg[i], presents[i][2], presents[i][3]);
+                        if (logoTimer > 135) {
+                            presents[i][2] += (presents[i][0] - presents[i][2]) / 15;
+                            presents[i][3] += (presents[i][1] - presents[i][3]) / 15;
+                        }
+                    }
+                }
+                if (logoTimer > 280) {
+                    transImg = get(0, 0, width, height);
+                    page = "maine";
+                }
+                logoTimer++;
+                break;
+            case "maine":
+                if (frameCount % 2 === 0) {
+                    typedSoFar = "";
+                }
+                image(img, 0, 0);
+                textSize(125);
+                textAlign(CENTER, CENTER);
+                textFont(createFont("Montserrat Bold"));
+                outlineText("TYPIST", 300, 85);
+                noStroke();
+                menuButtons.ka.draw();
+                menuButtons.math.draw();
+                menuButtons.short.draw();
+                menuButtons.food.draw();
+                menuButtons.sports.draw();
+                menuButtons.all.draw();
+                image(transImg, transImgX, 0);
+                transImgX += (600 - transImgX) / 15;
+                break;
+            case "beginThingy":
+                image(img, 0, 0);
+                textSize(100);
+                textAlign(CENTER, CENTER);
+                textFont(createFont("Montserrat Bold"));
+                outlineText("SELECT", 300, 75);
+                textSize(45);
+                outlineText("YOUR SETTINGS", 300, 150);
+                textSize(25);
+                outlineText("# OF WORDS", 300, 270);
+                buttons.set25.draw();
+                buttons.set50.draw();
+                buttons.set100.draw();
+                strokeWeight(2);
+                stroke(0);
+                buttons.backFromSettings.draw();
+                buttons.begin.draw();
+                witchWon.alt(305, 420, 150);
+                fill(0);
+                textFont(createFont("Montserrat Bold"));
+                textAlign(LEFT, CENTER);
+                textSize(30);
+                text(witchWon.txt, 280, 344.5);
+                textAlign(CENTER, CENTER);
+                text(witchWon.list.length + " terms", 300, 400);
+                strokeWeight(2);
+                stroke(0);
+                break;
+            case "done":
+                image(img, 0, 0);
+                textAlign(CENTER, CENTER);
+                textSize(75);
+                textFont(createFont("Montserrat Bold"));
+                outlineText("COMPLETED!", 300, 80);
+                textSize(25);
+                outlineText(witchWon.txt + "\n" + selectedNumWords + " words - " + (timer / 250).toFixed(2) + " sec\n" + (numIncorrect > 0 && idx > 0 ? abs((idx - numIncorrect) / idx * 100).toFixed(2) + "% acc." : "100% acc.") + "\n" + abs((idx / 6) / (timer / 250) * 60).toFixed(1) + " WPM", 140, 520);
+                fill(200);
+                rect(50, 160, 500, 280);
+                rect(375, 460, 175, 120);
+                for (var i in leStats) {
+                    noStroke();
+                    fill(0, 150, 0, 225);
+                    ellipse((i / leStats.length) * 480 + 60, 450 - ((leStats[i][0]) * 1.45) - 50, 7, 7);
+                    fill(0, 0, 150, 225);
+                    ellipse((i / leStats.length) * 480 + 60, 450 - ((leStats[i][1]) * 1.45) - 50, 7, 7);
+                }
+                strokeWeight(4);
+                stroke(255, 100);
+                line(40, 255, 550, 255);
+                line(40, 355, 550, 355);
+                textSize(20);
+                outlineText("100", 25, 255);
+                outlineText("50", 25, 355);
+                noFill();
+                strokeWeight(3);
+                stroke(0, 125, 0, 100);
+                beginShape();
+                for (var i in leStats) {
+                    vertex((i / leStats.length) * 480 + 60, 450 - ((leStats[i][0]) * 1.45) - 50);
+                }
+
+                endShape();
+                stroke(0, 0, 125, 100);
+                beginShape();
+                for (var i in leStats) {
+                    vertex((i / leStats.length) * 480 + 60, 400 - ((leStats[i][1]) * 1.45));
+                }
+                endShape();
+                noStroke();
+                fill(0, 125, 0, 225);
+                ellipse(450, 385, 20, 20);
+                fill(0, 0, 125, 225);
+                ellipse(450, 415, 20, 20);
+                textSize(20);
+                outlineText("WPM", 495, 415);
+                outlineText("Acc%", 497, 385);
+                textSize(19);
+                outlineText("Struggles", 462.5, 477.5);
+                if (cursorCollide(375, 460, 175, 120)) {
+                    handCursor = true;
+                    fill(0, 30);
+                    rect(375, 460, 175, 120);
+                    if (clicked) {
+                        page = "strug";
+                    }
+                }
+                else if (clicked) {
+                    idx = 0;
+                    timer = 0;
+                    numIncorrect = 0;
+                    leStats = [];
+                    toType = [];
+                    messedUp = [];
+                    hasStarted = false;
+                    messedUpNice = [];
+                    for (var i in types) {
+                        messedUpNice.push(0);
+                    }
+                    page = "maine";
+                }
+                fill(0);
+                for (var i = 0; i < messedUpNice.length; i++) {
+                    textSize(20);
+                    if (i < 4 && messedUpNice[i] > 0) {
+                        text("\"" + types[i] + "\": " + messedUpNice[i], 462.5, 505 + i * 20);
+                    }
+                    if (i === 0 && messedUpNice[i] === 0) {
+                        textSize(23);
+                        outlineText("No mistakes!!", 462.5, 525);
+                    }
+                    if (i !== 0 && messedUpNice[i] > messedUpNice[i - 1]) {
+                        toSwitch = [messedUpNice[i - 1], types[i - 1]];
+                        messedUpNice[i - 1] = messedUpNice[i];
+                        types[i - 1] = types[i];
+                        messedUpNice[i] = toSwitch[0];
+                        types[i] = toSwitch[1];
+                    }
+                }
+                textSize(16);
+                outlineText("(click to move on)", 286, 575);
+                break;
+            case "strug":
+                image(img, 0, 0);
+                textSize(41);
+                outlineText("FULL STRUGGLES", 300, 55);
+                fill(0);
+                textSize(35);
+                textAlign(CENTER, CENTER);
+                for (var i = 0; i < messedUpNice.length; i++) {
+                    textSize(20);
+                    if (messedUpNice[i] > 0) {
+                        text("\"" + types[i] + "\": " + messedUpNice[i], 300, 105 + i * 23);
+                    }
+                    if (i === 0 && messedUpNice[i] === 0) {
+                        textSize(50);
+                        outlineText("No mistakes!!", 300, 325);
+                    }
+                    if (i !== 0 && messedUpNice[i] > messedUpNice[i - 1]) {
+                        toSwitch = [messedUpNice[i - 1], types[i - 1]];
+                        messedUpNice[i - 1] = messedUpNice[i];
+                        types[i - 1] = types[i];
+                        messedUpNice[i] = toSwitch[0];
+                        types[i] = toSwitch[1];
+                    }
+                }
+                buttons.backStrugWordz.draw();
+                break;
+            case "thing":
+                image(img, 0, 0);
+                fill(20, 200, 20);
+                rect(50, 50, idx / (toType.join("").length) * 500, 50);
+                // textSize(20000);
+                textFont(createFont("monospace"));
+                if (idx >= toType.join("").length) {
+                    page = "done";
+                    for (var j = 0; j < messedUp.length; j++) {
+                        for (var i = 0; i < types.length; i++) {
+                            if (messedUp[j] === types[i]) {
+                                messedUpNice[i]++;
+                            }
+                        }
+                    }
+                }
+                if (keyIsBeingTyped) {
+                    if (key.toString() === (toType.join("")[idx]).toString()) {
+                        typedSoFar += (toType.join("")[idx]).toString();
+                        // idxFarOver += textWidth(toType.join("")[idx].toString()) / 200;
+                        idx++;
+                        gotWrong = false;
+                        hasStarted = true;
+                    }
+                    else {
+                        if (!gotWrong) {
+                            numIncorrect++;
+                            messedUp.push((toType.join("")[idx]).toString().toLowerCase());
+                        }
+                        gotWrong = true;
+                    }
+                }
+
+
+                if (idx > 1 && timer > 100) {
+                    textFont(createFont("Montserrat Bold"));
+                    fill(0);
+                    textSize(50);
+                    text(abs((idx / 6) / (timer / 250) * 60).toFixed(1), 100, 550);
+                }
+                if (idx === toType.length) {
+                    hasStarted = false;
+                }
+
+                textFont(createFont("monospace"));
+                switch (text_size) {
+                    case 1:
+                        textSize(100);
+                        break;
+                    case 2:
+                        textSize(75);
+                        break;
+                    case 3:
+                        textSize(50);
+                        break;
+                }
+                fill(0);
+                textAlign(LEFT, CENTER);
+                text(toType.join(""), 50 - textWidth(typedSoFar), 300);
+                noStroke();
+                if (gotWrong) {
+                    fill(200, 0, 0, 127.5);
+                }
+                else {
+                    fill(0, 162, 255, 127.5);
+                }
+                if (hasStarted) {
+                    switch (text_size) {
+                        case 1:
+                            rect(48, 256, textWidth((toType.join("")[idx])) + 6, 113);
+                            break;
+                        case 2:
+                            rect(48, 261, textWidth((toType.join("")[idx])) + 6, 93);
+                            break;
+                        case 3:
+                            rect(48, 266, textWidth((toType.join("")[idx])) + 6, 73);
+                            break;
+                    }
+                }
+                textAlign(LEFT, CENTER);
+                textFont(createFont("Montserrat Bold"));
+                fill(0);
+                textSize(50);
+                text(numIncorrect > 0 && idx > 0 ? abs((idx - numIncorrect) / idx * 100).toFixed(2) + "%" : "100%", 100, 500);
+                keyIsBeingTyped = false;
+                if (hasStarted) {
+                    timer++;
+                }
+                if (timer % 150 === 0 && hasStarted) {
+                    textFont(createFont("Montserrat Bold"));
+                    fill(0);
+                    textSize(50);
+                    leStats.push([numIncorrect > 0 && idx > 0 ? abs((idx - numIncorrect) / idx * 100).toFixed(2) : 100, abs((idx / 6) / (timer / 250) * 60).toFixed(1)]);
+                }
+        }
+        if (this.__frameRate < 100 && page === "thing" && timer > 250) {
+            _clearLogs();
+            println("WARNING!! You have a low frame rate. The game may not run as intended! Try:\nClosing unnecessary tabs and windows\nMaking sure that line #540 says \"frameRate(250);\"\nRefreshing the page\nIf the issue persists, you may need to restart your device.\n(Current FPS: " + ~~(this.__frameRate) + ")\n(Intended FPS: 250)");
+        }
+        if (this.__frameRate > 100) {
+            _clearLogs();
+        }
+    } catch (e) {
+        _clearLogs();
+        println("Tell SP what you were doing when this occurred: " + e);
+    }
+    if (handCursor) {
+        cursor(HAND);
+    }
+    else {
+        cursor(ARROW);
+    }
+    handCursor = false;
+    clicked = false;
+}
+
+function keyTyped() {
+    keyIsBeingTyped = true;
+}
+
+function mouseClicked() {
+    clicked = true;
+}
+
+// }
