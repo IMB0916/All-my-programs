@@ -1,0 +1,2121 @@
+/**
+ * 
+ * 
+ *  _   _    _    _     _     _____        _______ _____ _   _ 
+ * | | | |  / \  | |   | |   / _ \ \      / / ____| ____| \ | |
+ * | |_| | / _ \ | |   | |  | | | \ \ /\ / /|  _| |  _| |  \| |
+ * |  _  |/ ___ \| |___| |__| |_| |\ V  V / | |___| |___| |\  |
+ * |_| |_/_/   \_\_____|_____\___/  \_/\_/  |_____|_____|_| \_|
+ * 
+ * SP @Prodigy6 - 2022
+ * 
+ * the game is done! :DDDD
+ * 
+ * i hope it meets your expectations :)
+ * 
+ * mobile controls move your finger or press the screen, they should appear
+ * to remove them move your mouse outside of the canvas, just don't click outside of it (pc users only)
+ * 
+ * ** IF WEIRD ARROWS READ ^^
+ * 
+ * thanks to ƬHƎ CHICKƎӤ LOƦD and WoodlandWolf for ideas :)
+ * 
+ * i actually had time to neaten the code up, feel free to take a peek :)
+ * 
+ * if you get to the end there is a little surprise
+ * 
+ * feel free to make a level, if its good maybe ill add a user level section
+ * 
+ * all code by me :D
+ * 
+ * 
+ * DATES {
+ *  START - 10/14
+ *  DEMO RELEASE - 10/20
+ *  FINISH - 10/24
+ *  FULL RELEASE - 10/27
+ * }
+ *
+**/
+
+
+
+
+// {
+
+// makes it smoother
+smooth();
+
+// transitions
+function Trans() {
+    
+    this.arr = [];
+    
+    for(var i = 0; i < 8; i ++) {
+        for(var j = 0; j < 8; j ++) {
+            this.arr.push([
+                get(i * (600 / 8), j * (600 / 8), (600 / 8), (600 / 8)), // img
+                i * (600 / 8) + (600 / 16), // x
+                j * (600 / 8) + (600 / 16), // y
+                0, // rot
+                random(-3, 3), // rotspd
+                random(-1.5, 1.5), // xvel
+                random(-0.25, 2) // yvel
+            ]);
+        }
+    }
+    
+}
+
+Trans.prototype.draw = function() {
+    
+    imageMode(CENTER);
+    
+    for(var i in this.arr) {
+        
+        pushMatrix();
+        translate(this.arr[i][1], this.arr[i][2]);
+        rotate(this.arr[i][3]);
+        image(this.arr[i][0], 0, 0);
+        popMatrix();
+        
+        this.arr[i][1] += this.arr[i][5];
+        this.arr[i][2] += this.arr[i][6];
+        this.arr[i][3] += this.arr[i][4];
+        this.arr[i][4] *= 1.015;
+        this.arr[i][6] += 0.1;
+        
+        if(this.arr[i][2] > 1000) {
+            this.arr.splice(i, 1);
+        }
+        
+    }
+    
+    imageMode(CORNER);
+    
+};
+
+var transitions = [];
+
+// mouse vars
+var handCursor = false;
+var mouseMovedTimer = 0;
+
+// page
+var page = "load";
+
+// keys
+var keys = [];
+
+// player
+var player = {
+    x: 0,
+    y: 0,
+    movingX: 0,
+    movingY: 0
+};
+
+// camera
+var cam = {
+    x: 0,
+    y: 0,
+};
+
+// particles
+function Particle(x, y, col) {
+    
+    this.x = x + random(-10, 10);
+    this.y = y + random(-10, 10);
+    
+    this.col = col;
+    
+    this.siz = random(3, 8);
+    
+    this.xVel = random(-0.5, 0.5);
+    this.yVel = random(-0.5, 0.5);
+    
+    this.opac = random(225, 255);
+    this.opacVel = random(-8, -1);
+    
+}
+
+Particle.prototype.draw = function() {
+    
+    fill(this.col, this.opac);
+    rect(this.x, this.y, this.siz, this.siz);
+    
+    this.x += this.xVel;
+    this.y += this.yVel;
+    
+    this.opac += this.opacVel;
+    this.opacVel *= 1.01;
+    
+};
+
+var particles = [];
+
+// death vars
+var deadTimer = 0;
+var dead = false;
+
+// candy vars
+var candys = [];
+var candyAnimation = [];
+var howManycandys = 0;
+var totcandys = 0;
+
+var winTimer = 0;
+var winVars = [-750, -350, 0, 250, -750, 1350];
+
+// level vars
+
+/**
+ * 
+ * LEVEL CODES
+ * 
+ * o: normal block
+ * @: player spawnpoint
+ * #: door
+ * d: down spike
+ * w: right spike
+ * s: left spike
+ * a: up spike
+ * c: candy
+ * g: r-l ghost
+ * G: u-d ghost
+ * 
+**/
+
+var levels = [
+    
+    // 1
+    [
+        "oooooooooo",
+        "o@       o",
+        "oooooooo o",
+        "       o o",
+        "       o o",
+        "       o o",
+        "       o o",
+        "       o o",
+        "       o#o",
+        "       ooo",
+    ],
+    
+    // 2
+    [
+        "ooooo",
+        "o@  o",
+        "o  ooooo",
+        "oo    #o",
+        "oooooooo",
+    ],
+    
+    // 3
+    [
+        "oooooooooooooooooooo",
+        "o                  o",
+        "o oooooooooooooooo o",
+        "o o              o o",
+        "o o oooooooooooo o o",
+        "o o o          o o o",
+        "o o o oooooooo o o o",
+        "o o o o      o o o o",
+        "o o o o oooo o o o o",
+        "o o o o o# o o o o o",
+        "o o o o    o o o o o",
+        "o o o oooooo o o o o",
+        "o o o        o o o o",
+        "o o oooooooooo o o o",
+        "o o            o o o",
+        "o oooooooooooooo o o",
+        "o                o o",
+        "oooooooooooooooooo o",
+        "o@                 o",
+        "oooooooooooooooooooo",
+    ],
+    
+    // 4
+    [
+        "ooooooo",
+        "oc c co",
+        "o     o",
+        "oc @ co",
+        "o     o",
+        "oc c c#",
+        "ooooooo",
+    ],
+    
+    // 5
+    [
+        "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo",
+        "o@cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc#o",
+        "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+    ],
+    
+    // 6
+    [
+        "ooooooooooooooooooooooooooooooooooo",
+        "oc               @               #o",
+        "ooooooooooooooooooooooooooooooooooo",
+    ],
+    
+    // 7
+    [
+        "oooooooo",
+        "o @    o",
+        "o    o oo",
+        "oo oo  #o",
+        "o   o   o",
+        "o c o oco",
+        "ooooooooo",
+    ],
+    
+    // 8
+    [
+        "ooooooooooo",
+        "o       o o",
+        "ooc     c o",
+        "o     o   o",
+        "o  oc c   o",
+        "o    @co  o",
+        "o   c   coo",
+        "o   o     #",
+        "o         o",
+        "o         o",
+        "ooooooooooo",
+    ],
+    
+    // 9
+    [
+        "ooooooooooooo",
+        "o@          o",
+        "ooooooooooo o",
+        "o    o      o",
+        "o  o o oooooo",
+        "o oo o      o",
+        "o  o oooooo o",
+        "oo o        o",
+        "o  oooooooooo",
+        "oo          o",
+        "o#ooooooooo o",
+        "o           o",
+        "ooooooooooooo",
+    ],
+    
+    // 10
+    [
+        "ooooooo",
+        "ow @ so",
+        "od    o",
+        "o  d  o",
+        "o   o o",
+        "o d   o",
+        "o     o",
+        "o     o",
+        "o     o",
+        "o#a a o",
+        "ooooooo",
+    ],
+    
+    // 11
+    [
+        "           ooo",
+        "           odo",
+        "           o o",
+        "           o o",
+        "           o o",
+        "           o o",
+        "           o o",
+        "           o o",
+        "           o o",
+        "           o o",
+        "           o o",
+        "oooooooooooo oooooooooooo",
+        "ow          @          so",
+        "oooooooooooo oooooooooooo",
+        "           o o",
+        "           o o",
+        "           o o",
+        "           o o",
+        "           o o",
+        "           o o",
+        "           o o",
+        "           o o",
+        "           o o",
+        "           o#o",
+        "           ooo",
+    ],
+    
+    // 12
+    [
+        "ooooooooooooooo",
+        "o@o   co     co",
+        "o   oooo oooooo",
+        "ooo    o     co",
+        "oc  oo ocoooo o",
+        "oo     o      o",
+        "ocoooo o oooo o",
+        "o             o",
+        "o ooo oo oooooo",
+        "o#  oc  c     o",
+        "o   o ooooooo o",
+        "o c o        co",
+        "o   ooooooooo o",
+        "o            co",
+        "ooooooooooooooo",
+    ],
+    
+    // 13
+    [
+        "oooooooooo",
+        "ow  dc   o",
+        "o   c   oo",
+        "o d     do",
+        "o   @  c o",
+        "o        o",
+        "o    c oco",
+        "o      o dddddddd",
+        "o cw s o        #",
+        "oooooooooaaaaaaaa",
+    ],
+    
+    // 14
+    [
+        "dddddddddd",
+        "w @w a a a",
+        "ws   wda d",
+        "wwww c   #",
+        "wc    ad w",
+        "a ddw wa s",
+        "a  dw    w",
+        "w ddssaw w",
+        "sc    dd d",
+        "w waa   ca",
+        "d swacsawa",
+        "d c a   cw",
+        "adwwddwdaw",
+    ],
+    
+    // 15
+    [
+        "oooooo",
+        "o   @o",
+        "oG   o",
+        "o    o",
+        "o   go",
+        "#    o",
+        "oooooo",
+    ],
+    
+    // 16
+    [
+        "ooooooo",
+        "o@   Go",
+        "o    go",
+        "o     o",
+        "o    go",
+        "o    G#",
+        "ooooooo",
+    ],
+    
+    // 17
+    [
+        "ooooooo",
+        "oG   @o",
+        "o     o",
+        "o     o",
+        "o    go",
+        "o     o",
+        "o oooo",
+        "o     o",
+        "o     o",
+        "o     o",
+        "o    go",
+        "o G   o",
+        "ooooo#",
+    ],
+    
+    // 18
+    [
+        "oooooooooooooooooooo",
+        "og   ccccccccccccc#o",
+        "ooooo oooooooooooooo",
+        "    o o",
+        "    o o",
+        "    o o",
+        "    o o",
+        "    o o",
+        "    o o",
+        "    o o",
+        "    o o",
+        "    o o",
+        "    o@o",
+        "    ooo",
+    ],
+    
+    // 19
+    [
+        "ooo",
+        "o o",
+        "o o",
+        "o o",
+        "o ooooooooo",
+        "o  @g    co",
+        "o o       o",
+        "oGo       o",
+        "o o       o",
+        "o ooooooooo",
+        "o o G     #",
+        "o o   G   o",
+        "o o     G o",
+        "o         o",
+        "ooooooooooo",
+    ],
+    
+    // 20
+    [
+        "oooooooooooooooooooooooooooooooooooo",
+        "o@coc     coc     co      co      co",
+        "oc o  go g o  go g o  go g o  go g ooooooo",
+        "#    oooc    oooc    oooc    oooc       co",
+        "oooooo ooooooo ooooooo ooooooo ooooooooooo",
+    ],
+    
+    // 21
+    [
+        "oooooooooooooooooo",
+        "#               go",
+        "oooooooooo ooooooo",
+        "o     o    o Go",
+        "o   o   o     o",
+        "o ooooooGoooooo",
+        "o             o",
+        "oooooooo oooo o",
+        "o             o",
+        "o ooooo   ooo o",
+        "o o    ooooGoGo",
+        "o o  o   go o o",
+        "o o o o ooo ooo",
+        "o    go      @o",
+        "ooooooooooooooo",
+    ],
+    
+    // 22
+    [
+        "ooooodoooooo",
+        "o@o  c    cs",
+        "o          s",
+        "o    ow    o",
+        "owc  o     o",
+        "o cw o   w o",
+        "o    s     o",
+        "o  aso     o",
+        "w          o",
+        "od  d  a   o",
+        "oc ao     cs",
+        "ooooo#oooooo",
+    ],
+    
+    // 23
+    [
+        "                                                 o",
+        "oo ",
+        "o     o    o",
+        "o o o  o ooo",
+        "o      d   @",
+        "ocd odG  d o",
+        "o w     coao",
+        "o o c        o",
+        "o s  s  o  o",
+        "o   as d o o",
+        "o  aa    o o",
+        "   c                                             Go",
+        "ooooooooooGoooo",
+        "",
+        "",
+        "",
+        "",
+        "          o",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "                                                 #",
+    ],
+    
+    // 24
+    [
+        " o         ooooo",
+        "o          @   o",
+        "           o  go",
+        "           ooo o",
+        "           o   o",
+        "           o ooo",
+        "           o   o",
+        "           o  go",
+        "           o  go",
+        "           o  go",
+        "           o   o",
+        "           ooo o",
+        "           o   o",
+        "           o  go",
+        "           o  go",
+        "           o  go",
+        "           o  go",
+        "           o  go",
+        "           o   o",
+        "           o ooo",
+        "           o   o",
+        "           o  go",
+        "           o  go",
+        "           o  go",
+        "           o  go",
+        "           o  go",
+        "           o  go",
+        "           o   o",
+        "           ooo o",
+        "           o   o",
+        "           o  go",
+        "           o  go",
+        "           o  go",
+        "           o  go",
+        "           o  go",
+        "           o  go",
+        "           o  go",
+        "           o   o",
+        "           o oooo",
+        "           o    o",
+        "           o   go",
+        "           o    o",
+        "           oooo o",
+        "           o    o",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o    o",
+        "           o oooo",
+        "           o    o",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o    o",
+        "           oooo o",
+        "           o    o",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o    o",
+        "           o oooo",
+        "           o    o",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o    o",
+        "           oooo o",
+        "           o    o",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o    o",
+        "           o oooo",
+        "           o    o",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o    o",
+        "           oooo o",
+        "           o    o",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o   go",
+        "           o    o",
+        " c         w    #",
+        " o         oooooo",
+    ],
+    
+];
+var levelNames = [
+    
+    // 1
+    "get to the door",
+    "getting started",
+    "spiral",
+    "collect candies\nto finish",
+    
+    // 5
+    "candyyyy",
+    "the right\nway to go",
+    "r to restart",
+    "going in circles",
+    "the snake",
+    
+    // 10
+    "spikes hurt",
+    "which path?",
+    "maze",
+    "spikes",
+    "spike maze",
+    
+    // 15
+    "don't run\ninto ghosts",
+    "timing is everything",
+    "big b",
+    "ghosts eat candy",
+    "you can't\nreally blame\nthem",
+    "you're welcome for this",
+    
+    // 20
+    "ghost maze",
+    "at least\nthere's no\nghosts",
+    "the penultimate",
+    "this level will\nmake you rage\nlol"
+    
+];
+var curLevel = 0;
+var levelTimer = 0;
+
+// graphics
+var graphics = [
+    
+    // brick
+    [
+        "ggggeGGGgggggggg",
+        "ggggeGGGGGgggggg",
+        "eeeeeeeeeeeeeeee",
+        "gggggggggggegggg",
+        "gggggggggggeGGGg",
+        "GggggggggggeGGGG",
+        "eeeeeeeeeeeeeeee",
+        "gggggegggggggggg",
+        "gggggeGGGggggggg",
+        "gggggeGGGGGggggg",
+        "eeeeeeeeeeeeeeee",
+        "gggggggggggegggg",
+        "gggggggggggeGGGg",
+        "GggggggggggeGGGG",
+        "eeeeeeeeeeeeeeee",
+        "ggggeggggggggggg",
+    ],
+    
+    // door
+    [
+        "     LLLLLL ",
+        "   bbbLLLLLLL",
+        "  bbbbbbbLLLLL",
+        "  bbbbbbbbbLLL",
+        " bbbbbbbbbbbLLL",
+        " bbbbbbbbbbbbbL",
+        " bbbbbbbbbbbbbb",
+        "bbbbbbbbbbyYYbb",
+        "bbbbbbbbbyyyYYbb",
+        "BBBbbbbbbbbyyYbb",
+        "BBBBBBbbbbbbbbbb",
+        "BBBBBBBBBbbbbbbb",
+        "BBBBBBBBBBBBbbbb",
+        "llllBBBBBBBBBBbb",
+        "lllllllBBBBBBBBB",
+        "lllllllllBBBBBBB",
+    ],
+    
+    // down spike
+    [
+        "QQQQQQQQQQQQQQQQ",
+        "QQQQQQQ  QQQQQQQ",
+        "QQQQQQQ  QQQQQQQ",
+        " QQQQQ    QQQQQ",
+        " QQQQQ    QQQQQ",
+        " QQQQQ    QQQQQ",
+        " QQQQQ    QQQQQ",
+        "  QQQ      QQQ",
+        "  QQQ      QQQ",
+        "  QQQ      QQQ",
+        "  QQQ      QQQ",
+        "  QQQ      QQQ",
+        "   Q        Q",
+        "   Q        Q",
+        "   Q        Q",
+        "   Q        Q",
+    ],
+    
+    // up spike
+    [
+        "   Q        Q",
+        "   Q        Q",
+        "   Q        Q",
+        "   Q        Q",
+        "  QQQ      QQQ",
+        "  QQQ      QQQ",
+        "  QQQ      QQQ",
+        "  QQQ      QQQ",
+        "  QQQ      QQQ",
+        " QQQQQ    QQQQQ",
+        " QQQQQ    QQQQQ",
+        " QQQQQ    QQQQQ",
+        " QQQQQ    QQQQQ",
+        "QQQQQQQ  QQQQQQQ",
+        "QQQQQQQ  QQQQQQQ",
+        "QQQQQQQQQQQQQQQQ",
+    ],
+    
+    // right spike
+    [
+        "QQQ",
+        "QQQQQQQ",
+        "QQQQQQQQQQQQ",
+        "QQQQQQQQQQQQQQQQ",
+        "QQQQQQQQQQQQ",
+        "QQQQQQQ",
+        "QQQ",
+        "Q",
+        "Q",
+        "QQQ",
+        "QQQQQQQ",
+        "QQQQQQQQQQQQ",
+        "QQQQQQQQQQQQQQQQ",
+        "QQQQQQQQQQQQ",
+        "QQQQQQQ",
+        "QQQ",
+    ],
+    
+    // left spike
+    [
+        "             QQQ",
+        "         QQQQQQQ",
+        "    QQQQQQQQQQQQ",
+        "QQQQQQQQQQQQQQQQ",
+        "    QQQQQQQQQQQQ",
+        "         QQQQQQQ",
+        "             QQQ",
+        "               Q",
+        "               Q",
+        "             QQQ",
+        "         QQQQQQQ",
+        "    QQQQQQQQQQQQ",
+        "QQQQQQQQQQQQQQQQ",
+        "    QQQQQQQQQQQQ",
+        "         QQQQQQQ",
+        "             QQQ",
+    ],
+    
+    // ghost
+    [
+        "       wwww",
+        "     wwwwwwww",
+        "    wwwwwwwwww",
+        "   wwwwwwwwwwww",
+        "   WwqGwwwqewwww",
+        "  WWWWqqwwwqww w",
+        "  WWWWWWWwwww  w",
+        "  WWWWWqeGWWW",
+        " xxxWWWqqWWWWW",
+        " xxxxxxxqWWWWW",
+        " xxxxxxxxWWWWWW",
+        " xxxxxxxxxxxWWW",
+        "  xxxxxxxxxxxxx",
+        "  XXXXXxXXXXXXX",
+        "  XXX  xX XXXX",
+        "  XX   xx  XXX",
+        "   XX   x  XX",
+        "            XX",
+    ],
+    
+    // candy
+    [
+        "      wwww",
+        "     wwwwww",
+        "    wwwwwwww",
+        "    wwwwwwww",
+        "   wwwwwwwwww",
+        "   oooooooooo",
+        "  Oooooooooooo",
+        "  OOoooooooooo",
+        "  OOOOoooooooo",
+        " OOOOOOoooooooo",
+        " OOOOOOOooooooo",
+        " SSSSSSSSssssss ",
+        "SSSSSSSSSSSsssss",
+        "SSSSSSSSSSSSSsss",
+        "SSSSSSSSSSSSSSSs",
+        " SSSSSSSSSSSSSS",
+    ],
+    
+    // player/pumpkin
+    [
+        "     UUu",
+        "      UUuu",
+        "       UUuu",
+        "    NNNNNNNNN",
+        "  NNonnNnNnnnN",
+        " NoootNoontnnnN",
+        " NooottoottNnnnN",
+        "NoootttootttnnnN",
+        "NooooNoooooNoonN",
+        "NooooNoooooNoonN",
+        "NOoottttotttoooN",
+        "NOOottttttttoooN",
+        " NOOttNttottooN",
+        " NOOOONoooNoooN",
+        "  NNOOONONooNN",
+        "    NNNNNNNN",
+    ],
+    
+];
+var pixCol = [
+    
+    // nicely alphabitized for you :)
+    ["b", color(138, 60, 8)],
+    ["B", color(132, 54, 2)],
+    ["c", color(225, 225, 10)],
+    ["C", color(245, 245, 30)],
+    ["e", color(15)],
+    ["E", color(105)],
+    ["g", color(70)],
+    ["G", color(60)],
+    ["l", color(126, 48, 0)],
+    ["L", color(143, 65, 13)],
+    ["n", color(255, 125, 10)],
+    ["N", color(215, 75, 0)],
+    ["o", color(255, 115, 0)],
+    ["O", color(245, 105, 0)],
+    ["q", color(10)],
+    ["Q", color(15)],
+    ["r", color(250, 250, 50)],
+    ["s", color(225, 225, 10)],
+    ["S", color(215, 215, 0)],
+    ["t", color(115, 0, 0)],
+    ["u", color(50, 200, 50)],
+    ["U", color(40, 190, 40)],
+    ["w", color(240)],
+    ["W", color(234)],
+    ["x", color(228)],
+    ["X", color(222)],
+    ["y", color(235, 235, 20)],
+    ["Y", color(205, 205, 25)],
+    
+];
+var graphImgs = [];
+
+// blocks pt. 1
+function rectCollide(x, y, w, h, x2, y2, w2, h2) {
+    
+    return x2 + w2 > x && x2 < x + w && y2 + h2 > y && y2 < y + h2;
+    
+}
+var blocks = [];
+
+// ghost
+var ghosts = [];
+function Ghost(x, y, t) {
+    
+    this.x = x;
+    this.y = y;
+    
+    this.type = t;
+    
+    this.dir = 1;
+    
+}
+Ghost.prototype.draw = function() {
+    
+    pushMatrix();
+    translate(this.x, this.y);
+    image(graphImgs[6], 0, 0, 40, 40);
+    popMatrix();
+    
+    // particles
+    if(frameCount % 8 === 0) {
+        particles.push(new Particle(this.x + random(15, 25), this.y + random(15, 25), 235));
+    }
+    
+    switch(this.type) {
+        
+        case 1:
+            this.x += this.dir * 1.02;
+        break;
+        
+        case 2:
+            this.y += this.dir * 1.02;
+            
+    }
+    
+    // flip directions
+    for(var i = 0; i < blocks.length; ++i) {
+        
+        if(rectCollide(this.x, this.y, 40, 40, blocks[i].x, blocks[i].y, 40, 40)) {
+            
+            this.dir = -this.dir;
+            
+        }
+        
+    }
+    
+    // candy eating
+    for(var i = 0; i < candys.length; ++i) {
+        
+        if(rectCollide(this.x, this.y, 40, 40, candys[i][0] - 18, candys[i][1] - 18, 36, 36)) {
+            
+            // yummy particles
+            for(var j = 0; j < 11; ++j) {
+                
+                particles.push(new Particle(candys[i][0], candys[i][1], 230));
+                particles.push(new Particle(candys[i][0], candys[i][1], color(245, 105, 0)));
+                particles.push(new Particle(candys[i][0], candys[i][1], color(215, 215, 0)));
+                
+            }
+            
+            // removes the candy
+            candys.splice(i, 1);
+            
+        }
+        
+    }
+    
+    // destroy player
+    if(rectCollide(this.x + 2, this.y, 38, 40, player.x, player.y, 40, 40)) {
+        dead = true;
+    }
+    
+};
+
+// button
+function cursorCollide(x, y, w, h) {
+    
+    return mouseX > x && mouseY > y && mouseX < x + w && mouseY < y + h;
+    
+}
+
+function Button(config) {
+    
+    this.x = config.x;
+    this.y = config.y;
+    
+    this.w = config.w;
+    this.h = config.h;
+    
+    this.show = config.show;
+    
+    this.clicky = config.clicky;
+    
+}
+Button.prototype.draw = function() {
+    
+    this.show();
+    
+    if(cursorCollide(this.x, this.y, this.w, this.h)) {
+        
+        handCursor = true;
+        
+        if(mouseIsPressed) {
+            
+            this.clicky();
+            
+        }
+        
+    }
+    
+};
+var buttons = {
+    
+    // begin btn on menu
+    playBtn: new Button({
+        
+        x: 400,
+        y: 175,
+        w: 150,
+        h: 100,
+        
+        show: function() {
+            
+            fill(255, 20);
+            if(cursorCollide(400, 175, 150, 100)) {
+                fill(255, 45);
+            }
+            
+            strokeWeight(2.5);
+            stroke(225);
+            
+            rect(400, 175, 150, 100);
+            
+            textSize(40);
+            fill(245);
+            text("begin", 475, 225);
+            
+            noStroke();
+            
+        },
+        
+        clicky: function() {
+            
+            transitions.push(new Trans());
+            page = "gm";
+            
+        }
+        
+    }),
+    
+    // the mobile control buttons
+    uBtn: new Button({
+        
+        x: 150,
+        y: 200,
+        w: 125,
+        h: 125,
+        
+        show: function() {
+            
+            strokeWeight(2);
+            stroke(235, 150);
+            fill(0, 50);
+            rect(150, 200, 125, 125, 10);
+            
+            fill(255, 75);
+            triangle(175, 300, 250, 300, 212.5, 225);
+            
+        },
+        
+        clicky: function() {
+            
+            if(player.movingX === 0 && player.movingY === 0) {
+                player.movingY = -1;
+            }
+            
+        },
+        
+    }),
+    
+    dBtn: new Button({
+        
+        x: 150,
+        y: 450,
+        w: 125,
+        h: 125,
+        
+        show: function() {
+            
+            fill(0, 50);
+            rect(150, 450, 125, 125, 10);
+            
+            fill(255, 75);
+            triangle(175, 475, 250, 475, 212.5, 550);
+            
+        },
+        
+        clicky: function() {
+            
+            if(player.movingX === 0 && player.movingY === 0) {
+                player.movingY = 1;
+            }
+            
+        },
+        
+    }),
+    
+    lBtn: new Button({
+        
+        x: 25,
+        y: 325,
+        w: 125,
+        h: 125,
+        
+        show: function() {
+            
+            fill(0, 50);
+            rect(25, 325, 125, 125, 10);
+            
+            fill(255, 75);
+            triangle(125, 350, 125, 425, 50, 387.5);
+            
+        },
+        
+        clicky: function() {
+            
+            if(player.movingX === 0 && player.movingY === 0) {
+                player.movingX = -1;
+            }
+            
+        },
+        
+    }),
+    
+    rBtn: new Button({
+        
+        x: 275,
+        y: 325,
+        w: 125,
+        h: 125,
+        
+        show: function() {
+            
+            fill(0, 50);
+            rect(275, 325, 125, 125, 5);
+            
+            fill(255, 75);
+            triangle(300, 350, 300, 425, 375, 387.5);
+            
+        },
+        
+        clicky: function() {
+            
+            if(player.movingX === 0 && player.movingY === 0) {
+                player.movingX = 1;
+            }
+            
+        },
+        
+    }),
+    
+    // restart button
+    reBtn: new Button({
+        
+        x: 500,
+        y: 25,
+        w: 75,
+        h: 75,
+        
+        show: function() {
+            
+            fill(0, 50);
+            rect(500, 25, 75, 75, 5);
+            
+            fill(255, 75);
+            textSize(50);
+            textAlign(CENTER, CENTER);
+            textFont(createFont("Arial Bold"));
+            text("↺", 537.5, 62.5);
+            
+            textFont(createFont("Trebuchet MS Bold Italics"));
+            
+        },
+        
+        clicky: function() {
+            
+            dead = true;
+            
+        },
+        
+    }),
+    
+};
+
+// block
+function block(x, y, t) {
+    
+    this.x = x;
+    this.y = y;
+    
+    this.type = t;
+    
+}
+function loadLevel() {
+    
+    // resets all of the vars
+    ghosts = [];
+    blocks = [];
+    
+    candyAnimation = [];
+    candys = [];
+    howManycandys = 0;
+    
+    player.movingX = 0;
+    player.movingY = 0;
+    
+    levelTimer = 0;
+    
+    // places all of the blocks
+    for(var j = 0; j < levels[curLevel].length; ++j) {
+        
+        for(var k = 0; k < levels[curLevel][j].length; ++k) {
+            
+            switch(levels[curLevel][j][k]) {
+                
+                // spike
+                case "o":
+                    blocks.push(new block(k * 40, j * 40, 0));
+                break;
+                
+                // door
+                case "#":
+                    blocks.push(new block(k * 40, j * 40, 1));
+                break;
+                
+                // right spike
+                case "w":
+                    blocks.push(new block(k * 40, j * 40, 2));
+                break;
+                
+                // left spike
+                case "s":
+                    blocks.push(new block(k * 40, j * 40, 3));
+                break;
+                
+                // up spike
+                case "a":
+                    blocks.push(new block(k * 40, j * 40, 4));
+                break;
+                
+                // down spike
+                case "d":
+                    blocks.push(new block(k * 40, j * 40, 5));
+                break;
+                
+                // candy
+                case "c":
+                    candys.push([k * 40 + 20, j * 40 + 20]);
+                    break;
+                
+                // ghosts
+                case "g":
+                    ghosts.push(new Ghost(k * 40, j *  40, 1));
+                break;
+                case "G":
+                    ghosts.push(new Ghost(k * 40, j *  40, 2));
+                break;
+                
+                // player create-area-zone-procure thing
+                case "@":
+                    player.x = k * 40;
+                    player.y = j * 40;
+                break;
+                
+            }
+            
+        }
+        
+    }
+    
+    // candy length set
+    totcandys = candys.length;
+}
+block.prototype.draw = function() {
+    
+    switch(this.type) {
+        
+        // brick
+        case 0:
+            image(graphImgs[0], this.x, this.y, 40, 40);
+        break;
+        
+        // door
+        case 1:
+            image(graphImgs[1], this.x, this.y, 40, 40);
+        break;
+        
+        // right spike
+        case 2:
+            image(graphImgs[4], this.x, this.y, 40, 40);
+        break;
+        
+        // left spike
+        case 3:
+            image(graphImgs[5], this.x, this.y, 40, 40);
+        break;
+        
+        // up spike
+        case 4:
+            image(graphImgs[3], this.x, this.y, 40, 40);
+        break;
+        
+        // down spike
+        case 5:
+            image(graphImgs[2], this.x, this.y, 40, 40);
+        break;
+        
+    }
+    
+    // if collide
+    if(rectCollide(this.x, this.y, 40, 40, player.x, player.y, 40, 40)) {
+        
+        switch(this.type) {
+            
+            // finish :D
+            case 1:
+                
+                if(howManycandys === totcandys) {
+                    
+                    ++curLevel;
+                    
+                    transitions.push(new Trans());
+                    
+                    if(curLevel >= levels.length) {
+                        page = "yay finisifh";
+                    }
+                    else {
+                        loadLevel();
+                    }
+                }
+                
+                // blocks
+                else {
+                    
+                    // x moving
+                    if(player.movingY === 0) {
+                        
+                        if(player.movingX < 0.5) {
+                            
+                            player.movingX = 0;
+                            player.x = this.x + 40;
+                            
+                        }
+                        
+                        if(player.movingX > 0.5) {
+                            
+                            player.movingX = 0;
+                            player.x = this.x - 40;
+                            
+                        }
+                        
+                    }
+                    
+                    // y moving
+                    else {
+                        
+                        if(player.movingY < 0.5) {
+                            
+                            player.movingY = 0;
+                            player.y = this.y + 40;
+                            
+                        }
+                        
+                        if(player.movingY > 0.5) {
+                            
+                            player.movingY = 0;
+                            player.y = this.y - 40;
+                            
+                        }
+                        
+                    }
+                    
+                }
+            break;
+            case 0:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                
+                if(player.movingY === 0) {
+                    
+                    // if moving left
+                    if(player.movingX < 0.5) {
+                        
+                        player.movingX = 0;
+                        player.x = this.x + 40;
+                        
+                        // spike
+                        if(this.type === 2) {
+                            dead = true;
+                        }
+                        
+                        // cool particles ;D
+                        else if(this.type === 0) {
+                            
+                            for(var i = 0; i < 4; ++i) {
+                                
+                                for(var j = 0; j < 5; ++j) {
+                                    
+                                    particles.push(new Particle(player.x, player.y + 20, color(255, 115, 0)));
+                                    
+                                }
+                                
+                                particles.push(new Particle(player.x, player.y + 20, color(40, 190, 40)));
+                                
+                            }
+                        }
+                    }
+                    
+                    // if moving right
+                    if(player.movingX > 0.5) {
+                        
+                        player.movingX = 0;
+                        player.x = this.x - 40;
+                        
+                        // spike
+                        if(this.type === 3) {
+                            dead = true;
+                        }
+                        
+                        // cool particles ;D
+                        else if(this.type === 0) {
+                            
+                            for(var i = 0; i < 4; ++i) {
+                                
+                                for(var j = 0; j < 5; ++j) {
+                                    
+                                    particles.push(new Particle(player.x + 40, player.y + 20, color(255, 115, 0)));
+                                    
+                                }
+                                
+                                particles.push(new Particle(player.x + 40, player.y + 20, color(40, 190, 40)));
+                                
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                }
+                
+                else {
+                    
+                    // moving up
+                    if(player.movingY < 0.5) {
+                        
+                        player.movingY = 0;
+                        player.y = this.y + 40;
+                        
+                        // spike
+                        if(this.type === 5) {
+                            dead = true;
+                        }
+                        
+                        // cool particles ;D
+                        else if(this.type === 0) {
+                            
+                            for(var i = 0; i < 4; ++i) {
+                                
+                                for(var j = 0; j < 2; ++j) {
+                                    
+                                    particles.push(new Particle(player.x + 20, player.y, color(255, 115, 0)));
+                                    
+                                }
+                                
+                                for(var j = 0; j < 3; ++j) {
+                                    
+                                    particles.push(new Particle(player.x + 20, player.y, color(40, 190, 40)));
+                                    
+                                }
+                                
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                    // moving down
+                    if(player.movingY > 0.5) {
+                        
+                        player.movingY = 0;
+                        player.y = this.y - 40;
+                        
+                        // spike
+                        if(this.type === 4) {
+                            dead = true;
+                        }
+                        
+                        // nice particles ;P
+                        else if(this.type === 0) {
+                            
+                            for(var i = 0; i < 4; ++i) {
+                                
+                                for(var j = 0; j < 5; ++j) {
+                                    
+                                    particles.push(new Particle(player.x + 20, player.y + 40, color(255, 115, 0)));
+                                    
+                                }
+                                
+                                particles.push(new Particle(player.x + 20, player.y + 40, color(40, 190, 40)));
+                                
+                            }
+                            
+                        }
+                        
+                    }
+                    
+                }
+            
+        }
+        
+    }
+};
+
+// otlinetchesxt
+function outlineText(msg, x, y) {
+    
+    fill(255);
+    for(var i = -2; i < 3; ++i) {
+        
+        for(var j = -2; j < 3; ++j) {
+            
+            text(msg, x + i, y + j);
+            
+        }
+        
+    }
+    
+    // not 40 :P
+    fill(39.9);
+    text(msg, x, y);
+}
+
+// loading page timers
+var loadTimer = 0;
+loadLevel();
+function draw() {
+    
+    // i tried
+    try {
+        
+        switch(page) {
+            
+            case "load":
+                
+                // loading images
+                background(0, 0);
+                noStroke();
+                for(var i = 0; i < graphics[loadTimer].length; ++i) {
+                    
+                    for(var j = 0; j < graphics[loadTimer][i].length; ++j) {
+                            
+                        for(var k = 0; k < pixCol.length; ++k) {
+                            
+                            if(pixCol[k][0] === graphics[loadTimer][i][j]) {
+                                
+                                fill(pixCol[k][1]);
+                                
+                            }
+                            
+                            else {
+                                
+                                noFill();
+                            }
+                            
+                            rect(j * 30, i * 30, 30, 30);
+                            
+                        }
+                        
+                    }
+                    
+                }
+                
+                // gets themmm
+                graphImgs.push(get(0, 0, 480, graphics[loadTimer].length * 30));
+                
+                ++loadTimer;
+                
+                background(40);
+                
+                textSize(100);
+                textAlign(CENTER, CENTER);
+                textFont(createFont("SP Custom Bold"));
+                fill(0);
+                outlineText("loading :)", 300, 255);
+                
+                textSize(50);
+                outlineText(loadTimer - 1 + " / 8", 300, 365);
+                
+                if(loadTimer > graphics.length - 1) {
+                    page = "maine";
+                }
+                
+            break;
+            
+            // finish
+            // frankly i think this animation is cool
+            case "yay finisifh":
+                
+                background(40);
+                textSize(100);
+                fill(255, 200);
+                textFont(createFont("Trebuchet MS Bold Italics"));
+                textAlign(CENTER, CENTER);
+                outlineText("win :)", winVars[4], 100);
+                
+                textSize(60);
+                outlineText("congratulations :D", winVars[5], 500);
+                
+                image(graphImgs[8], 175, winVars[1], 250, 250);
+                image(graphImgs[6], winVars[0], 180 + (250 - winVars[3]), 250, winVars[3]);
+                
+                if(winTimer > 30) {
+                    
+                    winVars[0] += (175 - winVars[0]) / 20;
+                    
+                    if(frameCount % floor(250 / winVars[3]) === 0) {
+                        
+                        particles.push(new Particle(winVars[0] + 230, random(185 + (250 - winVars[3]), 420), 225));
+                        
+                    }
+                    
+                }
+                
+                if(winTimer > 200) {
+                    
+                    winVars[1] += winVars[2];
+                    winVars[2] += 0.1;
+                    
+                }
+                
+                if(winVars[1] > -70) {
+                    
+                    winVars[3] = 180 - winVars[1];
+                    
+                }
+                
+                if(winVars[1] > 162 && winVars[1] < 168) {
+                    
+                    for(var i = 0; i < 60; i++) {
+                        
+                        for(var j = 0; j < 4; j++) {
+                            
+                            particles.push(new Particle(random(185, 185 + 230), winVars[1] + 250, color(215, 75, 0)));
+                            particles.push(new Particle(random(185, 185 + 230), winVars[1] + 250, color(255, 115, 0)));
+                            particles.push(new Particle(random(185, 185 + 230), winVars[1] + 250, color(245, 105, 0)));
+                            
+                        }
+                        
+                        particles.push(new Particle(random(185, 185 + 230), winVars[1] + 250, color(50, 200, 50)));
+                        
+                    }
+                    
+                }
+                
+                // shaking
+                if(winTimer > 305 && winTimer < 315) {
+                    
+                    image(get(0, 0, width, height), random(-9, 9), random(-9, 9), 600, 600);
+                    
+                }
+                
+                if(winVars[1] > 172) {
+                    
+                    winVars[2] = 0;
+                    
+                }
+                
+                if(winTimer > 480) {
+                    
+                    winVars[4] += (300 - winVars[4]) / 15;
+                    winVars[5] += (300 - winVars[5]) / 20;
+                    
+                }
+                
+                cam.x = 0;
+                cam.y = 0;
+                
+                winTimer ++;
+                
+            break;
+            
+            // the menu
+            // bro this looks sick
+            case "maine":
+                
+                background(40);
+                
+                textSize(100);
+                textAlign(CENTER, CENTER);
+                textFont(createFont("Trebuchet MS Bold Italics"));
+                outlineText("halloween", 300, 90);
+                
+                pushMatrix();
+                translate(25, 200);
+                rotate(-30);
+                image(graphImgs[8], 0, 0, 175, 175);
+                popMatrix();
+                
+                pushMatrix();
+                translate(-20, 225);
+                rotate(7.5);
+                image(graphImgs[7], 0, 0, 50, 50);
+                popMatrix();
+                
+                pushMatrix();
+                translate(225, 250);
+                rotate(9.5);
+                image(graphImgs[6], 0, 0, 175, 175);
+                
+                rotate(-2);
+                image(graphImgs[3], -150, 180, 150, 150);
+                
+                for(var i = -2; i < 3; ++i) {
+                    
+                    if(i !== -1) {
+                        
+                        image(graphImgs[0], i * 150, 180, 150, 150);
+                    }
+                }
+                
+                popMatrix();
+                
+                // ghost particles
+                if(frameCount % 2 === 0) {
+                    
+                    particles.push(new Particle(random(375, 388), random(295, 430), 225));
+                    
+                }
+                
+                // begin btn
+                buttons.playBtn.draw();
+                
+            break;
+            
+            // the game
+            case "gm":
+                
+                noStroke();
+                background(40);
+                
+                pushMatrix();
+                translate(cam.x, cam.y);
+                
+                // draw the blox
+                for(var i = 0; i < blocks.length; ++i) {
+                    
+                    blocks[i].draw();
+                    
+                }
+                
+                // candys
+                for(var i = 0; i < candys.length; ++i) {
+                    
+                    // draw
+                    imageMode(CENTER);
+                    image(graphImgs[7], candys[i][0], candys[i][1], 20, 20);
+                    imageMode(CORNER);
+                    
+                    if(rectCollide(candys[i][0] - 20, candys[i][1] - 20, 40, 40, player.x, player.y, 40, 40)) {
+                        
+                        // candy corn particels
+                        for(var j = 0; j < 12; ++j) {
+                            
+                            particles.push(new Particle(candys[i][0], candys[i][1], 230));
+                            particles.push(new Particle(candys[i][0], candys[i][1], color(245, 105, 0)));
+                            particles.push(new Particle(candys[i][0], candys[i][1], color(215, 215, 0)));
+                            
+                        }
+                        
+                        // animations
+                        candyAnimation.push([candys[i][0] + cam.x, candys[i][1] + cam.y]);
+                        candys.splice(i, 1);
+                        
+                    }
+                    
+                }
+                
+                // draw the player
+                if(!dead) {
+                    
+                    image(graphImgs[8], player.x, player.y, 40, 40);
+                    
+                }
+                
+                // gosts
+                for(var i = 0; i < ghosts.length; ++i) {
+                    
+                    ghosts[i].draw();
+                    
+                }
+                
+                popMatrix();
+                
+                // candy
+                imageMode(CENTER);
+                image(graphImgs[7], 460, 550, 25, 25);
+                imageMode(CORNER);
+                
+                fill(255);
+                textSize(30);
+                text(howManycandys + "/" + totcandys, 530, 550);
+                
+                for(var i = 0; i < candyAnimation.length; ++i) {
+                    
+                    imageMode(CENTER);
+                    image(graphImgs[7], candyAnimation[i][0], candyAnimation[i][1], 25, 25);
+                    imageMode(CORNER);
+                    
+                    candyAnimation[i][0] += (462 - candyAnimation[i][0]) / 14;
+                    candyAnimation[i][1] += (552 - candyAnimation[i][1]) / 14;
+                    
+                    // remove the candy
+                    if(round(candyAnimation[i][0]) > 459 && round(candyAnimation[i][1]) > 549) {
+                        
+                        candyAnimation.splice(i, 1);
+                        ++howManycandys;
+                        
+                    }
+                    
+                }
+                
+                // r to restart :)
+                if(keys[82]) {
+                    
+                    dead = true;
+                    
+                }
+                
+                // the moving
+                if(!dead) {
+                    
+                    // right
+                    if(player.movingX === 0 && player.movingY === 0) {
+                        
+                        if(keys[RIGHT]) {
+                            
+                            player.movingX = 1;
+                            
+                        }
+                        
+                    }
+                    
+                    // left
+                    if(player.movingX === 0 && player.movingY === 0) {
+                        
+                        if(keys[LEFT]) {
+                            
+                            player.movingX = -1;
+                            
+                        }
+                        
+                    }
+                    
+                    // up
+                    if(player.movingX === 0 && player.movingY === 0) {
+                        
+                        if(keys[UP]) {
+                            
+                            player.movingY = -1;
+                            
+                        }
+                        
+                    }
+                    
+                    // down
+                    if(player.movingX === 0 && player.movingY === 0) {
+                        
+                        if(keys[DOWN]) {
+                            
+                            player.movingY = 1;
+                            
+                        }
+                        
+                    }
+                    
+                }
+                
+                // cam moving
+                cam.x += ((-player.x + 280) - cam.x) / 20;
+                cam.y += ((-player.y + 280) - cam.y) / 20;
+                
+                textSize(50);
+                textAlign(CENTER, CENTER);
+                fill(255, ((-levelTimer) * 3.5 + 255));
+                textFont(createFont("Trebuchet MS Bold Italics"));
+                text(levelNames[curLevel], 300, 500 - (levelTimer));
+                levelTimer += (2 / 5);
+                
+                if(dead) {
+                    
+                    // so you cant move :D
+                    player.movingX = 0;
+                    player.movingY = 0;
+                    
+                    ++deadTimer;
+                    
+                    if(deadTimer < 2) {
+                        
+                        // the partilescs
+                        for(var i = 0; i < 15; ++i) {
+                            
+                            for(var j = 0; j < 6; ++j) {
+                                
+                                particles.push(new Particle(player.x + random(15, 25), player.y + random(15, 25), color(255, 115, 0)));
+                                
+                            }
+                            
+                            particles.push(new Particle(player.x + random(16, 24), player.y + random(10, 20), color(40, 190, 40)));
+                        }
+                        
+                    }
+                    
+                }
+                
+                // player moving
+                player.x += player.movingX * 4;
+                player.y += player.movingY * 4;
+                
+                // restart the levle
+                if(deadTimer > 119) {
+                    
+                    deadTimer = 0;
+                    dead = false;
+                    loadLevel();
+                    
+                }
+                
+                // the buttons
+                --mouseMovedTimer;
+                
+                if(mouseX !== pmouseX || mouseY !== pmouseY) {
+                    
+                    mouseMovedTimer = 800;
+                    
+                }
+                
+                if(mouseMovedTimer > 0) {
+                    
+                    // pup
+                    buttons.uBtn.draw();
+                    
+                    // deft
+                    buttons.lBtn.draw();
+                    
+                    // write
+                    buttons.rBtn.draw();
+                    
+                    // drown
+                    buttons.dBtn.draw();
+                    
+                    // free start
+                    buttons.reBtn.draw();
+                    
+                }
+        }
+    }
+    
+    // the ball
+    catch(e) {
+        
+        _clearLogs();
+        println("Tell SP what you were doing when this occurred: " + e);
+        
+    }
+    
+    // draw the transition
+    for(var i = 0; i < transitions.length; ++i) {
+        transitions[i].draw();
+    }
+    
+    // draw the partiqules
+    noStroke();
+    pushMatrix();
+    translate(cam.x, cam.y);
+    
+    for(var i = 0; i < particles.length; ++i) {
+        
+        particles[i].draw();
+        
+        // unpaetieslce
+        if(particles[i].opac < 0) {
+            
+            particles.splice(i, 1);
+            
+        }
+        
+    }
+    
+    popMatrix();
+    
+    if(handCursor) {
+        
+        cursor(HAND);
+        
+    }
+    
+    else {
+        
+        cursor(ARROW);
+        
+    }
+    
+    handCursor = false;
+    
+    if(width !== 600 && height !== 600) {
+        
+        throw {
+            
+            message: "Please make sure the width and height are set to 600!"
+            
+        };
+        
+    }
+    
+}
+
+function mouseClicked() {
+    
+    mouseMovedTimer = 800;
+    
+}
+
+function keyPressed() {
+    
+    keys[keyCode] = true;
+    
+}
+
+function keyReleased() {
+    
+    keys[keyCode] = false;
+    
+}
+
+function mouseMoved() {
+    
+    if(page === "gm") {
+        
+        mouseMovedTimer = 600;
+        
+    }
+    
+}
+
+function mouseOut() {
+    
+    mouseMovedTimer = 0;
+    
+}
+
+
+// }
+
+
+
+
