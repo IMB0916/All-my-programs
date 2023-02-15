@@ -1,0 +1,3313 @@
+/**
+
+         I have completed 100% of Khan Academy's 
+        'Intro to JS' and have been programming 
+                    for ~34 months.
+    
+          I would prefer to be placed in the
+                 Advanced bracket.
+                                                    
+    W     W H     H  OOOOO
+    W     W H     H O     O
+    W     W H     H O     O
+    W     W HHHHHHH O     O
+    W  W  W H     H O     O                         
+    W  W  W H     H O     O
+     WW WW  H     H  OOOOO
+            
+            DDDDD   IIIIIII DDDDD
+            D    D     I    D    D
+            D     D    I    D     D
+            D     D    I    D     D
+            D     D    I    D     D
+            D     D    I    D     D
+            D    D     I    D    D
+            DDDDD   IIIIIII DDDDD
+            
+                    IIIIIII TTTTTTT  ??????
+                       I       T    ?      ?
+                       I       T          ?
+                       I       T         ?
+                       I       T        ?
+                       I       T   
+                    IIIIIII    T        ?
+    
+    SP @Prodigy6 - 2021
+    
+    CREDITS {
+        All code - SP
+        All code was made after the contest beginning with the exception of my button function and the rectCollide function.
+        Code that is similar is a coincidence.
+    }
+    
+    ENJOY!
+    
+    Arrow keys to move, press the walkie-talkie in the bottom right for your suspects stuff (accuse, notes, transcripts, and more!)
+    
+    I tried to make good graphics, but I know they look pretty bad.
+    
+    Though this has no winter theme, Happy Holidays!
+    
+    STARTED  - 11/05/21
+    FINISHED - 12/18/21
+    RELEASED - 12/20/21
+    
+    LOGS {
+        Released - 12/20/21
+        Day 1 - 43 votes
+        Made it so you can accuse someone if you haven't interviewed everyone (by popular request)
+        Day 2 - 77 votes
+        Day 3 - 89 votes
+    }
+    
+*/
+
+
+// variables  {
+
+// the positions of the detective leader around the map
+var detectiveLeader = [
+    [0, 750, 1400],
+    [0, 60, 180],
+    [0, 1440, 1400],
+    [1, 150, 150],
+    [1, 1260, 1260],
+    [1, 840, 120],
+    [2, 720, 60],
+];
+
+/* INDEX FOR THE MESSAGES BELOW
+
+    0 = david askel (leader)
+    1 = detective (you)
+    2 = joshua johnson (father)
+    3 = addie johnson (addie)
+    4 = maddie johnson (maddie)
+    5 = melissa smith (maid)
+    6 = gerald drowsky (groundskeeper)
+    7 = julianne johnson (wife)
+
+*/
+
+// the messages. i wont go into too much detail
+var detectiveLeaderMessages = [
+    
+    // beginning
+    [
+        [0, "Welcome, Detective. I'm David Askel, the lead detective on the case of the robbery."],
+        [1, "Thanks for the professional greeting. You left the gates wide open, I could see you watching me like a hawk from a mile away."],
+        [0, "..."],
+        [0, "It wasn't me who opened them. But that's pointless information either way."],
+        [0, "Anyways, a robbery has happened. Let's cut to the chase."],
+        [0, "Someone, in the middle of the night, stole a box full of jewelry from the unfortunate family that lives here."],
+        [1, "So what am I supposed to do?"],
+        [0, "It's very simple -- you just need to explore the premises, interview witnesses with me, and then deduct who committed the crime."],
+        [1, "I'm not an amateur, shouldn't be too difficult."],
+        [0, "Don't get too cocky -- it may be harder than you think!"],
+        [0, "Well, I'm off to go keep investigating. You're bound to come into contact with me again -- feel free to start up a conversation!"],
+    ],
+    
+    // fence talk
+    [
+        [0, "Oh, hey there."],
+        [1, "Um... hi."],
+        [0, "Just examining the fence over here. It seems plausible that there could be a breach in the perimeter here."],
+        [0, "See where that gap in the fence is?"],
+        [1, "*examines fence*"],
+        [1, "Nope, not really..."],
+        [0, "Hmmm... Perhaps you are right. I'll be off!"],
+    ],
+    
+    // intvw w/ groundskeeper
+    [
+        [0, "Hey, Detective."],
+        [1, "Hello."],
+        [0, "They have a groundskeeper here, and I managed to get him here to talk."],
+        [6, "Hello!"],
+        [1, "Hello there."],
+        [0, "Can it. I'll do the interrogating from here."],
+        [1, "So much for being friendly..."],
+        [0, "State your name, age, and occupation."],
+        [6, "Don't you already know all of that based on the piece of paper you're holding?"],
+        [0, "*glances down at paper*"],
+        [0, "Yes, but it's proper procedure and it sounds much more official."],
+        [6, "Okay, whatever."],
+        [6, "Gerald Drowski, Age 56, and of course, I work as a groundskeeper."],
+        [0, "Thank you."],
+        [0, "What do you know about the robbery?"],
+        [6, "Not very much. I've never once been inside of the house, but I hear Mrs. Johnson blabbering about where the box is all of the time."],
+        [6, "I'm sure there's not a soul who has been around here for more than a day who doesn't know where that box is."],
+        [0, "Interesting. What kind of work did you do here?"],
+        [6, "What do you honestly expect? I trimmed hedges, beautified lawns, painted houses, repaired fences, other normally disinteresting things."],
+        [0, "I see."],
+        [1, "This is so boring...."],
+        [0, "What did you just say?!"],
+        [1, "Nothing...."],
+        [0, "A likely story... anyways, I think that's it, Gerald."],
+        [6, "All right then! Thanks, I hope they catch whoever did it!"],
+        [0, "Me, too."],
+    ],
+    
+    // intvw w/ father
+    [
+        [0, "Hello -- I've got the father of the family here. He's willing to give an interview of what happened, to find the thief."],
+        [0, "I'll just stand here and watch."],
+        [1, "Okay then."],
+        [2, "I'm ready."],
+        [1, "State your name, age, and occupation."],
+        [2, "Joshua Johnson, aged 44, and I work in the oil industry."],
+        [1, "Okay. So, your house was broken into last night -- can you tell me anything about that?"],
+        [2, "Honestly, not really. My wife and I were sound asleep in bed and did not notice a thing. When we woke up, my wife was selecting an outfit when she noticed that the jewelry was all missing."],
+        [1, "Where was the jewelry stored?"],
+        [2, "Ummmm...."],
+        [1, "I suggest you give me whatever information you are withholding."],
+        [2, "Fine... It was in a box next to our bed."],
+        [1, "Wait... next to your bed?!"],
+        [2, "Um, yes. Here, I have it."],
+        [2, "*shows box*"],
+        [1, "That is simply extraordinary."],
+        [1, "Moving on, can you tell me the details of anything in the box?"],
+        [2, "Oh yes, lots. The things in there were worth a total of around $100,000. There were lots of--"],
+        [1, "Wait a second... did you say $100,000?!"],
+        [0, "*facepalms*"],
+        [2, "Yes. Anyways, there is a large assortment of rings, as my wife has a sort of collection. There is also a few necklaces, which she saves for only important gatherings."],
+        [1, "I see, I see..."],
+        [1, "I think that is all the questions I have for you."],
+        [2, "Okay. Have a nice day."],
+        [0, "Gosh, this guy doesn't know what he's doing..."],
+    ],
+    
+    // intvw w/ addie and maddie
+    [
+        [0, "Hey, Detective."],
+        [1, "Hello..."],
+        [0, "This is the house of the family which was robbed. If it wasn't obvious."],
+        [1, "Is there a reason you're stopping me here?"],
+        [0, "Oh, yes. I have a few witnesses who are very much willing to be questioned. I'm sure you'll find them... very *cough* charming."],
+        [3, "We are VERY charming."],
+        [4, "Yes, indeed we are."],
+        [1, "What... are your names?"],
+        [3, "Addison."],
+        [4, "Madison."],
+        [3, "But call me Addie."],
+        [4, "And call me Maddie."],
+        [1, "*flummoxed*"],
+        [1, "O-kay...."],
+        [1, "Can you tell me any information about the robbery?"],
+        [3, "Yes, I can!"],
+        [4, "Well, we both can."],
+        [3, "Yes, I suppose."],
+        [4, "Anyways, we were both in bed when the robbery happened."],
+        [3, "We didn't hear much, but there was the faint sound of some creaking floorboards outside of our room."],
+        [4, "Wait... there were?"],
+        [3, "Yes... didn't you hear them?"],
+        [3, "Anyways, I must've forgot to tell you. I assumed it was our dad, because he does this weird thing where he sneaks over to the table and eats food when he thinks everyone is asleep."],
+        [4, "Don't tell him that we know."],
+        [3, "But Mom said he didn't leave bed last night."],
+        [4, "And usually Mom is a reliable source."],
+        [3, "But anyways, that's it."],
+        [1, "That was... a very -- er -- informative tidbit."],
+        [1, "Can you tell me anything about the jewelry?"],
+        [4, "Well, it's in a box next to our parent's bed"],
+        [3, "Well, it's worth about a hundred million dollars,"],
+        [4, "There's about a zillion rings and necklaces in it,"],
+        [3, "Mom is obsessed with looking nice. She's always talking about investing in some stocks -- "],
+        [4, "-- whatever those are --"],
+        [3, "-- so she can purchase more."],
+        [1, "Interesting, interesting..."],
+        [4, "Why are you rubbing your hands together weirdly like that?"],
+        [1, "No reason. Well, I think that's all I need from you both -- have a good day and thanks for that informative conversation!"],
+        [0, "I think you need to work with your interrogating skills. You're very diplomatic, but not very good at getting the necessary information, and not the... outliers."],
+    ],
+    
+    // intvw w/ maid
+    [
+        [0, "Hello again."],
+        [0, "I have just ran into the maid of the household -- I was unaware that they had one, because there was no mention of it."],
+        [1, "I didn't know either."],
+        [5, "Hey! Just because nobody warned you doesn't mean I'm not legitimate! That doesn't mean I should be suspicious!"],
+        [1, "Not gonna lie, that sounds pretty suspicious."],
+        [0, "Agreed."],
+        [1, "Anyways, I have a few simple questions for you. Answer truthfully."],
+        [5, "Okay, got it."],
+        [1, "State your name, age, and occupation."],
+        [5, "Melissa Smith, 26, and I'm a maid."],
+        [1, "What do you know about the robbery?"],
+        [5, "Not much more than what you know. I got in my car at around 4pm yesterday. I don't live here, you know."],
+        [1, "You're avoiding the question. What do you know about the robbery?"],
+        [5, "I said, hardly anything. Jewelry was stolen from a box. Worth a ton of money. Middle of the night. Last night. End of story."],
+        [5, "Okay, next question."],
+        [1, "Umm.... All right then. What kind of work as a maid did you do?"],
+        [5, "Cleaning, vaccuming, dusting, laundry, that sort of thing. There is nothing interesting about it. Just the grunt work that the Johnsons don't want to do. Absolutely boring. The pay's okay, but the job is just bori--"],
+        [1, "Yes, that was plenty enough synonyms. Did you happen to do any of your cleaning, vaccuming, or dusting near the box?"],
+        [5, "No... well, maybe. I don't know where the box was stored."],
+        [1, "Can anybody confirm that?"],
+        [5, "Well, no, but..."],
+        [5, "Please trust me."],
+        [1, "Okay. Well, that concludes our interview."],
+        [5, "That was... well, short."],
+        [0, "And that's the way to do it. Thank you for your time, Melissa."],
+        [0, "Also, have you any idea what that black blob to the right is?"],
+        [1, "I think that's called a television."],
+        [0, "Oh."],
+        [0, "Please excuse me, detective. I just got a phone call with a potential lead on the case."],
+    ],
+    
+    // intvw w/ mother
+    [
+        [0, "Hey there, Detective."],
+        [1, "You just pop up everywhere."],
+        [0, "You bet I do."],
+        [0, "The wife of the father is here."],
+        [7, "Please, call me Julianne."],
+        [0, "Fine, Julianne."],
+        [7, "Thank you."],
+        [0, "Detective, do you want to take this one?"],
+        [1, "Sure."],
+        [1, "State your name, age, and occupation."],
+        [7, "Julianne Johnson, Age 39, and I am a stay-at-home mom."],
+        [1, "Really? I sensed otherwise."],
+        [0, "You SENSED?"],
+        [1, "Um... moving on..."],
+        [7, "No I truly am. Ask ole Josh over here."],
+        [2, "I can confirm."],
+        [1, "Since when were you standing there?"],
+        [0, "Since he walked in forty-five seconds ago."],
+        [1, "Anyways, moving on for real this time, what can you tell me about the robbery?"],
+        [1, "Oh, and \"ole Josh\", can you please leave the room?"],
+        [2, "*leaves room*"],
+        [7, "I don't know all of the fine details, but I do know that someone broke in sometime last night, that they took all of my precious jewelry, and that you're going to find out who did it and catch them!"],
+        [0, "Aw, thank you."],
+        [1, "*rolls eyes*"],
+        [1, "Where was the jewelry stored?"],
+        [7, "In a box next to our bed. I thought everyone knew that after the robbery -- I told all the staff. And all of the nosy detectives."],
+        [1, "Can you tell me the details of anything in the box?"],
+        [7, "All of my jewelry -- it was super expensive, and insurance doesn't want to cover it!"],
+        [7, "*starts getting heated*"],
+        [1, "Uhhh, well..."],
+        [1, "I think those are all of the questions I have for you. Have a good day!"],
+        [7, "*grumbling* You, too..."],
+    ],
+    
+];
+
+// the same messages, for the transcript. read above comment
+var dlmTot = [
+    
+    // beginning
+    [
+        [0, "Welcome, Detective. I'm David Askel, the lead detective on the case of the robbery."],
+        [1, "Thanks for the professional greeting. You left the gates wide open, I could see you watching me like a hawk from a mile away."],
+        [0, "..."],
+        [0, "It wasn't me who opened them. But that's pointless information either way."],
+        [0, "Anyways, a robbery has happened. Let's cut to the chase."],
+        [0, "Someone, in the middle of the night, stole a box full of jewelry from the unfortunate family that lives here."],
+        [1, "So what am I supposed to do?"],
+        [0, "It's very simple -- you just need to explore the premises, interview witnesses with me, and then deduct who committed the crime."],
+        [1, "I'm not an amateur, shouldn't be too difficult."],
+        [0, "Don't get too cocky -- it may be harder than you think!"],
+        [0, "Well, I'm off to go keep investigating. You're bound to come into contact with me again -- feel free to start up a conversation!"],
+    ],
+    
+    // fence talk
+    [
+        [0, "Oh, hey there."],
+        [1, "Um... hi."],
+        [0, "Just examining the fence over here. It seems plausible that there could be a breach in the perimeter here."],
+        [0, "See where that gap in the fence is?"],
+        [1, "*examines fence*"],
+        [1, "Nope, not really..."],
+        [0, "Hmmm... Perhaps you are right. I'll be off!"],
+    ],
+    
+    // intvw w/ groundskeeper
+    [
+        [0, "Hey, Detective."],
+        [1, "Hello."],
+        [0, "They have a groundskeeper here, and I managed to get him here to talk."],
+        [6, "Hello!"],
+        [1, "Hello there."],
+        [0, "Can it. I'll do the interrogating from here."],
+        [1, "So much for being friendly..."],
+        [0, "State your name, age, and occupation."],
+        [6, "Don't you already know all of that based on the piece of paper you're holding?"],
+        [0, "*glances down at paper*"],
+        [0, "Yes, but it's proper procedure and it sounds much more official."],
+        [6, "Okay, whatever."],
+        [6, "Gerald Drowski, Age 56, and of course, I work as a groundskeeper."],
+        [0, "Thank you."],
+        [0, "What do you know about the robbery?"],
+        [6, "Not very much. I've never once been inside of the house, but I hear Mrs. Johnson blabbering about where the box is all of the time."],
+        [6, "I'm sure there's not a soul who has been around here for more than a day who doesn't know where that box is."],
+        [0, "Interesting. What kind of work did you do here?"],
+        [6, "What do you honestly expect? I trimmed hedges, beautified lawns, painted houses, repaired fences, other normally disinteresting things."],
+        [0, "I see."],
+        [1, "This is so boring...."],
+        [0, "What did you just say?!"],
+        [1, "Nothing...."],
+        [0, "A likely story... anyways, I think that's it, Gerald."],
+        [6, "All right then! Thanks, I hope they catch whoever did it!"],
+        [0, "Me, too."],
+    ],
+    
+    // intvw w/ father
+    [
+        [0, "Hello -- I've got the father of the family here. He's willing to give an interview of what happened, to find the thief."],
+        [0, "I'll just stand here and watch."],
+        [1, "Okay then."],
+        [2, "I'm ready."],
+        [1, "State your name, age, and occupation."],
+        [2, "Joshua Johnson, aged 44, and I work in the oil industry."],
+        [1, "Okay. So, your house was broken into last night -- can you tell me anything about that?"],
+        [2, "Honestly, not really. My wife and I were sound asleep in bed and did not notice a thing. When we woke up, my wife was selecting an outfit when she noticed that the jewelry was all missing."],
+        [1, "Where was the jewelry stored?"],
+        [2, "Ummmm...."],
+        [1, "I suggest you give me whatever information you are withholding."],
+        [2, "Fine... It was in a box next to our bed."],
+        [1, "Wait... next to your bed?!"],
+        [2, "Um, yes. Here, I have it."],
+        [2, "*shows box*"],
+        [1, "That is simply extraordinary."],
+        [1, "Moving on, can you tell me the details of anything in the box?"],
+        [2, "Oh yes, lots. The things in there were worth a total of around $100,000. There were lots of--"],
+        [1, "Wait a second... did you say $100,000?!"],
+        [0, "*facepalms*"],
+        [2, "Yes. Anyways, there is a large assortment of rings, as my wife has a sort of collection. There is also a few necklaces, which she saves for only important gatherings."],
+        [1, "I see, I see..."],
+        [1, "I think that is all the questions I have for you."],
+        [2, "Okay. Have a nice day."],
+        [0, "Gosh, this guy doesn't know what he's doing..."],
+    ],
+    
+    // intvw w/ addie and maddie
+    [
+        [0, "Hey, Detective."],
+        [1, "Hello..."],
+        [0, "This is the house of the family which was robbed. If it wasn't obvious."],
+        [1, "Is there a reason you're stopping me here?"],
+        [0, "Oh, yes. I have a few witnesses who are very much willing to be questioned. I'm sure you'll find them... very *cough* charming."],
+        [3, "We are VERY charming."],
+        [4, "Yes, indeed we are."],
+        [1, "What... are your names?"],
+        [3, "Addison."],
+        [4, "Madison."],
+        [3, "But call me Addie."],
+        [4, "And call me Maddie."],
+        [1, "*flummoxed*"],
+        [1, "O-kay...."],
+        [1, "Can you tell me any information about the robbery?"],
+        [3, "Yes, I can!"],
+        [4, "Well, we both can."],
+        [3, "Yes, I suppose."],
+        [4, "Anyways, we were both in bed when the robbery happened."],
+        [3, "We didn't hear much, but there was the faint sound of some creaking floorboards outside of our room."],
+        [4, "Wait... there were?"],
+        [3, "Yes... didn't you hear them?"],
+        [3, "Anyways, I must've forgot to tell you. I assumed it was our dad, because he does this weird thing where he sneaks over to the table and eats food when he thinks everyone is asleep."],
+        [4, "Don't tell him that we know."],
+        [3, "But Mom said he didn't leave bed last night."],
+        [4, "And usually Mom is a reliable source."],
+        [3, "But anyways, that's it."],
+        [1, "That was... a very -- er -- informative tidbit."],
+        [1, "Can you tell me anything about the jewelry?"],
+        [4, "Well, it's in a box next to our parent's bed"],
+        [3, "Well, it's worth about a hundred million dollars,"],
+        [4, "There's about a zillion rings and necklaces in it,"],
+        [3, "Mom is obsessed with looking nice. She's always talking about investing in some stocks -- "],
+        [4, "-- whatever those are --"],
+        [3, "-- so she can purchase more."],
+        [1, "Interesting, interesting..."],
+        [4, "Why are you rubbing your hands together weirdly like that?"],
+        [1, "No reason. Well, I think that's all I need from you both -- have a good day and thanks for that informative conversation!"],
+        [0, "I think you need to work with your interrogating skills. You're very diplomatic, but not very good at getting the necessary information, and not the... outliers."],
+    ],
+    
+    // intvw w/ maid
+    [
+        [0, "Hello again."],
+        [0, "I have just ran into the maid of the household -- I was unaware that they had one, because there was no mention of it."],
+        [1, "I didn't know either."],
+        [5, "Hey! Just because nobody warned you doesn't mean I'm not legitimate! That doesn't mean I should be suspicious!"],
+        [1, "Not gonna lie, that sounds pretty suspicious."],
+        [0, "Agreed."],
+        [1, "Anyways, I have a few simple questions for you. Answer truthfully."],
+        [5, "Okay, got it."],
+        [1, "State your name, age, and occupation."],
+        [5, "Melissa Smith, 26, and I'm a maid."],
+        [1, "What do you know about the robbery?"],
+        [5, "Not much more than what you know. I got in my car at around 4pm yesterday. I don't live here, you know."],
+        [1, "You're avoiding the question. What do you know about the robbery?"],
+        [5, "I said, hardly anything. Jewelry was stolen from a box. Worth a ton of money. Middle of the night. Last night. End of story."],
+        [5, "Okay, next question."],
+        [1, "Umm.... All right then. What kind of work as a maid did you do?"],
+        [5, "Cleaning, vaccuming, dusting, laundry, that sort of thing. There is nothing interesting about it. Just the grunt work that the Johnsons don't want to do. Absolutely boring. The pay's okay, but the job is just bori--"],
+        [1, "Yes, that was plenty enough synonyms. Did you happen to do any of your cleaning, vaccuming, or dusting near the box?"],
+        [5, "No... well, maybe. I don't know where the box was stored."],
+        [1, "Can anybody confirm that?"],
+        [5, "Well, no, but..."],
+        [5, "Please trust me."],
+        [1, "Okay. Well, that concludes our interview."],
+        [5, "That was... well, short."],
+        [0, "And that's the way to do it. Thank you for your time, Melissa."],
+        [0, "Also, have you any idea what that black blob to the right is?"],
+        [1, "I think that's called a television."],
+        [0, "Oh."],
+        [0, "Please excuse me, detective. I just got a phone call with a potential lead on the case."],
+    ],
+    
+    // intvw w/ mother
+    [
+        [0, "Hey there, Detective."],
+        [1, "You just pop up everywhere."],
+        [0, "You bet I do."],
+        [0, "The wife of the father is here."],
+        [7, "Please, call me Julianne."],
+        [0, "Fine, Julianne."],
+        [7, "Thank you."],
+        [0, "Detective, do you want to take this one?"],
+        [1, "Sure."],
+        [1, "State your name, age, and occupation."],
+        [7, "Julianne Johnson, Age 39, and I am a stay-at-home mom."],
+        [1, "Really? I sensed otherwise."],
+        [0, "You SENSED?"],
+        [1, "Um... moving on..."],
+        [7, "No I truly am. Ask ole Josh over here."],
+        [2, "I can confirm."],
+        [1, "Since when were you standing there?"],
+        [0, "Since he walked in forty-five seconds ago."],
+        [1, "Anyways, moving on for real this time, what can you tell me about the robbery?"],
+        [1, "Oh, and \"ole Josh\", can you please leave the room?"],
+        [2, "*leaves room*"],
+        [7, "I don't know all of the fine details, but I do know that someone broke in sometime last night, that they took all of my precious jewelry, and that you're going to find out who did it and catch them!"],
+        [0, "Aw, thank you."],
+        [1, "*rolls eyes*"],
+        [1, "Where was the jewelry stored?"],
+        [7, "In a box next to our bed. I thought everyone knew that after the robbery -- I told all the staff. And all of the nosy detectives."],
+        [1, "Can you tell me the details of anything in the box?"],
+        [7, "All of my jewelry -- it was super expensive, and insurance doesn't want to cover it!"],
+        [7, "*starts getting heated*"],
+        [1, "Uhhh, well..."],
+        [1, "I think those are all of the questions I have for you. Have a good day!"],
+        [7, "*grumbling* You, too..."],
+    ],
+    
+];
+// image for the win/lose screen (you'll see it)
+var winOrLoseScreenImg;
+
+// the cursor. dis ≠ this, dis = display
+var disCursor = "norm";
+
+// if the mouse is clicked
+var clicked = false;
+
+// the page
+var page = "load";
+
+// if a key is typed (for the notes on the suspects)
+var keyIsTyped = false;
+
+// how many frames are existing, for the load screen
+var frames = 0;
+
+// the keys being pressed
+var keys = [];
+
+// the background (for the suspects and sub-suspects page(s))
+var bckgrd;
+
+// the scroll on the suspect page(s)
+var suspectScroll = 0;
+
+// the player and positions
+var player = {
+    x: 750,
+    y: 1500,
+    xVel: 0,
+    yVel: 0
+};
+
+// the cam and positions
+var cam = {
+    x: 0,
+    y: 0,
+};
+
+// fades on the page where it says "you accused ... they were ..."
+var accuseFades = [0, 0, 0, 0];
+
+// the timer, to know when the fades start
+var accuseTimer = 0;
+
+// which section of the house you are in
+var sec = 0;
+
+// the array with all of the sections
+var gmArray = [
+    [
+        "                        P",
+        "siiiiiiiiiiiiiiiiiiiiiiidS",
+        "FgggggggggggppeeeeeeeeeeeF",
+        "FgggggggggggppeeeeeeeeeeeF",
+        "FgghGhGgggggppeeeeeeeeeeeF",
+        "FggGgggggggpppeeeeeeeeeeeF",
+        "FgghggggggppppppgggggggggF",
+        "FgghgggggpppggpppggggggggF",
+        "FggggggppppggggppppggggggF",
+        "FgggggpppggggggggpppgggggF",
+        "FggggpppgggOOOOgggpppggggF",
+        "FgghgppgggoBBBBogggppghggF",
+        "FgghgppggoBBBBBBoggppgGggF",
+        "FgghgppggoBBbbBBoggppgGggF",
+        "FggGgppggoBBbbBBoggppghggF",
+        "FggGgppggoBBBBBBoggppghggF",
+        "FggGgppgggoBBBBogggppgGggF",
+        "FggggpppgggOOOOgggpppggggF",
+        "FgggggpppggggggggpppgggggF",
+        "FggggggppppggggppppggggggF",
+        "FggGgggggpppggpppgggggGggF",
+        "FggGggggggppppppgggggghggF",
+        "FggGgggggggppppggggggghggF",
+        "FgghGhhgggggppgggggGGGGggF",
+        "FgggggggggggppgggggggggggF",
+        "FgggggggggggppgggggggggggF",
+        "vffffffffffffffffffffffffV"
+    ],
+    [
+        "iiiiiiiiiiiiiiiiiiiiiiii",
+        "iwwwwwwwwwZZZZZwwwCwwwwi",
+        "iwwuuUUuuwwwwwwwwwwwwwPi",
+        "iwwUuuUUuwZZZZZwwwWwwwPi",
+        "iwwUUuuUUwwwwwwwwwqwwwPi",
+        "iwwuUUuuUwZZZZZwwwwwwwPi",
+        "iwwuuUUuuwwwwwwwwwCwwwwi",
+        "iwwUuuUUuwwiiiiiiiiiiiii",
+        "iwwwwwwwwwwi           i",
+        "iwwwwwwwwwwi           i",
+        "iwwRRRRRRwwi           i",
+        "iwwRRRRRRww0P          i",
+        "iwwRRRRRRwwiiiiiiiiiiiii",
+        "iwwRRRRRRww1P          i",
+        "iwwRRRRRRwwi           i",
+        "iwwwwwwwwwwi           i",
+        "iwwwwwwwwwwi           i",
+        "iiwwwiiiiiiiiiiiiiiiiiii",
+        "iwwwwwwwwwwwwwwwwwwwwwwi",
+        "iwwwTTTwwwwwwwRRRRRRRRwi",
+        "iwCwTTTwcwwwwwRRRRRRRRwi",
+        "iwwwTTTwwwwwwwRRRRRRRRwi",
+        "iwwwwwwwwwwwwwwwwwwwwwwi",
+        "iiiiiiiiiiiiiiiiiiiiiiDi",
+        "                      P",
+    ],
+    [
+        " iiiiiiiiiiiii",
+        " itwwwwwwwwwwi",
+        " itwRRRRRwwwri",
+        " iwwRRRRRwwaAi",
+        "P2wwwwwwwwwaAi",
+        " iiiiiiiiiiiii",
+    ],
+    [
+        " iiiiiiiiiiiii",
+        "P3wwwwwwwwwaAi",
+        " iwwRRRRRwwaAi",
+        " itwRRRRRwwwri",
+        " itwwwwwwwwwwi",
+        " iiiiiiiiiiiii",
+    ],
+];
+
+// how far the cam can go (so you're not looking at an abyss when you get near the edge
+var gameLengths = [
+    
+    // x, x,  y, y
+    [[-960, 0], [-1020, -60]],
+    [[-840, 0], [-840, 0]],
+    [[-240, -65], [120, 120]],
+    [[-240, -65], [120, 120]],
+];
+/** logo vars **/
+var imgs = [];
+var bck;
+var presents = [];
+var pMsg = ["P", "R", "E", "S", "E", "N", "T", "S"];
+var transImg, transImgX = 0.1;
+var logoTimer = 1;
+for(var i = 0; i < 8; i++) {
+    presents.push([i * 50 + 125, 525, 300, 615]);
+}
+background(0, 0, 0, 0);
+fill(0);
+textSize(380);
+textFont(createFont("Montserrat Bold"));
+textAlign(CENTER, CENTER);
+text("SP", 295, 295);
+fill(127.5);
+text("SP", 300, 300);
+fill(255);
+text("SP", 305, 305);
+for(var i = 0; i < 30; i++) {
+    for(var j = 0; j < 30; j++) {
+        imgs.push([get(i*30, j*30, 30, 30), i*30, j*30, 0, 285, false]);
+    }
+}
+
+noStroke();
+background(21, 0, 158);
+for(var i = 0; i < height; i+= 10) {
+    fill(0, 3);
+    rect(0, i, width, height - i);
+}
+for(var i = 0; i < 600; i++) {
+    fill(255);
+    ellipse(random(0, width), random(0, height), random(0.5, 2.5), random(0.5, 2.5));
+}
+
+bck = get(0, 0, 600, 600);
+
+// }
+// graphics  {
+
+// the graphics that are being loaded (for a "nicer" loading screen)
+var whichGraphicsAreBeingLoaded = ["grass", "hedge", "flowery-hedge", "fence-1", "fence-2", "path", "marble-1", "marble-2", "fountain-1", "fountain-2", "deck-planks", "house-planks", "door-1", "door-2", "carpet-1", "carpet-2", "carpet-3", "chair-1", "chair-2", "table", "bookshelf", "couch-1", "couch-2", "bed-1", "bed-2", "dresser", "nightstand", "fence-corner-1", "fence-corner-2", "fence-corner-3", "fence-corner-4", "player", "guide", "father", "addie", "maddie", "maid", "groundskeeper", "walkie-talkie", "question-mark", "background"];
+
+// the colors
+var colors = [
+    ["a", color(255, 162, 0)],   // orange
+    ["A", color(0)],             // black
+    ["b", color(110, 178, 255)], // light blue
+    ["B", color(50, 156, 255)],  // slightly darker blue
+    ["c", color(245, 26, 26)],   // red
+    ["C", color(255, 230, 140)], // beige
+    ["d", color(175)],           // light gray
+    ["D", color(255, 0, 191)],   // pink
+    ["E", color(204, 0, 255)],   // purple
+    ["g", color(22, 217, 0)],    // light green
+    ["G", color(2, 197, 0)],     // medium green
+    ["h", color(18, 120, 0)],    // dark green
+    ["H", color(8, 100, 0)],     // slightly darker green
+    ["i", color(40)],            // almost black
+    ["o", color(107, 84, 51)],   // brown
+    ["O", color(117, 94, 61)],   // slightly lighter brown
+    ["p", color(255, 255, 180)], // pale yellow
+    ["P", color(255, 243, 160)], // slightly darker pale yellow
+    ["q", color(230)],           // slightly darker than "T"
+    ["r", color(0, 129, 143)],   // turquoise
+    ["R", color(0, 124, 138)],   // slightly darker turquoise
+    ["s", color(92, 67, 235)],   // purple-blue
+    ["S", color(87, 62, 230)],   // slightly darker purple-blue
+    ["t", color(240)],           // very light gray
+    ["T", color(235)],           // slightly darker gray
+    ["u", color(255, 36, 36)],   // slightly darker red
+    ["U", color(87, 72, 25)],    // very dark brown
+    ["v", color(112, 87, 255)],  // other purple-blue
+    ["V", color(107, 82, 250)],  // slightly darker purple-blue
+    ["w", color(255)],           // white
+    ["W", color(85, 70, 24)],    // slightly darker dark brown
+    ["x", color(173, 158, 112)], // weird brown-beige color
+    ["X", color(93, 78, 32)],    // dark brown
+    ["y", color(255, 255, 0)],   // yellow
+    ["Y", color(0, 96, 255)],    // blue
+    ["z", color(153, 138, 92)],  // other weird brown-beige color
+    ["Z", color(133, 118, 72)],  // weird brown-beigte color v3
+];
+
+// the pixel art... very long, very tedious
+var pixelArt = [
+    [],
+    // grass - 1
+    [
+        "gggggggggggggggggggg",
+        "gGgggggggggggggggggG",
+        "GgggggGgGggggggggggg",
+        "gggggggGgggggGgGgggg",
+        "ggggggggggggggGggggg",
+        "gggggggggggggggggggg",
+        "gggggggggggggggggggg",
+        "ggggggggggggggGgGggg",
+        "gggggggggggggggGgggg",
+        "gggggGgGgggggggggggg",
+        "ggggggGggggggggggggg",
+        "gggggggggggggggggggg",
+        "gggggggggggggggggggg",
+        "gggggggggggggggggggg",
+        "gggggggggggggggggggg",
+        "gggggggggggggGgGgggg",
+        "gGgGggggggggggGggggg",
+        "ggGggggggggggggggggg",
+        "gggggggggggggggggggg",
+        "gggggggggggggggggggg",
+    ],
+    // hedge - 2
+    [
+        "hHhhhhhhhHHHhhhhhhhh",
+        "hHHHhhhhHHHhhhhHHhhh",
+        "hHHHhhhhhHHhhhhhHHhh",
+        "hhHHhhhhhhhhhhhhhhhh",
+        "hhhhhhhHhhhhhhhhhhhh",
+        "HHHHhhhHHhhhhhhhhHHH",
+        "hhHHHhHHHhHHHhhhHHHH",
+        "hhhhHhhHhhhHHHhhhHHh",
+        "hhhhhhhhhhhhHhhhhHhh",
+        "hhHHHHhhhhhhhhhhhhhh",
+        "hhHHHHHhhhHhhhhhhhhh",
+        "hhHHhhhhhhHHHhhhhhHH",
+        "HhhhhhhhhhhHHHHhhHHH",
+        "hhhHhhhhhhhhHHhhhHHh",
+        "hhhHHHHhhhhhhhhhhHhh",
+        "hhhhhHHHhhhhhhhhhhhh",
+        "hhHhhhhhhhHhhhhhhhhh",
+        "HHHHHhhhHHHhhhhHHHhh",
+        "hhHHhhhHHHHHhhhHHhhh",
+        "hhhhhhhhhhhhhhHHhhhh",
+    ],
+    // flowery hedge - 3
+    [
+        "hHhhhhhhhHHHhhhwhhhh",
+        "hHHHhhhwHHHhhhhHHhhh",
+        "hHwHhhwywHHhhhhhHHhh",
+        "hwywhhhwhhhhhhhhwhhh",
+        "hhwhhhhHhhhhhhhwywhh",
+        "HHHHhhhHHhhhhhhhwHHH",
+        "hhHHHhHHHhHHHhhhHHHH",
+        "hhhhHhhHhwhHHHhhhHHh",
+        "hhhhhhhhwywhHhhhhHhh",
+        "hhHHHHhhhwhhhhhhwhhh",
+        "hhHHHHHhhhHhhhhwywhh",
+        "hhHHhhhhhhHHHhhhwhHH",
+        "HhhhhwhhhhhHHHHhhHHH",
+        "hhhHwywhhhhhHHhhhHHh",
+        "hhhHHwHhhhhhhhhhhHhh",
+        "hhhhhHHHhhhhhhhhhhhh",
+        "hhHhhhhhhhHhhhhhhhhh",
+        "HHHwHhhhHHHhhhhHHHhh",
+        "hhwywhhHHHHHhhhwHhhh",
+        "hhhwhhhhhhhhhhwywhhh",
+    ],
+    // fence h - 4
+    [
+        "gggggggggggggggggggg",
+        "gGgggggggggggggggggG",
+        "GgggggGgGggggggggggg",
+        "gOOOOgggOOOOggOOOOgg",
+        "gOooogggOoooggOooogg",
+        "gOoOogggOoOoggOoOogg",
+        "oOoOooooOoOoooOoOooo",
+        "oOooooooOoooooOooooo",
+        "gOooogggOoooggOooogg",
+        "gOoooGgGOoooggOooogg",
+        "gOooogGgOoooggOooogg",
+        "gOooogggOoooggOooogg",
+        "oOoOooooOoOoooOoOooo",
+        "oOoOooooOoOoooOoOooo",
+        "gOoOogggOoOoggOoOogg",
+        "gOooogggOoooggOooogg",
+        "gGgGggggggggggGggggg",
+        "ggGggggggggggggggggg",
+        "gggggggggggggggggggg",
+        "gggggggggggggggggggg",
+    ],
+    // fence v - 5
+    [
+        "gggggggggOOggggggggg",
+        "gGgggggggooggggggggG",
+        "GgggggGgGooggggggggg",
+        "gggggggGgooggGgGgggg",
+        "gggggggggoogggGggggg",
+        "gggggggggOOggggggggg",
+        "gggggggggOOggggggggg",
+        "gggggggggoogggGgGggg",
+        "gggggggggooggggGgggg",
+        "gggggGgGgooggggggggg",
+        "ggggggGggooggggggggg",
+        "gggggggggOOggggggggg",
+        "gggggggggOOggggggggg",
+        "gggggggggOOggggggggg",
+        "gggggggggooggggggggg",
+        "gggggggggooggGgGgggg",
+        "gGgGgggggoogggGggggg",
+        "ggGggggggooggggggggg",
+        "gggggggggOOggggggggg",
+        "gggggggggOOggggggggg",
+    ],
+    // path - 6
+    [
+        "pppppppppppppppppPpp",
+        "pppppppppppppppppppp",
+        "pppppppppppppppppppp",
+        "pppppppppppppPpPpppp",
+        "ppppppppppppppPppppp",
+        "pppppppppppppppppppp",
+        "pppppppppppppppppppp",
+        "pppppppppppppppppppp",
+        "pppppppPpPpppppppppp",
+        "ppppppppPppppppppppp",
+        "pppppppppppppppppppp",
+        "ppppppppppppPpPppppp",
+        "pppppppppppppPpppppp",
+        "pppppppppppppppppppp",
+        "ppPpPppppppppppppppp",
+        "pppPpppppppppppppppp",
+        "pppppppppppppppppppp",
+        "pppppppppppppppppppp",
+        "pppppppppppppppppppp",
+        "ppppppppppppppppPpPp",
+    ],
+    // marble h - 7
+    [
+        "tttttttttttttttttttt",
+        "TTTTTTTTTTTTTTTTTTTT",
+        "tttttttttttttttttttt",
+        "TTTTTTTTTTTTTTTTTTTT",
+        "tttttttttttttttttttt",
+        "TTTTTTTTTTTTTTTTTTTT",
+        "tttttttttttttttttttt",
+        "TTTTTTTTTTTTTTTTTTTT",
+        "tttttttttttttttttttt",
+        "TTTTTTTTTTTTTTTTTTTT",
+        "tttttttttttttttttttt",
+        "TTTTTTTTTTTTTTTTTTTT",
+        "tttttttttttttttttttt",
+        "TTTTTTTTTTTTTTTTTTTT",
+        "tttttttttttttttttttt",
+        "TTTTTTTTTTTTTTTTTTTT",
+        "tttttttttttttttttttt",
+        "TTTTTTTTTTTTTTTTTTTT",
+        "tttttttttttttttttttt",
+        "TTTTTTTTTTTTTTTTTTTT",
+    ],
+    // marble v - 8
+    [
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+        "tTtTtTtTtTtTtTtTtTtT",
+    ],
+    // fountain water close - 9
+    [
+        "bbbbbbbbbbbbbbbbbbbb",
+        "bbbBBbBbbbbbbbbbbbbb",
+        "bbbbbBbbbbbbbbbbbbbb",
+        "bbbbbbbbbbBBBbbbbbbb",
+        "bbbbbbbBBBbbbBbbbbbb",
+        "bbbbbbbbbbbbbbbbbbbb",
+        "bbbbbbbbbbbbbbbbbbbb",
+        "BbbbbbbbbbbbbbbBBBbb",
+        "bbbbbbbbbbbbbbbbbbBB",
+        "bbbbbbbbbbbbbbbbbbbb",
+        "bbbbbbbbbbbbbbbbbbbb",
+        "bbbbbbbBBBbbbbbbbbbb",
+        "bbbbbbbbbbbbbbbbbbbb",
+        "bbbbbbbbbbbbbBbbBbbb",
+        "bbbbbbbbbbbbBbBBbbbb",
+        "bbbbbbbbbbbbbbbbbbbb",
+        "bbbbbbbbbbbbbbbbbbbb",
+        "bbBBbbbbbbbbbbbbbbbb",
+        "bbbbBBbbbbbbbbbbbbbb",
+        "bbbbbbbbbbbbbbbbbbbb",
+    ],
+    // fountain water far - 10
+    [
+        "BBBBBBBYYBBBBBBBBBBB",
+        "BBBBBYYBBBBBBBBBBBBB",
+        "BBBBBBBBBBBYYYBBBBBB",
+        "BBBBBBBBBBBBBBYYYBBB",
+        "BBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBYYYBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBYBBBBB",
+        "BBBBBBBBBBBBBYBYBBBB",
+        "BBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBYBBBBBBBBBBBB",
+        "BBBBYYYBYYBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBBBB",
+        "BBBBBBBBBBBBBBBBBYBB",
+        "YBBBBBBBBBBBBBBBYBYY",
+    ],
+    // deck planks - 11
+    [
+        "zzzzzzzzzzzzzzzzzzzZ",
+        "zzzzzzzzzzzzzzzzzzzZ",
+        "zzzzzzzzzzzzzzzzzzzZ",
+        "zzzzzzzzzzzzzzzzzzzZ",
+        "ZZZZZZZZZZZZZZZZZZZZ",
+        "zzzzzzZzzzzzzzzzzzzz",
+        "zzzzzzZzzzzzzzzzzzzz",
+        "zzzzzzZzzzzzzzzzzzzz",
+        "zzzzzzZzzzzzzzzzzzzz",
+        "ZZZZZZZZZZZZZZZZZZZZ",
+        "Zzzzzzzzzzzzzzzzzzzz",
+        "Zzzzzzzzzzzzzzzzzzzz",
+        "Zzzzzzzzzzzzzzzzzzzz",
+        "Zzzzzzzzzzzzzzzzzzzz",
+        "ZZZZZZZZZZZZZZZZZZZZ",
+        "zzzzzzzzzzzzzZzzzzzz",
+        "zzzzzzzzzzzzzZzzzzzz",
+        "zzzzzzzzzzzzzZzzzzzz",
+        "zzzzzzzzzzzzzZzzzzzz",
+        "ZZZZZZZZZZZZZZZZZZZZ",
+    ],
+    // floor/house planks - 12
+    [
+        "xxxxxxxxxxxxxxxxxxxz",
+        "xxxxxxxxxxxxxxxxxxxz",
+        "xxxxxxxxxxxxxxxxxxxz",
+        "xxxxxxxxxxxxxxxxxxxz",
+        "zzzzzzzzzzzzzzzzzzzz",
+        "xxxxxxzxxxxxxxxxxxxx",
+        "xxxxxxzxxxxxxxxxxxxx",
+        "xxxxxxzxxxxxxxxxxxxx",
+        "xxxxxxzxxxxxxxxxxxxx",
+        "zzzzzzzzzzzzzzzzzzzz",
+        "zxxxxxxxxxxxxxxxxxxx",
+        "zxxxxxxxxxxxxxxxxxxx",
+        "zxxxxxxxxxxxxxxxxxxx",
+        "zxxxxxxxxxxxxxxxxxxx",
+        "zzzzzzzzzzzzzzzzzzzz",
+        "xxxxxxxxxxxxxzxxxxxx",
+        "xxxxxxxxxxxxxzxxxxxx",
+        "xxxxxxxxxxxxxzxxxxxx",
+        "xxxxxxxxxxxxxzxxxxxx",
+        "zzzzzzzzzzzzzzzzzzzz",
+    ],
+    // door 1 - 13
+    [
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXyyyyyyX",
+        "XXXXXXXXXXXXXXXXyyyX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+    ],
+    // door 2 - 14
+    [
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XXXXXXXXXXyXXXXXXXXX",
+        "XXXXXXXXXXyXXXXXXXXX",
+        "XXXXXXXXXXyXXXXXXXXX",
+        "XXXXXXXXXyyXXXXXXXXX",
+        "XXXXXXXXXyyXXXXXXXXX",
+        "XXXXXXXXXyyXXXXXXXXX",
+        "XXXXXXXXXXXXXXXXXXXX",
+    ],
+    // carpet 1 - 15
+    [
+        "rrrrrrrrrrrrrrrrrrrr",
+        "rrRrrrrRrrrrRrrrrRrr",
+        "rRrRrrRrRrrRrRrrRrRr",
+        "rrrrrrrrrrrrrrrrrrrr",
+        "rrrrrrrrrrrrrrrrrrrr",
+        "rrRrrrrRrrrrRrrrrRrr",
+        "rRrRrrRrRrrRrRrrRrRr",
+        "rrrrrrrrrrrrrrrrrrrr",
+        "rrrrrrrrrrrrrrrrrrrr",
+        "rrRrrrrRrrrrRrrrrRrr",
+        "rRrRrrRrRrrRrRrrRrRr",
+        "rrrrrrrrrrrrrrrrrrrr",
+        "rrrrrrrrrrrrrrrrrrrr",
+        "rrRrrrrRrrrrRrrrrRrr",
+        "rRrRrrRrRrrRrRrrRrRr",
+        "rrrrrrrrrrrrrrrrrrrr",
+        "rrrrrrrrrrrrrrrrrrrr",
+        "rrRrrrrRrrrrRrrrrRrr",
+        "rRrRrrRrRrrRrRrrRrRr",
+        "rrrrrrrrrrrrrrrrrrrr",
+    ],
+    // carpet 2 - 16
+    [
+        "vvvvvvvvvvvvvvvvvvvv",
+        "vvVvvvvVvvvvVvvvvVvv",
+        "vVvVvvVvVvvVvVvvVvVv",
+        "vvvvvvvvvvvvvvvvvvvv",
+        "vvvvvvvvvvvvvvvvvvvv",
+        "vvVvvvvVvvvvVvvvvVvv",
+        "vVvVvvVvVvvVvVvvVvVv",
+        "vvvvvvvvvvvvvvvvvvvv",
+        "vvvvvvvvvvvvvvvvvvvv",
+        "vvVvvvvVvvvvVvvvvVvv",
+        "vVvVvvVvVvvVvVvvVvVv",
+        "vvvvvvvvvvvvvvvvvvvv",
+        "vvvvvvvvvvvvvvvvvvvv",
+        "vvVvvvvVvvvvVvvvvVvv",
+        "vVvVvvVvVvvVvVvvVvVv",
+        "vvvvvvvvvvvvvvvvvvvv",
+        "vvvvvvvvvvvvvvvvvvvv",
+        "vvVvvvvVvvvvVvvvvVvv",
+        "vVvVvvVvVvvVvVvvVvVv",
+        "vvvvvvvvvvvvvvvvvvvv",
+        "vvvvvvvvvvvvvvvvvvvv",
+    ],
+    // carpet 3 - 17
+    [
+        "ssssssssssssssssssss",
+        "ssSssssSssssSssssSss",
+        "sSsSssSsSssSsSssSsSs",
+        "ssssssssssssssssssss",
+        "ssssssssssssssssssss",
+        "ssSssssSssssSssssSss",
+        "sSsSssSsSssSsSssSsSs",
+        "ssssssssssssssssssss",
+        "ssssssssssssssssssss",
+        "ssSssssSssssSssssSss",
+        "sSsSssSsSssSsSssSsSs",
+        "ssssssssssssssssssss",
+        "ssssssssssssssssssss",
+        "ssSssssSssssSssssSss",
+        "sSsSssSsSssSsSssSsSs",
+        "ssssssssssssssssssss",
+        "ssssssssssssssssssss",
+        "ssSssssSssssSssssSss",
+        "sSsSssSsSssSsSssSsSs",
+        "ssssssssssssssssssss",
+    ],
+    // chair 1 - 18
+    [
+        "ZZZZZZZZZZZZZZZZZZZZ",
+        "ZZZZZZZZZZZZZZZZZZZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "zzzzzzzzzzzzzzzzzzZZ",
+        "ZZZZZZZZZZZZZZZZZZZZ",
+        "ZZZZZZZZZZZZZZZZZZZZ",
+    ],
+    // chair 2 - 19
+    [
+        "ZZZZZZZZZZZZZZZZZZZZ",
+        "ZZZZZZZZZZZZZZZZZZZZ",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZZZZZZZZZZZZZZZZZZZ",
+        "ZZZZZZZZZZZZZZZZZZZZ",
+    ],
+    // table - 20
+    [
+        "UUUUUUUUUUUUUUUUUUUU",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "UUUUUUUUUUUUUUUUUUUU",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "UUUUUUUUUUUUUUUUUUUU",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "UUUUUUUUUUUUUUUUUUUU",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWWWWWWW",
+        "WWWWWWWWWWWWWWWWWWWW",
+    ],
+    // bookshelf - 21
+    [
+        "zzzzzzzzzzzzzzzzzzzz",
+        "zZZZZZZZZZZZZZZZZZZz",
+        "zZZBZZZZZZZZZZBZZZZz",
+        "zZZBZZsuaaZZZZBZZZZz",
+        "zyyBZZsuaaZuZZBsZZBz",
+        "zyyBggsuaayuggBsaaBz",
+        "zyyBggsuaayuggBsaaBz",
+        "zyyBggsuaayuggBsaaBz",
+        "zyyBggsuaayuggBsaaBz",
+        "zzzzzzzzzzzzzzzzzzzz",
+        "zZZZZZZZZZZZZZZZZZZz",
+        "zZZZZZZZZZZZZZZZZZZz",
+        "zZZZZZZZZgZZZZZZuZZz",
+        "zaaasssyZgZuZZgZuZZz",
+        "zaaasssyZgZussgBuyyz",
+        "zaaasssyugBussgBuyyz",
+        "zaaasssyugBussgBuyyz",
+        "zaaasssyugBussgBuyyz",
+        "zaaasssyugBussgBuyyz",
+        "zzzzzzzzzzzzzzzzzzzz",
+    ],
+    // couch 1 - 22
+    [
+        "ZZZZZZZZZZZZZZZZZZZZ",
+        "ZZZZZZZZZZZZZZZZZZZZ",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+    ],
+    // couch 2 - 23
+    [
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZzzzzzzzzzzzzzzzzzz",
+        "ZZZZZZZZZZZZZZZZZZZZ",
+        "ZZZZZZZZZZZZZZZZZZZZ",
+    ],
+    // bed 1 - 24
+    [
+        "cuuuuuuuuuuuucuuuuuu",
+        "uuuuuuuuuuuuucuuuuuu",
+        "uuuuuuuuuuuuuucucuuu",
+        "uuuuuuuucuuuuuuucuuu",
+        "uuuuuuuucuuuuuuucuuu",
+        "uuuuuuuucuuuuuuuucuu",
+        "uuuuuuuuuuuuuuuuucuu",
+        "uuuucuuuuuuucuuuuuuu",
+        "uuucuuuuuuuucuuuuuuu",
+        "uuuucuuuuuuuucuuuuuu",
+        "uuuucuuuuuuuuuuuuuuu",
+        "uuuuuuuuuuucuuuuuuuu",
+        "uuuuuuuuuuucuuuuuuuu",
+        "uuuuuuuuuuucuuuuuuuu",
+        "uuuuuuuuuuuuuuuuuuuu",
+        "uuuuuucuuuuuuuuuucuu",
+        "uuuuuuucuuuuuuuuuucu",
+        "uuuuuucuuuuuuuuuucuu",
+        "ucuuuuuuuuuuuuuuuuuu",
+        "cuuuuuuuuuuuuuuuuuuu",
+    ],
+    // bed 2 - 25
+    [
+        "cuuuuuuuuuwwwwwwwwww",
+        "uuuuuuuuuuwwwwwwwwww",
+        "uuuuuuuuuuwwwwwwwwww",
+        "uuuuuuuucuwwwwwwwwww",
+        "uuuuuuuucuwwwwwwwwww",
+        "uuuuuuuucuwwwwwwwwww",
+        "uuuuuuuuuuwwwwwwwwww",
+        "uuuucuuuuuwwwwwwwwww",
+        "uuucuuuuuuwwwwwwwwww",
+        "uuuucuuuuuwwwwwwwwww",
+        "uuuucuuuuuwwwwwwwwww",
+        "uuuuuuuuuuwwwwwwwwww",
+        "uuuuuuuuuuwwwwwwwwww",
+        "uuuuuuuuuuwwwwwwwwww",
+        "uuuuuuuuuuwwwwwwwwww",
+        "uuuuuucuuuwwwwwwwwww",
+        "uuuuuuucuuwwwwwwwwww",
+        "uuuuuucuuuwwwwwwwwww",
+        "ucuuuuuuuuwwwwwwwwww",
+        "cuuuuuuuuuwwwwwwwwww",
+    ],
+    // dresser - 26
+    [
+        "ZZZZZZZZZZZZZZZZZZxz",
+        "ZzzzzzzzzzzzzzzzzZxz",
+        "ZzzzzzzzzzzzzzzzzZxz",
+        "ZzzzzzzzzzzzzzzzzZxz",
+        "ZzzzzzzzzzzzzzzzzZzz",
+        "ZzzzzzzzzzzzzzzzzZxx",
+        "ZzzzzzzzzzzzzzzzzZxx",
+        "ZzzzzzzzzzzzzzzzzZxx",
+        "ZzzzzzzzzzzzzzzzzZxZ",
+        "ZzzzzzzzzzzzzzzzzZZZ",
+        "ZzzzzzzzzzzzzzzzzZxZ",
+        "ZzzzzzzzzzzzzzzzzZxx",
+        "ZzzzzzzzzzzzzzzzzZxx",
+        "ZzzzzzzzzzzzzzzzzZxx",
+        "ZzzzzzzzzzzzzzzzzZzz",
+        "ZzzzzzzzzzzzzzzzzZxx",
+        "ZzzzzzzzzzzzzzzzzZxx",
+        "ZzzzzzzzzzzzzzzzzZxx",
+        "ZzzzzzzzzzzzzzzzzZxx",
+        "ZZZZZZZZZZZZZZZZZZzz",
+    ],
+    // nightstand - 27
+    [
+        "XXXXXXXXXXXXXXXXXXXX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XZZZZZZZZZZZZZZZZZZX",
+        "XXXXXXXXXXXXXXXXXXXX",
+    ],
+    // fence corner 1 - 28
+    [
+        "gggggggggggggggggggg",
+        "gGgggggggggggggggggG",
+        "GgggggGgGggggggggggg",
+        "gOOOOggGOOoggGgGgggg",
+        "gOooogggOoogggGggggg",
+        "gOoOogggOoOggggggggg",
+        "oOoOooooOoOggggggggg",
+        "oOooooooOoogggGgGggg",
+        "gOooogggOooggggGgggg",
+        "gOoooGgGOooggggggggg",
+        "gOooogGgOooggggggggg",
+        "gOooogggOoOggggggggg",
+        "oOoOooooOoOggggggggg",
+        "oOoOooooOoOggggggggg",
+        "gOoOogggOooggggggggg",
+        "gOooogggOooggGgGgggg",
+        "gGgGgggggoogggGggggg",
+        "ggGggggggooggggggggg",
+        "gggggggggOOggggggggg",
+        "gggggggggOOggggggggg",
+    ],
+    // fence corner 2 - 29
+    [
+        "gggggggggOOggggggggg",
+        "gGgggggggooggggggggG",
+        "GgggggGgGooggggggggg",
+        "gOOOOggGOOoggGgGgggg",
+        "gOooogggOoogggGggggg",
+        "gOoOogggOoOggggggggg",
+        "oOoOooooOoOggggggggg",
+        "oOooooooOoogggGgGggg",
+        "gOooogggOooggggGgggg",
+        "gOoooGgGOooggggggggg",
+        "gOooogGgOooggggggggg",
+        "gOooogggOoOggggggggg",
+        "oOoOooooOoOggggggggg",
+        "oOoOooooOoOggggggggg",
+        "gOoOogggOooggggggggg",
+        "gOooogggOooggGgGgggg",
+        "gGgGggggggggggGggggg",
+        "ggGggggggggggggggggg",
+        "gggggggggggggggggggg",
+        "gggggggggggggggggggg",
+    ],
+    // fence corner 3 - 30
+    [
+        "gggggggggOOggggggggg",
+        "gGgggggggooggggggggG",
+        "GgggggGgGooggggggggg",
+        "gggggggGgooOgGOOOOgg",
+        "gggggggggoooggOooogg",
+        "gggggggggOOoggOooogg",
+        "gggggggggOOoooOooooo",
+        "gggggggggoooooOooooo",
+        "gggggggggoooggOooogg",
+        "gggggGgGgoooggOooogg",
+        "ggggggGggoooggOooogg",
+        "gggggggggOOoggOooogg",
+        "gggggggggOOoooOooooo",
+        "gggggggggOOoooOooooo",
+        "gggggggggoooggOooogg",
+        "gggggggggooogGOooogg",
+        "gGgGggggggggggGggggg",
+        "ggGggggggggggggggggg",
+        "gggggggggggggggggggg",
+        "gggggggggggggggggggg",
+    ],
+    // fence corner 4 - 31
+    [
+        "gggggggggggggggggggg",
+        "gGgggggggggggggggggG",
+        "GgggggGgGggggggggggg",
+        "gggggggGgggggGOOOOgg",
+        "ggggggggggggggOooogg",
+        "ggggggggggggggOooogg",
+        "gggggggggOOoooOooooo",
+        "gggggggggoooooOooooo",
+        "gggggggggoooggOooogg",
+        "gggggGgGgoooggOooogg",
+        "ggggggGggoooggOooogg",
+        "gggggggggOOoggOooogg",
+        "gggggggggOOoooOooooo",
+        "gggggggggOOoooOooooo",
+        "gggggggggoooggOooogg",
+        "gggggggggooogGOooogg",
+        "gGgGgggggoogggGggggg",
+        "ggGggggggooggggggggg",
+        "gggggggggOOggggggggg",
+        "gggggggggOOggggggggg",
+    ],
+    // player - 32
+    [
+        "  UUUUUUUUUUUUUUUU  ",
+        " UUUUUUUUUUUUUUUUUU ",
+        "UUUUUUUUUUUUUUUUUUUU",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCAACCCCCCCCAACCCC",
+        "CCCCAACCCCCCCCAACCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "UUUUUUUUUUUUUUUUUUUU",
+        "UUUUUUUUUUUUUUUUUUUU",
+        "UUUUUUUUUUUUUUUUUUUU",
+        "UUUUUUUUUUUUUUUUUUUU",
+        "UUUUUUUUUUUUUUUUUUUU",
+        "UUUUUUUUUUUUUUUUUUUU",
+        "UUUUUUUUUUUUUUUUUUUU",
+        " UUUUUUUUUUUUUUUUUU ",
+        "  UUUUUUUUUUUUUUUU  ",
+    ],
+    // guide - 33
+    [
+        "  dddddddddddddddd  ",
+        " dddddddddddddddddd ",
+        "dddddddddddddddddddd",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCAACCCCCCCCAACCCC",
+        "CCCCAACCCCCCCCAACCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "tttttttttttttttttttt",
+        "tttttttttttttttttttt",
+        "tttttttttttttttttttt",
+        "tttttttttttttttttttt",
+        "tttttttttttttttttttt",
+        "tttttttttttttttttttt",
+        "tttttttttttttttttttt",
+        " tttttttttttttttttt ",
+        "  tttttttttttttttt  ",
+    ],
+    // father - 34
+    [
+        "  oooooooooooooooo  ",
+        " oooooooooooooooooo ",
+        "oooooooooooooooooooo",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCAACCCCCCCCAACCCC",
+        "CCCCAACCCCCCCCAACCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "ttttttttAAAAtttttttt",
+        "tttttttttAAttttttttt",
+        "tttttttttAAttttttttt",
+        "tttttttttAAttttttttt",
+        "ttttttttAAAAtttttttt",
+        "tttttttAAAAAAttttttt",
+        "tttttttAAAAAAttttttt",
+        " tttttttAAAAttttttt ",
+        "  tttttttAAttttttt  ",
+    ],
+    // addie - 35
+    [
+        "  oooooooooooooooo  ",
+        " oooooooooooooooooo ",
+        "oooooooooooooooooooo",
+        "ooooCCCCCCCCCCCCoooo",
+        "oooCCCCCCCCCCCCCCooo",
+        "ooCCCCCCCCCCCCCCCCoo",
+        "oCCCAACCCCCCCCAACCCo",
+        "oCCCAACCCCCCCCAACCCo",
+        "oCCCCCCCCCCCCCCCCCCo",
+        "oCCCCCCCCCCCCCCCCCCo",
+        "oCCCCCCCCCCCCCCCCCCo",
+        "ooDDDDDDDDDDDDDDDDoo",
+        "DoDDDDDDDDDDDDDDDDoD",
+        "DDDDDDDDDDDDDDDDDDDD",
+        "DDDDDDDDDDDDDDDDDDDD",
+        "DDDDDDDDDDDDDDDDDDDD",
+        "DDDDDDDDDDDDDDDDDDDD",
+        "DDDDDDDDDDDDDDDDDDDD",
+        " DDDDDDDDDDDDDDDDDD ",
+        "  DDDDDDDDDDDDDDDD  ",
+    ],
+    // maddie - 36
+    [
+        "  oooooooooooooooo  ",
+        " oooooooooooooooooo ",
+        "oooooooooooooooooooo",
+        "ooooCCCCCCCCCCCCoooo",
+        "oooCCCCCCCCCCCCCCooo",
+        "ooCCCCCCCCCCCCCCCCoo",
+        "oCCCAACCCCCCCCAACCCo",
+        "oCCCAACCCCCCCCAACCCo",
+        "oCCCCCCCCCCCCCCCCCCo",
+        "oCCCCCCCCCCCCCCCCCCo",
+        "oCCCCCCCCCCCCCCCCCCo",
+        "ooEEEEEEEEEEEEEEEEoo",
+        "EoEEEEEEEEEEEEEEEEoE",
+        "EEEEEEEEEEEEEEEEEEEE",
+        "EEEEEEEEEEEEEEEEEEEE",
+        "EEEEEEEEEEEEEEEEEEEE",
+        "EEEEEEEEEEEEEEEEEEEE",
+        "EEEEEEEEEEEEEEEEEEEE",
+        " EEEEEEEEEEEEEEEEEE ",
+        "  EEEEEEEEEEEEEEEE  ",
+    ],
+    // maid - 37
+    [
+        "  AAAAAAAAAAAAAAAA  ",
+        " AAAAAAAAAAAAAAAAAA ",
+        "AAAAAAAAAAAAAAAAAAAA",
+        "AAAAAAAAAAAAAAAAAAAA",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCAACCCCCCCCAACCCC",
+        "CCCCAACCCCCCCCAACCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "CCCCCCCCCCCCCCCCCCCC",
+        "sSsSsSsSsSsSsSsSsSsS",
+        "sSsSsSsSsSsSsSsSsSsS",
+        "sSsSsSsSsSsSsSsSsSsS",
+        "sSsSsSsSsSsSsSsSsSsS",
+        "sSsSsSsSsSsSsSsSsSsS",
+        "sSsSsSsSsSsSsSsSsSsS",
+        "sSsSsSsSsSsSsSsSsSsS",
+        " SsSsSsSsSsSsSsSsSs ",
+        "  sSsSsSsSsSsSsSsS  ",
+    ],
+    // groundskeeper - 38
+    [
+        "  AAAAAAAAAAAAAAAA  ",
+        " AAAAAAAAAAAAAAAAAA ",
+        "AAAAAAAAAAAAAAAAAAAA",
+        "OOOOOOOOOOOOOOOOOOOO",
+        "OOOOOOOOOOOOOOOOOOOO",
+        "OOOOOOOOOOOOOOOOOOOO",
+        "OOOOAAOOOOOOOOAAOOOO",
+        "OOOOAAOOOOOOOOAAOOOO",
+        "OOOOOOOOOOOOOOOOOOOO",
+        "OOOOOOOOOOOOOOOOOOOO",
+        "OOOOOOOOOOOOOOOOOOOO",
+        "sSsSsSsSsSsSsSsSsSsS",
+        "sSsSsSsSsSsSsSsSsSsS",
+        "sSsSsSsSsSsSsSsSsSsS",
+        "sSsSsSsSsSsSsSsSsSsS",
+        "sSsSsSsSsSsSsSsSsSsS",
+        "sSsSsSsSsSsSsSsSsSsS",
+        "sSsSsSsSsSsSsSsSsSsS",
+        " SsSsSsSsSsSsSsSsSs ",
+        "  sSsSsSsSsSsSsSsS  ",
+    ],
+    // walkie talkie - 39
+    [
+        "       ii",
+        "       ii",
+        "       ii",
+        "       ii",
+        "       ii",
+        "       ii",
+        "iiiiiiiii",
+        "iiiiiiiii",
+        "iiAAAAAii",
+        "iiiiiiiii",
+        "iiAAAAAii",
+        "iiiiiiiii",
+        "iiAAAAAii",
+        "iiiiiiiii",
+        "iiiiiiiii",
+        "iiiiiiiii",
+        "iiiiiiiii",
+        "iiiiiiiii",
+        "iiiiiiiii",
+        "iiiiiiiii",
+    ],
+    // wife - 40
+    [
+        "  oooooooooooooooo  ",
+        " oooooooooooooooooo ",
+        "oooooooooooooooooooo",
+        "oooCCCCCCCCCCCCCCooo",
+        "ooCCCCCCCCCCCCCCCCoo",
+        "ooCCCCCCCCCCCCCCCCoo",
+        "oCCCAACCCCCCCCAACCCo",
+        "oCCCAACCCCCCCCAACCCo",
+        "oCCCCCCCCCCCCCCCCCCo",
+        "ooCCCCCCCCCCCCCCCCoo",
+        "ooCCCCCCCCCCCCCCCCoo",
+        "oooCCCCCCCCCCCCCCooo",
+        "tttttttttttttttttttt",
+        "tttttttttAAttttttttt",
+        "tttttttttAAttttttttt",
+        "tttttttttttttttttttt",
+        "tttttttttAAttttttttt",
+        "tttttttttAAttttttttt",
+        " tttttttttttttttttt ",
+        "  tttttttttttttttt  ",
+    ],
+    // question mark - 41
+    [
+        "       AAAAAA       ",
+        "    AAAAAAAAAAAA    ",
+        "  AAAAAAAAAAAAAAA   ",
+        "  AAAAAAAAAAAAAAAA  ",
+        "  AAAAAAAAAAAAAAAAA ",
+        "  AAAAA      AAAAAA ",
+        "  AAAA       AAAAAA ",
+        "  AAAA       AAAAAA ",
+        "   AAAA      AAAAAA ",
+        "    AAAA     AAAAAA ",
+        "            AAAAAA  ",
+        "           AAAAAA   ",
+        "          AAAAAA    ",
+        "         AAAAAA     ",
+        "        AAAAAA      ",
+        "       AAAAAA       ",
+        "                    ",
+        "                    ",
+        "        AAAA        ",
+        "        AAAA        ",
+    ],
+    // menu background - 42
+    [
+        "TTTTTTTTTTTTTTTTTTT",
+        "TtTtTtTtTtTtTtTtTtT",
+        "TTqTqTqTqTqTqTqTqTT",
+        "TtTtTtTtTtTtTtTtTtT",
+        "TTqTqTqTqTqTqTqTqTT",
+        "TtTtTtTtTtTtTtTtTtT",
+        "TTqTqTqTqTqTqTqTqTT",
+        "TtTtTtTtTtTtTtTtTtT",
+        "TTqTqTqTqTqTqTqTqTT",
+        "TtTtTtTtTtTtTtTtTtT",
+        "TTqTqTqTqTqTqTqTqTT",
+        "TtTtTtTtTtTtTtTtTtT",
+        "TTqTqTqTqTqTqTqTqTT",
+        "TtTtTtTtTtTtTtTtTtT",
+        "TTqTqTqTqTqTqTqTqTT",
+        "TtTtTtTtTtTtTtTtTtT",
+        "TTqTqTqTqTqTqTqTqTT",
+        "TtTtTtTtTtTtTtTtTtT",
+        "TTTTTTTTTTTTTTTTTTT",
+    ],
+];
+
+// the graphics array (loaded into at the loading screen)
+var graphics = [];
+
+// }
+// button stuff  {
+
+// rectcollide function. not used for the buttons but fits in this subcategory
+function rectCollide(x1, y1, w1, h1, x2, y2, w2, h2) {
+    return x2 + w2 > x1 && x2 < x1 + w1 && y2 + h2 > y1 && y2 < y1 + h2;
+}
+
+// if the cursor collides with the mouse, for special functions
+function cursorCollide(x, y, w, h) {
+    return mouseX > x && mouseY > y && mouseX < x + w && mouseY < y + h;
+}
+
+// button function
+function button(x, y, w, h, fC, tC, tS, msg, d) {
+
+    // tedious variables
+    this.x = x;           // x
+    this.y = y;           // y
+    this.w = w;           // width
+    this.h = h;           // height
+    this.fillCol = fC;    // fill color
+    this.textCol = tC;    // text color
+    this.textSize = tS;   // text size
+    this.msg = msg;       // message (or what it says)
+    this.destination = d; // destination
+}
+
+// draws the button
+button.prototype.draw = function() {
+
+    // makes the rectangle
+    fill(this.fillCol);
+    rect(this.x, this.y, this.w, this.h);
+
+    // the text
+    fill(this.textCol);
+    textSize(this.textSize);
+    text(this.msg, this.x + this.w / 2, this.y + this.h / 2);
+
+    // the collisions
+    if (cursorCollide(this.x, this.y, this.w, this.h) && this.msg !== "close") {
+        
+        disCursor = "hand";
+        
+        // over effect
+        fill(0, 30);
+        rect(this.x, this.y, this.w, this.h);
+        
+        // if you clicked it
+        if (clicked) {
+            page = this.destination;
+        }
+    }
+    
+    // for the suspects page, so you could collide with the suspect scroll. everything else is identical
+    if(this.msg === "close") {
+        if (cursorCollide(this.x, this.y + suspectScroll, this.w, this.h)) {
+            
+            disCursor = "hand";
+            
+            // over effect
+            fill(0, 30);
+            rect(this.x, this.y, this.w, this.h);
+            
+            // if you clicked it
+            if (clicked) {
+                page = this.destination;
+            }
+        }
+    }
+
+};
+
+
+// buttons. their name should say it all
+
+var playBtn = new button(150, 300, 300, 100, 255, 0, 45, "play", "gm");
+
+var howBtn = new button(150, 450, 300, 100, 255, 0, 45, "how", "how");
+
+var backFromSuspects = new button(100, 450, 400, 100, 255, 0, 50, "close", "gm");
+
+var backFromNotes = new button(30, 530, 100, 40, 255, 0, 20, "<", "suspects");
+
+var confirmAccuse = new button(175, 300, 250, 100, 255, 0, 35, "Yes", "accuse-confirmed");
+
+var notConfirmedAccuse = new button(175, 450, 250, 100, 255, 0, 35, "No", "notes");
+
+var transcriptBtn = new button(150, 425, 300, 75, 255, 0, 35, "Transcript", "transcript");
+
+var backFromWhoops = new button(100, 450, 400, 100, 255, 0, 50, "Okay!", "notes");
+
+var menuFromWin = new button(150, 460, 300, 100, 230, 0, 37, "Main Menu", "reset-game");
+
+var backFromHow =  new button(150, 460, 300, 100, 255, 0, 37, "Back", "menu");
+
+// }
+// suspects  {
+
+// the suspects list, for the notes pages
+var suspects = [];
+
+// the variable index for which suspect you're taking notes of
+var suspectNotes = 0;
+
+// same as above, but for accusing
+var theAccused = 0;
+
+// the suspect function
+function suspect(name, age, occupation, img, intvw) {
+    
+    // boring variables v2.0
+    this.name = name; // name
+    this.age = age; // age
+    this.occ = occupation; // occupation
+    this.imgSpot = img; // which image they are associated with
+    this.spot = suspects.length; // which spot in the suspects array they are
+    this.introduced = false; // have they been introduced yet
+    this.notIt = false; // have you put an "x" over their image, signaling that it is not them?
+    this.notes = []; // your notes about them. done in array format.
+    this.boxOpen = false; // whether you are in their notes box yet
+    this.interview = intvw; // which dlm index they are in (for transcript)
+}
+
+// introduce the suspect
+suspect.prototype.introduce = function() {
+    
+    if(!this.introduced) {
+        suspects.push(new suspect(this.name, this.age, this.occ, this.imgSpot, this.interview));
+        this.introduced = true;
+    }
+    
+};
+
+// draw the suspect in the notes page
+suspect.prototype.drawInPg = function() {
+    
+    // box behind them
+    fill(0, 200);
+    rect(50, this.spot * 200 + 150, 500, 165);
+    
+    // graphic
+    image(graphics[this.imgSpot], 75, this.spot * 200 + 175, 110, 110);
+    
+    // for x-ing out the suspect
+    if(cursorCollide(75, this.spot * 200 + 175 + suspectScroll, 110, 110)) {
+        disCursor = "hand";
+        if(clicked) {
+            this.notIt = !this.notIt;
+        }
+    }
+    
+    // for clicking on the suspect (for notes)
+    else if(cursorCollide(50, this.spot * 200 + 150 + suspectScroll, 500, 165)) {
+        disCursor = "hand";
+        if(clicked) {
+            suspectNotes = this.spot;
+            page = "notes";
+        }
+    }
+    
+    // name
+    fill(255);
+    textFont(createFont("Montserrat Bold"));
+    textSize(40);
+    textAlign(LEFT, CENTER);
+    text(this.name, 210, this.spot * 200 + 200);
+    
+    // age & occ.
+    textSize(20);
+    text("Age: " + this.age + "\nOccupation: " + this.occ, 210, this.spot * 200 + 250);
+    
+    // draws the x if it's not them
+    if(this.notIt) {
+        strokeWeight(10);
+        stroke(255, 0, 0);
+        line(70, this.spot * 200 + 170, 190, this.spot * 200 + 290);
+        line(190, this.spot * 200 + 170, 70, this.spot * 200 + 290);
+        noStroke();
+    }
+};
+
+// accuse the suspect
+suspect.prototype.accuse = function() {
+    theAccused = this.spot;
+    
+    // changes the page, if you haven't interviewed everyone then it takes you to a different page
+    page = "accuse";
+};
+
+// displays the notes
+suspect.prototype.notesPg = function() {
+    
+    // good ole headings
+    textFont(createFont("Montserrat Bold"));
+    fill(255);
+    textSize(65);
+    textAlign(CENTER, CENTER);
+    text(this.name, 300, 80);
+    textSize(40);
+    text("Notes", 300, 150);
+    
+    // the box's text
+    textAlign(LEFT, LEFT);
+    textSize(22);
+    textFont(createFont("Montserrat"));
+    text(this.boxOpen && frameCount % 80 > 40 ? this.notes.join("") + "|" : this.notes.join(""), 40, 200, 500, 100000);
+    textFont(createFont("Montserrat Bold"));
+    
+    // the word limit
+    fill(this.notes.length === 250 ? color(255, 70, 70) : 255);
+    text(this.notes.length + " / 250", 450, 560);
+    
+    // opening the box
+    if(cursorCollide(35, 185, 530, 350)) {
+        disCursor = "txt";
+        if(clicked) {
+            this.boxOpen = true;
+        }
+    }
+    else {
+        if(clicked) {
+            this.boxOpen = false;
+        }
+    }
+    
+    // if the box is open
+    if(this.boxOpen) {
+        
+        // so you can type as you please
+        if(keyIsTyped) {
+            switch(key.code) {
+                case BACKSPACE:
+                    this.notes.pop();
+                    this.notesLen --;
+                break;
+                default:
+                    if(this.notes.length <= 249) {
+                        this.notes.push(key.toString());
+                    }
+                break;
+            }
+        }
+    }
+    
+    // resets this, so not everything you type appears
+    keyIsTyped = false;
+    
+    // draws the "back" button
+    textAlign(CENTER, CENTER);
+    backFromNotes.draw();
+    
+    // accuse button
+    fill(255);
+    rect(200, 520, 200, 60);
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textFont(createFont("Montserrat Bold"));
+    textSize(30);
+    text("Accuse", 300, 550);
+    if(cursorCollide(200, 520, 200, 60)) {
+        disCursor = "hand";
+        fill(0, 30);
+        rect(200, 520, 200, 60);
+        if(clicked) {
+            suspects[this.spot].accuse();
+        }
+    }
+    
+    // transcript button
+    transcriptBtn.draw();
+};
+
+// display the transcript page
+suspect.prototype.transcriptPg = function() {
+    
+    // translate
+    pushMatrix();
+    translate(0, suspectScroll);
+    
+    // basically, if you're not the detective
+    if(this.interview !== "none") {
+        
+        // keeps the scroll inside the boundaries.
+        suspectScroll = constrain(suspectScroll, -dlmTot[this.interview].length * 100 + 175, 0);
+        
+        // boxes
+        for(var i = 0; i < dlmTot[this.interview].length; i++) {
+            if(-suspectScroll + 600 > i * 100 + 175 && -suspectScroll + 150 < i * 100 + 175) {
+                fill(200);
+                rect(50, i * 100 + 175, 500, 80);
+                switch(dlmTot[this.interview][i][0]) {
+                    
+                    // graphics. see guide at line ~60
+                    case 0:
+                    image(graphics[33], 57.5, i * 100 + 182.5, 65, 65);
+                    break;
+                    
+                    case 1:
+                    image(graphics[32], 57.5, i * 100 + 182.5, 65, 65);
+                    break;
+                    
+                    case 2:
+                    image(graphics[34], 57.5, i * 100 + 182.5, 65, 65);
+                    break;
+                    
+                    case 3:
+                    image(graphics[35], 57.5, i * 100 + 182.5, 65, 65);
+                    break;
+                    
+                    case 4:
+                    image(graphics[36], 57.5, i * 100 + 182.5, 65, 65);
+                    break;
+                    
+                    case 5:
+                    image(graphics[37], 57.5, i * 100 + 182.5, 65, 65);
+                    break;
+                    
+                    case 6:
+                    image(graphics[38], 57.5, i * 100 + 182.5, 65, 65);
+                    break;
+                    
+                    case 7:
+                    image(graphics[40], 57.5, i * 100 + 182.5, 65, 65);
+                    break;
+                }
+                
+                // transcript text
+                fill(0);
+                textSize(15);
+                textFont(createFont("Montserrat"));
+                text(dlmTot[this.interview][i][1], 150, i * 100 + 162.5, 380, 100);
+            }
+        }
+        
+        // back button
+        fill(255);
+        rect(150, i * 100 + 220, 300, 125);
+        fill(0);
+        textFont(createFont("Montserrat Bold"));
+        textSize(50);
+        text("back", 300, i * 100 + 278.5);
+        if(cursorCollide(150, i * 100 + 220 + suspectScroll, 300, 125)) {
+            disCursor = "hand";
+            fill(0, 30);
+            rect(150, i * 100 + 220, 300, 125);
+            if(clicked) {
+                page = "notes";
+            }
+        }
+    }
+    
+    // if you are detective
+    else {
+        
+        // breaking the news :(
+        fill(255);
+        textSize(50);
+        textAlign(CENTER, CENTER);
+        textFont(createFont("Montserrat Bold"));
+        text("There's no\ntranscript for\nyou!", 300, 265);
+        
+        // back button
+        textFont(createFont("Montserrat Bold"));
+        fill(255);
+        rect(150, 400, 300, 125);
+        textSize(50);
+        fill(0);
+        text("back", 300, 462.5);
+        
+        // collisions
+        if(cursorCollide(150, 400, 300, 125)) {
+            disCursor = "hand";
+            fill(0, 30);
+            rect(150, 400, 300, 125);
+            if(clicked) {
+                page = "notes";
+            }
+        }
+    }
+    popMatrix();
+};
+
+// suspects
+var detective = new suspect("Detective", "14", "Detective", 32, "none");
+var leader = new suspect("David Askel", "68", "Leader", 33, 0);
+var father = new suspect("Joshua Johnson", "44", "Father", 34, 3);
+var addie = new suspect("Addie Johnson", "8", "Twin", 35, 4);
+var maddie = new suspect("Maddie Johnson", "8", "Twin", 36, 4);
+var maid = new suspect("Melissa Smith", "26", "Maid", 37, 5);
+var groundskeeper = new suspect("Gerald Drowsky", "56", "Groundskeeper", 38, 2);
+var mother = new suspect("julianne Johnson", "39", "Mother", 40, 6);
+
+// }
+// detective leader stuff  {
+
+// the function
+function detectiveLeaderMessage() {
+    
+    // boring variables v3
+    this.started = false; // has he begun speaking
+    this.hisArrSpot = 0; // which part of the array he's in
+    this.amt = 0; // which part of the conversation they're in
+    this.amtThrough = 0; // how far through the text the substring is
+    this.longness = detectiveLeaderMessages[this.hisArrSpot][this.amt][1].length; // the length of the text (when can you move onto the next message)
+}
+
+// start speaking
+detectiveLeaderMessage.prototype.begin = function() {
+    this.started = true;
+    
+    // resets all of the variables
+    this.amt = 0;
+    this.amtThrough = 0;
+    this.longness = detectiveLeaderMessages[this.hisArrSpot][this.amt][1].length;
+};
+
+// show the d.l.m.
+detectiveLeaderMessage.prototype.showIt = function() {
+    
+    // if you've started
+    if (this.started) {
+        
+        // so the player can't run off
+        player.xVel = 0;
+        player.yVel = 0;
+        
+        // text box
+        fill(75);
+        rect(0, 347, width, 3);
+        fill(200);
+        rect(0, 350, width, height - 350);
+        fill(0);
+        
+        // what he/she is saying
+        textAlign(LEFT);
+        textSize(20);
+        text(detectiveLeaderMessages[this.hisArrSpot][this.amt][1].substring(0, this.amtThrough), 25, 380, 380, 500);
+        
+        // go through the text
+        this.amtThrough += 0.8;
+        
+        textAlign(CENTER, CENTER);
+        
+        // go zoom zoom, uncomment if you don't want to spend the agonizing five minutes reading everything
+        //this.amtThrough += 30;
+        
+        // graphics. line ~60 for guide
+        switch(detectiveLeaderMessages[this.hisArrSpot][this.amt][0]) {
+            case 0:
+            image(graphics[33], 440, 400, 130, 130);
+            leader.introduce();
+            text("David Askel", 505, 560);
+            break;
+            
+            case 1:
+            image(graphics[32], 440, 400, 130, 130);
+            detective.introduce();
+            text("Detective", 505, 560);
+            break;
+            
+            case 2:
+            image(graphics[34], 440, 400, 130, 130);
+            father.introduce();
+            text("Joshua Johnson", 505, 560);
+            break;
+            
+            case 3:
+            image(graphics[35], 440, 400, 130, 130);
+            addie.introduce();
+            text("Addie Johnson", 505, 560);
+            break;
+            
+            case 4:
+            image(graphics[36], 440, 400, 130, 130);
+            maddie.introduce();
+            text("Maddie Johnson", 505, 560);
+            break;
+            
+            case 5:
+            image(graphics[37], 440, 400, 130, 130);
+            maid.introduce();
+            text("Melissa Smith", 505, 560);
+            break;
+            
+            case 6:
+            image(graphics[38], 440, 400, 130, 130);
+            groundskeeper.introduce();
+            text("Gerald Drowsky", 505, 560);
+            break;
+            
+            case 7:
+            image(graphics[40], 440, 400, 130, 130);
+            mother.introduce();
+            text("julianne Johnson", 505, 560);
+            break;
+        }
+        textSize(20);
+        textAlign(CENTER, CENTER);
+        textAlign(LEFT, LEFT);
+        
+        // if you can continue
+        if (this.amtThrough >= this.longness) {
+            textSize(15);
+            text("(Press space to move on...)", 25, 574);
+            if (keys[32]) {
+                
+                // moves on the index
+                this.amt++;
+                
+                // if you've gone through all of the messages
+                if (this.amt === detectiveLeaderMessages[this.hisArrSpot].length) {
+                    
+                    // close the text box
+                    this.started = false;
+                    
+                    // make it so you can never speak again
+                    detectiveLeader.splice(this.hisArrSpot, 1);
+                    detectiveLeaderMessages.splice(this.hisArrSpot, 1);
+                    
+                    // resets the variable
+                    this.amt = 0;
+                    this.amtThrough = 0;
+                }
+                
+                // if you're not done
+                if (this.started) {
+                    this.amtThrough = 0;
+                    this.longness = detectiveLeaderMessages[this.hisArrSpot][this.amt][1].length;
+                }
+            }
+        }
+    }
+};
+
+// so you can speak
+var dlm = new detectiveLeaderMessage();
+
+// }
+// block object & function to display blocks  {
+
+// the array of variable
+var blocks = [];
+
+// the block function
+function block(x, y, id) {
+
+    // boring variables (v4?)
+    this.x = x; // x
+    this.y = y; // y
+    this.type = id; // type
+    
+}
+
+// the function to set the section
+function showSec() {
+    
+    // resets the array, so that it isn't buggy.
+    blocks = [];
+
+    // sets the blocks
+    for (var i = 0; i < gmArray[sec].length; i++) {
+        for (var j = 0; j < gmArray[sec][i].length; j++) {
+            
+            // if the block is a block
+            if (gmArray[sec][i] !== " ") {
+                
+                // pushes it into the array
+                blocks.push(new block(j * 60, i * 60, gmArray[sec][i][j]));
+            }
+        }
+    }
+}
+
+// shows the section
+showSec();
+
+// }
+// fade stuff (between rooms)  {
+
+// the function to make the fade
+function makeFade() {
+    
+    // boring variables v5
+    this.fade = 10;       // the fade
+    this.fadeSpd = 5;     // the fade's speed
+    this.started = false; // if it has started
+    this.xTsA = 0;        // the x to go to
+    this.yTsA = 0;        // the y to go to
+    this.secTsA = 0;      // the section to go to
+}
+
+// starts the function
+makeFade.prototype.begin = function() {
+    
+    // make it start
+    this.started = true;
+};
+
+// show it
+makeFade.prototype.showF = function() {
+    
+    // if you've started it
+    if (this.started) {
+        
+        // shows the rect
+        noStroke();
+        fill(0, this.fade);
+        rect(0, 0, width, height);
+        
+        // changes the fade and speed
+        this.fade += this.fadeSpd;
+        this.fadeSpd *= 0.996;
+    }
+    
+    // starts to down-fade
+    if (this.fade > 255) {
+        
+        // sets the x
+        player.x = this.xTsA;
+        
+        // sets the y
+        player.y = this.yTsA;
+        
+        // sets the section
+        sec = this.secTsA;
+        showSec();
+        
+        // resets the fade speed
+        this.fadeSpd = -this.fadeSpd;
+    }
+    
+    // if it's ended
+    if (this.fade < 10) {
+        
+        // stops started
+        this.started = false;
+        
+        // resets the fade and fade speed
+        this.fade = 10;
+        this.fadeSpd = 4;
+    }
+};
+
+// makes the new fade
+var levFd = new makeFade();
+
+// }
+// block drawing & colliding  {
+
+// draws the blocks
+block.prototype.draw = function() {
+
+    // the types
+    switch (this.type) {
+        
+        // the black stuff
+        case "P":
+            fill(0);
+            rect(this.x, this.y, 60, 60);
+            break;
+            
+        // carpet
+        case "u":
+            image(graphics[16], this.x, this.y, 60, 60);
+            break;
+            
+        case "U":
+            image(graphics[17], this.x, this.y, 60, 60);
+            break;
+            
+        case "R":
+            image(graphics[15], this.x, this.y, 60, 60);
+            break;
+            
+            
+        // table
+        case "T":
+            image(graphics[20], this.x, this.y, 60, 60);
+            break;
+            
+        // chair
+        case "C":
+            image(graphics[19], this.x, this.y, 60, 60);
+            break;
+            
+        case "c":
+            image(graphics[18], this.x, this.y, 60, 60);
+            break;
+            
+            
+        // couch
+        case "W":
+            image(graphics[22], this.x, this.y, 60, 60);
+            break;
+            
+        case "q":
+            image(graphics[23], this.x, this.y, 60, 60);
+            break;
+            
+            
+        // dresser
+        case "t":
+            image(graphics[26], this.x, this.y, 60, 60);
+            break;
+            
+        // bed
+        case "a":
+            image(graphics[24], this.x, this.y, 60, 60);
+            break;
+            
+        case "A":
+            image(graphics[25], this.x, this.y, 60, 60);
+            break;
+            
+        // nightstand
+        case "r":
+            image(graphics[27], this.x, this.y, 60, 60);
+            break;
+            
+        // floor planks
+        case "w":
+            image(graphics[12], this.x, this.y, 60, 60);
+            break;
+            
+        // bookshelf
+        case "Z":
+            image(graphics[21], this.x, this.y, 60, 60);
+            break;
+            
+        // dors
+        case "d":
+        case "D":
+            image(graphics[13], this.x, this.y, 60, 60);
+            break;
+            
+        case "0":
+        case "1":
+        case "2":
+        case "3":
+            fill(67, 26, 26);
+            image(graphics[14], this.x, this.y, 60, 60);
+            break;
+            
+            
+        // deck planks
+        case "e":
+            image(graphics[11], this.x, this.y, 60, 60);
+            break;
+
+        // hedge
+        case "G":
+            image(graphics[2], this.x, this.y, 60, 60);
+            break;
+            
+        // flowery hedge
+        case "h":
+            image(graphics[3], this.x, this.y, 60, 60);
+            break;
+            
+        // path
+        case "p":
+            image(graphics[6], this.x, this.y, 60, 60);
+            break;
+            
+        // marble
+        case "o":
+            image(graphics[8], this.x, this.y, 60, 60);
+            break;
+            
+        case "O":
+            image(graphics[7], this.x, this.y, 60, 60);
+            break;
+            
+            
+        // fountain water
+        case "b":
+            image(graphics[10], this.x, this.y, 60, 60);
+            break;
+            
+        case "B":
+            image(graphics[9], this.x, this.y, 60, 60);
+            break;
+            
+            
+        // walls
+        case "i":
+            fill(220);
+            rect(this.x, this.y, 60, 60);
+            break;
+
+            // fence graphics
+
+            // top
+        case "f":
+            image(graphics[4], this.x, this.y, 60, 60);
+            break;
+
+            // sides
+        case "F":
+            image(graphics[5], this.x, this.y, 60, 60);
+            break;
+            
+            // corners
+        case "s":
+            image(graphics[31], this.x, this.y, 60, 60);
+            break;
+            
+        case "S":
+            image(graphics[28], this.x, this.y, 60, 60);
+            break;
+            
+        case "v":
+            image(graphics[30], this.x, this.y, 60, 60);
+            break;
+            
+        case "V":
+            image(graphics[29], this.x, this.y, 60, 60);
+            break;
+        
+        // grass
+        case "g":
+            image(graphics[1], this.x, this.y, 60, 60);
+            break;
+        default:
+    }
+};
+
+// the collisions
+block.prototype.collide = function() {
+    switch (this.type) {
+        
+        // the things that you can't go through
+        case "h":
+        case "c":
+        case "C":
+        case "T":
+        case "t":
+        case "f":
+        case "F":
+        case "o":
+        case "G":
+        case "i":
+        case "r":
+        case "a":
+        case "P":
+        case "W":
+        case "Z":
+        case "q":
+        case "O":
+        case "S":
+            
+            // if there's a collision through the bottom of the block
+            if (rectCollide(this.x, this.y - 5, 60, 60, player.x, player.y, 60, 60) && player.yVel > 0) {
+                player.yVel = 0;
+
+                // this is needed because you can glitch into the floor in one of the rooms
+                player.y = this.y - 60;
+            }
+            
+            // if there's a collision through the top of the block
+            if (rectCollide(this.x, this.y + 5, 60, 60, player.x, player.y, 60, 60) && player.yVel < 0) {
+                player.yVel = 0;
+            }
+            
+            // if there's a collision through the left of the block
+            if (rectCollide(this.x - 5, this.y, 60, 60, player.x, player.y, 60, 60) && player.xVel > 0) {
+                player.xVel = 0;
+            }
+            
+            // if there's a collision through the right of the block
+            if (rectCollide(this.x + 5, this.y, 60, 60, player.x, player.y, 60, 60) && player.xVel < 0) {
+                player.xVel = 0;
+            }
+            break;
+    }
+    
+    // things with special collisions (aka doors)
+    
+    // wont go into too mcuh detail
+    switch (this.type) {
+        
+        
+        case "d":
+            if (rectCollide(this.x, this.y, 60, 60, player.x, player.y, 60, 60)) {
+                levFd.xTsA = 1320;
+                levFd.yTsA = 1320;
+                levFd.secTsA = 1;
+                levFd.begin();
+            }
+            break;
+            
+            
+        case "0":
+            if (rectCollide(this.x, this.y, 60, 60, player.x, player.y, 60, 60)) {
+                levFd.xTsA = 120;
+                levFd.yTsA = 240;
+                levFd.secTsA = 2;
+                levFd.begin();
+            }
+            break;
+            
+            
+        case "1":
+            if (rectCollide(this.x, this.y, 60, 60, player.x, player.y, 60, 60)) {
+                levFd.xTsA = 120;
+                levFd.yTsA = 60;
+                levFd.secTsA = 3;
+                levFd.begin();
+            }
+            break;
+            
+            
+        case "2":
+            if (rectCollide(this.x, this.y, 60, 60, player.x, player.y, 60, 60)) {
+                levFd.xTsA = 600;
+                levFd.yTsA = 660;
+                levFd.secTsA = 1;
+                levFd.begin();
+            }
+            break;
+            
+            
+        case "3":
+            if (rectCollide(this.x, this.y, 60, 60, player.x, player.y, 60, 60)) {
+                levFd.xTsA = 600;
+                levFd.yTsA = 780;
+                levFd.secTsA = 1;
+                levFd.begin();
+            }
+            break;
+        case "D":
+            if (rectCollide(this.x, this.y, 60, 60, player.x, player.y, 60, 60)) {
+                levFd.xTsA = 1440;
+                levFd.yTsA = 120;
+                levFd.secTsA = 0;
+                levFd.begin();
+            }
+            break;
+            
+            
+    }
+};
+
+// }
+// draw function  {
+
+draw = function() {
+    
+    // page stuff
+    switch (page) {
+        
+        // menu
+        case "menu":
+            
+            // background
+            image(graphics[42], 0, 0, 630, 630);
+            
+            // title
+            textFont(createFont("Montserrat Bold"));
+            fill(0);
+            textAlign(CENTER, CENTER);
+            textSize(90);
+            text("who did it?", 300, 120);
+            
+            // buttons
+            textFont(createFont("Montserrat"));
+            noStroke();
+            playBtn.draw();
+            howBtn.draw();
+            
+            // question mark stuff
+            pushMatrix();
+            translate(50, 50);
+            
+            // sets the image mode
+            imageMode(CENTER);
+            rotate(-30);
+            
+            // q.m. 1
+            image(graphics[41], 0, 0, 60, 60);
+            rotate(60);
+            translate(420, -250);
+            
+            // q.m. 2
+            image(graphics[41], 0, 0, 75, 75);
+            rotate(-40);
+            translate(-350, 120);
+            
+            // q.m. 3
+            image(graphics[41], 0, 0, 85, 85);
+            rotate(25);
+            translate(92, -212);
+            
+            // q.m. 4
+            image(graphics[41], 0, 0, 55, 55);
+            popMatrix();
+            
+            // resets the image mode
+            imageMode(CORNER);
+            
+            image(transImg, transImgX, 0);
+        transImgX += (600 - transImgX) / 10;
+            break;
+            
+            // how page
+        case "how":
+            
+            // background
+            image(graphics[42], 0, 0, 630, 630);
+            
+            // title
+            textFont(createFont("Montserrat Bold"));
+            fill(0);
+            textAlign(CENTER, CENTER);
+            textSize(80);
+            text("how to play?", 300, 100);
+            
+            // description
+            textFont(createFont("Montserrat"));
+            textSize(30);
+            text("arrow keys to move. space to speak. you can't go through blocks. figure out who committed the crime. all else will be explained.", 25, 55, 550, 550);
+            
+            // back button
+            backFromHow.draw();
+            break;
+            
+            // the game
+        case "gm":
+            background(0);
+            
+            // the cam
+            pushMatrix();
+            translate(cam.x, cam.y);
+            
+            // draw & collide blocks
+            for (var l = 0; l < blocks.length; l++) {
+                blocks[l].draw();
+                blocks[l].collide();
+            }
+            
+            // draw the player
+            image(graphics[32], player.x, player.y, 60, 60);
+            
+            // talking
+            for (var i = 0; i < detectiveLeader.length; i++) {
+                
+                // detective leader
+                if (sec === detectiveLeader[i][0]) {
+                    
+                    // display
+                    image(graphics[33], detectiveLeader[i][1], detectiveLeader[i][2], 60, 60);
+                    
+                    // collide
+                    if (rectCollide(detectiveLeader[i][1], detectiveLeader[i][2] - 5, 60, 60, player.x, player.y, 60, 60) && player.yVel > 0) {
+                        player.yVel = 0;
+                    }
+                    
+                    if (rectCollide(detectiveLeader[i][1], detectiveLeader[i][2] + 5, 60, 60, player.x, player.y, 60, 60) && player.yVel < 0) {
+                        player.yVel = 0;
+                    }
+                    
+                    if (rectCollide(detectiveLeader[i][1] - 5, detectiveLeader[i][2], 60, 60, player.x, player.y, 60, 60) && player.xVel > 0) {
+                        player.xVel = 0;
+                    }
+                    
+                    if (rectCollide(detectiveLeader[i][1] + 5, detectiveLeader[i][2], 60, 60, player.x, player.y, 60, 60) && player.xVel < 0) {
+                        player.xVel = 0;
+                    }
+                    
+                    // if player is close
+                    if (rectCollide(detectiveLeader[i][1] - 60, detectiveLeader[i][2] - 60, 120, 120, player.x - 60, player.y - 60, 120, 120)) {
+                        
+                        // "space to speak" text
+                        fill(0);
+                        textAlign(CENTER, CENTER);
+                        textSize(15);
+                        textFont(createFont("Montserrat"));
+                        text("space to speak", detectiveLeader[i][1] + 30, detectiveLeader[i][2] - 15);
+                        
+                        // if they press space
+                        if (keys[32]) {
+                            
+                            // sets the msg spot
+                            dlm.hisArrSpot = i;
+                            
+                            // starts it
+                            if(!dlm.started) {
+                                dlm.begin();
+                            }
+                        }
+                    }
+                }
+            }
+
+            popMatrix();
+            
+            // button for walkie talkie
+            if(cursorCollide(500, 420, 68, 148) && !dlm.started) {
+                disCursor = "hand";
+                
+                // changes the page
+                if(clicked) {
+                    bckgrd = get();
+                    page = "suspects";
+                }
+            }
+            
+            // shows detective leader message    
+            dlm.showIt();
+            
+            // move the x and y
+            player.x += player.xVel;
+            player.y += player.yVel;
+            
+            // resets the vel (the whole point of the vel is for collisions, but it gets very buggy if it keeps going)
+            player.xVel = 0;
+            player.yVel = 0;
+                
+            // keys
+                
+            // what they say seems pretty self explanitory
+            if (keys[LEFT]) {
+                player.xVel = -5;
+            }
+            
+            if (keys[UP]) {
+                player.yVel = -5;
+            }
+            
+            if (keys[DOWN]) {
+                player.yVel = 5;
+            }
+            
+            if (keys[RIGHT]) {
+                player.xVel = 5;
+            }
+            
+            // sets the cam x and y
+            cam.x = 270 - player.x;
+            cam.y = 270 - player.y;
+            
+            // keeps them in their needed spots
+            cam.x = constrain(cam.x, gameLengths[sec][0][0], gameLengths[sec][0][1]);
+            cam.y = constrain(cam.y, gameLengths[sec][1][0], gameLengths[sec][1][1]);
+            
+            // shows the fade
+            levFd.showF();
+            
+            // shows the walkie talkie
+            if(!dlm.started) {
+                image(graphics[39], 500, 420, 150, 150);
+            }
+            break;
+            
+        // suspects page
+        case "suspects":
+            
+            // background
+            image(bckgrd, 0, 0, width, height);
+            noStroke();
+            fill(0, 100);
+            rect(0, 0, width, height);
+            
+            // scroll
+            pushMatrix();
+            translate(0, suspectScroll);
+            
+            // shows the suspects
+            for(var i = 0; i < suspects.length; i++) {
+                suspects[i].drawInPg();
+            }
+            
+            // title
+            fill(255);
+            textSize(100);
+            textAlign(CENTER, CENTER);
+            textFont(createFont("Montserrat Bold"));
+            text("SUSPECTS", 300, 80);
+            
+            // sets the back button's position as needed
+            backFromSuspects.y = suspects.length * 200 + 175;
+            
+            // draws the back button
+            backFromSuspects.draw();
+            popMatrix();
+            
+            // scrolling through the page
+            
+            // go down
+            if(keys[DOWN]) {
+                suspectScroll -= 10;
+            }
+            
+            // go up
+            if(keys[UP]) {
+                suspectScroll += 10;
+            }
+            
+            // keeps the suspect constrained
+            
+            // if you have enough to scroll
+            if(suspects.length > 1) {
+                suspectScroll = constrain(suspectScroll, suspects.length * -200 + 270, 0);
+            }
+            
+            // if not
+            else {
+                suspectScroll = 0;
+            }
+        break;
+        
+        // notes page
+        case "notes":
+            
+            // background
+            image(bckgrd, 0, 0, width, height);
+            noStroke();
+            fill(0, 100);
+            rect(0, 0, width, height);
+            
+            // shows the notes pg
+            suspects[suspectNotes].notesPg();
+        break;
+        
+        // transcript pg
+        case "transcript":
+            
+            // the backgroundd
+            image(bckgrd, 0, 0, width, height);
+            noStroke();
+            fill(0, 100);
+            rect(0, 0, width, height);
+            
+            // title
+            fill(255);
+            textSize(85);
+            textAlign(CENTER, CENTER);
+            textFont(createFont("Montserrat Bold"));
+            text("TRANSCRIPT", 300, 80);
+            
+            // subtitle
+            textSize(25);
+            text("for interview with " + suspects[suspectNotes].name, 300, 140);
+            
+            // transcript page
+            suspects[suspectNotes].transcriptPg();
+            
+            // scrolling
+            
+            // go down
+            if(keys[DOWN]) {
+                suspectScroll -= 10;
+            }
+            
+            // go up
+            if(keys[UP]) {
+                suspectScroll += 10;
+            }
+        break;
+        
+        // accuse page
+        case "accuse":
+            
+            // background
+            image(bckgrd, 0, 0, width, height);
+            noStroke();
+            fill(0, 100);
+            rect(0, 0, width, height);
+            
+            // title
+            textSize(110);
+            fill(255);
+            textFont(createFont("Montserrat Bold"));
+            text("ACCUSE", 300, 100);
+            
+            // subtitle
+            textSize(40);
+            text(suspects[theAccused].name + "?", 300, 200);
+            
+            // yes button
+            confirmAccuse.draw();
+            
+            // no button
+            notConfirmedAccuse.draw();
+        break;
+        
+        // if you have confirmed you are going to accuse
+        case "accuse-confirmed":
+            
+            // timer goes
+            accuseTimer ++;
+            
+            // background
+            background(30);
+            
+            // formatting
+            textSize(70);
+            textFont(createFont("Montserrat Bold"));
+            
+            // first one
+            fill(255, accuseFades[0]);
+            text("You accused...", 300, 85);
+            
+            // second one
+            textSize(50);
+            fill(255, accuseFades[1]);
+            text(suspects[theAccused].name, 300, 160);
+            
+            // third one
+            if(accuseTimer > 290) {
+                image(graphics[suspects[theAccused].imgSpot], 225, 225, 150, 150);
+            }
+            
+            // fourth one
+            fill(255, accuseFades[2]);
+            text("They were...", 300, 430);
+            
+            // fifth one
+            fill(255, accuseFades[3]);
+            
+            // NO PEEKING PLS
+            if(suspects[theAccused].name === "Melissa Smith") {
+                text("The robber!", 300, 500);
+            }
+            else {
+                text("Not the robber...", 300, 500);
+            }
+            
+            // start first one
+            if(accuseTimer > 20) {
+                accuseFades[0] += 3;
+            }
+            
+            // start second one
+            if(accuseTimer > 155) {
+                accuseFades[1] += 3;
+            }
+            
+            // start fourth one
+            if(accuseTimer > 425) {
+                accuseFades[2] += 3;
+            }
+            
+            // start fifth one
+            if(accuseTimer > 685) {
+                accuseFades[3] += 1.5;
+            }
+            
+            // drumroll
+            if(accuseTimer > 500 && accuseTimer < 700) {
+                fill(255);
+                textSize(15);
+                text("drumroll please...", 300, 580);
+            }
+            
+            // click incentive(?)
+            if(accuseTimer > 775) {
+                textSize(15);
+                fill(255, sin(frameCount * 2) * 120 + 127.5);
+                text("(click)", 300, 580);
+                
+                // changes the page
+                if(clicked) {
+                    winOrLoseScreenImg = get(0, 0, width, height);
+                    
+                    // for winning
+                    if(suspects[theAccused].name === "Melissa Smith") {
+                        page = "victory";
+                    }
+                    
+                    // for losing
+                    else {
+                        page = "lose";
+                    }
+                }
+            }
+        break;
+        
+        // lose page
+        case "lose":
+            
+            // background
+            background(255);
+            
+            // title
+            fill(0);
+            textFont(createFont("Montserrat Bold"));
+            textSize(90);
+            text("YOU LOST...", 300, 325);
+            
+            // subtitle
+            textSize(30);
+            text("Better luck next time...", 300, 420);
+            
+            // image
+            image(winOrLoseScreenImg, 200, 50, 200, 200);
+            
+            // back button
+            menuFromWin.draw();
+        break;
+        
+        // win page
+        case "victory":
+            
+            // background
+            background(255);
+            
+            // title
+            fill(0);
+            textFont(createFont("Montserrat Bold"));
+            textSize(90);
+            text("YOU WON!", 300, 325);
+            
+            // subtitle
+            textSize(30);
+            text("Nice detective work!\n... Or was it guesswork?", 300, 420);
+            
+            // image
+            image(winOrLoseScreenImg, 200, 50, 200, 200);
+            
+            // back button
+            menuFromWin.draw();
+        break;
+        
+        // reset the game
+        case "reset-game":
+            
+            // resets all of the detective leader stuff
+            detectiveLeaderMessages = dlmTot;
+            detectiveLeader = [
+                [0, 750, 1400],
+                [0, 60, 180],
+                [0, 1440, 1400],
+                [1, 150, 150],
+                [1, 1260, 1260],
+                [1, 840, 120],
+                [2, 720, 60],
+            ];
+            
+            // resets the player's x
+            player.x = 750;
+            
+            // and the player's y
+            player.y = 1500;
+            
+            // and the suspects
+            suspects = [];
+            
+            // and the accusation things
+            accuseFades = [0, 0, 0, 0];
+            accuseTimer = 0;
+            
+            // and the notes & accused indexes
+            suspectNotes = 0;
+            theAccused = 0;
+            
+            // and the blocks
+            blocks = [];
+            
+            // and the section
+            sec = 0;
+            
+            // and loads it
+            showSec();
+            
+            // after all that, resets the page
+            page = "menu";
+        break;
+        
+        // loading screen
+        case "load":
+            
+            // background
+            background(0, 0, 0, 0);
+            noStroke();
+            frames++;
+            
+            // draws the pixel art
+            for (var j = 0; j < pixelArt[frames].length; j++) {
+                for (var i = 0; i < pixelArt[frames][j].length; i++) {
+                    for (var g = 0; g < colors.length; g++) {
+                        if (pixelArt[frames][j][i] === colors[g][0]) {
+                            fill(colors[g][1]);
+                        } else {
+                            noFill();
+                        }
+                        rect(i * 10, j * 10, 10, 10);
+                    }
+                }
+            }
+            
+            // gets the image
+            graphics[frames] = (get(0, 0, 200, 200));
+            
+            // actual loading screen
+            background(255);
+            
+            // text
+            textSize(50);
+            fill(0);
+            textAlign(CENTER, CENTER);
+            text("Loading...", 300, 300);
+            
+            // subtitle
+            textSize(20);
+            text(frames + " / 42\n" + whichGraphicsAreBeingLoaded[frames-1], 300, 400);
+            
+            // loading bar
+            fill(100);
+            rect(150, 450, 300, 60);
+            fill(0);
+            rect(150, 450, (frames / 42 * 100).toFixed(1) * 3, 60);
+            
+            // if it's fully loaded
+            if (frames > 41) {
+                page = "logo";
+            }
+            break;
+            case "logo":
+                image(bck, 0, 0);
+    imageMode(CENTER);
+    for(var i in imgs) {
+        pushMatrix();
+        translate(imgs[i][3] + 15, imgs[i][4]);
+        image(imgs[i][0], 0, 0);
+        popMatrix();
+        if(imgs[i][5]) {
+            imgs[i][3] += (imgs[i][1] - imgs[i][3]) / 10;
+            imgs[i][4] += (imgs[i][2] - imgs[i][4]) / 10;
+        }
+    }
+    if(logoTimer < 180) {
+        imgs[logoTimer * 5][5] = true;
+        imgs[logoTimer * 5 - 1][5] = true;
+        imgs[logoTimer * 5 - 2][5] = true;
+        imgs[logoTimer * 5 - 3][5] = true;
+        imgs[logoTimer * 5 - 4][5] = true;
+    }
+    imageMode(CORNER);
+    if(logoTimer > 60) {
+        for(var i in presents) {
+            textSize(40);
+            textFont(createFont("Montserrat Bold"));
+            fill(255);
+            text(pMsg[i], presents[i][2], presents[i][3]);
+            if(logoTimer > 135) {
+                presents[i][2] += (presents[i][0] - presents[i][2]) / 15;
+                presents[i][3] += (presents[i][1] - presents[i][3]) / 15;
+            }
+        }
+    }
+    if(logoTimer > 280) {
+        transImg = get(0, 0, 600, 600);
+        page = "menu";
+    }
+    logoTimer ++;
+            break;
+    }
+
+    // cursor stuff
+    switch(disCursor) {
+        
+        // hand
+        case "hand":
+        cursor(HAND);
+        break;
+        
+        // text
+        case "txt":
+        cursor('text');
+        break;
+        
+        // normal
+        case "norm":
+        cursor(ARROW);
+        break;
+    }
+    
+    // sets the cursor
+    disCursor = "norm";
+    
+    // resets that the key is typed
+    keyIsTyped = false;
+    
+    // and the clicked
+    clicked = false;
+    
+    // for debugging
+    
+    /*
+    _clearLogs();
+    println(this.__frameRate.toFixed(2));
+    */
+    
+};
+
+// }
+// user interaction  {
+
+// if the mouse is clicked
+mouseClicked = function() {
+    clicked = true;
+};
+
+// if a key is pressed
+keyPressed = function() {
+    keys[keyCode] = true;
+};
+
+// if a key is released
+keyReleased = function() {
+    keys[keyCode] = false;
+};
+
+// if a key is being typed
+keyTyped = function() {
+    keyIsTyped = true;
+};
+
+// }
+
+
