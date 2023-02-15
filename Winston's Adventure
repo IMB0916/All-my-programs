@@ -1,0 +1,1908 @@
+// if it doesnt say 'SP' then flag it
+var creator = 'SP';
+
+
+// if it doesn't say 'CheesyMonster' then flag it
+var tutorialMaker = 'CheesyMonster';
+
+
+// this delags the game alot so you should probably have it on. you can also change it in-game by clicking the mouse you probably shouldnt change manually this way bc then the game doesnt work so you will want to just use the click functioning in the game. also if you decide to be rude and change this to something other than 'true' or 'false' then you will be rewarded with lag so you should keep it on unless you have a NASA computer :P actually tho it doesnt do that much but keep it on anyways if you read this than rofl to you xD
+var delag = true;
+/**
+ * 
+ * SP @Prodigy6 - 2020
+ * 
+ * The game runs much better on Chrome, at a frame rate of about 90 versus about 40 from FireFox. Also, close most of your tabs before playing. I find that with about 15 tabs open it only runs at 60 FPS, but with 1 or 2 it runs at 110.
+ * 
+ * VOTE LOG {
+ * Day 1: +25, 25 total
+ * Day 2: +24, 49 total
+ * Day 3: + 26, 75 total
+ * Day 4: +13, 88 total
+ * Day 5: +7, 95 total (off first page of hotlist, idk how its still getting votes)
+ * Day 6: +4, 99 total (off second page of hotlist how come this is still getting votes itll probably reach 100 by tomorrow :o)
+ * }
+ * 
+ * TIMELINE {
+ * TIMELINE:
+ * @STARTED: 2/12/2020
+ * @BREAK: 3/1/2020 through 4/17/2020
+ * @FINISHED: 5/1/2020
+ * @RELEASED: 5/3/2020
+ * }
+ * 
+ * LEADERBOARD:
+ *      =1. Clovenbob: 23259
+ *      =2. Vortex Ninja: 22243
+ *      =3. SP: 22125
+ *      =4. Patrick M: 21736
+ *      =5. SXB: 21397
+ * 
+ * LEADERBOARD GUIDELINES | VERY important; PLEASE READ! {
+ * Leaderboard guidelines:
+ *      =It MUST be a Spin-Off.
+ *      =No telling me your score without Spin-Off proof.
+ *      =You MUST post it in the LEADERBOARD THREAD in the Tips and Thanks. If it's in another thread it WILL NOT be put on the leaderboard.
+ *      =You MUST have a score greater than 21397.
+ *      =You MUST have finished the game completely.
+ *      =Your spin-off should be of the win screen, which looks similar to the main menu.
+ *      =Post it in the specified format the Leaderboard Thread tells you to.
+ *      =Shall you have cheated, I will know!
+ *      =There are five spots on the leaderboard, and five ONLY. Don't submit me scores that are below five
+ *      =Fail to follow all of these rules and you won't get on the leaderboard.
+ *      =In case of a score tie, the tiebreaker is how long it took for you to finish.
+ * }
+ * 
+ * HOW {
+ * not all this stuff is covered in the how page,  im putting it here for your sake
+ * =MOVING
+ *      -Left arrow or D to move right
+ *      -Up arrow or W to move up
+ *      -Right arrow or A to move left
+ * =GAMEPLAY
+ *      -R to restart
+ *      -S to skip (3 skips per game)
+ *      -Click your mouse to delag/lag the game
+ * 
+ * =BLOCKS / In order of their first level
+ *      -Regular (No Special Collisions)
+ *          =Grass - level 1
+ *          =Dirt - level 1
+ *          =Rock - level 7
+ *          =Normal - level 13
+ *          =Brick - level 13
+ *          =Invisible - level 21
+ *      -Death (Kills instantly if you hit)
+ *          =Spike - level 2
+ *          =Acid - level 4
+ *          =Error Buddy - level 4
+ *      Physic (Other)
+ *          =Portal - level 1
+ *          =Trampoline - level 3
+ *          =Water - level 5
+ * }
+ * 
+ * CREDITS {
+ * CREDITS:
+ * -cheesymonster @TheObjectNinja for basic blocks, collisions and template (https://www.khanacademy.org/computer-programming/platformer-template-pro-update/4607718155681792)
+ * -green ghost @GreenGhost1 for outlined text (https://www.khanacademy.org/computer-programming/outlined-text-function/6065950086725632)
+ * -cubic coding @CubicCoding for FPS counter
+ * -sp @Prodigy6 for all else
+ * 
+ * Thanks to my awesome beta testers!
+ * -Ivar Bega Stem
+ * -Mango
+ * -Harry Le
+ * -TNT Guy
+ * -Mau
+ * -Preetham Sivalingam
+ * }
+ * 
+ * Any comments, critiques, suggestions, ideas, questions, or large balls of cheese you have you can share with me in the Tips and Thanks.
+**/
+
+// like a good program
+smooth();
+// variables {
+var score=5;
+var l=0;
+var timerrr = 0;
+var percentage=0;
+var su=0;
+var s=0;
+var s1=10;
+var randm=color(random(0,255),random(0,255),random(0,255));
+noStroke();
+var fade=255;
+var clicked=false;
+textAlign(CENTER,CENTER);
+var difficulty = ["Super Easy", "Super Easy", "Super Easy", "Easy", "Easy", "Kinda Medium, Kinda Easy","Super Easy","Kinda Medium, Kinda Easy", "Easy", "Medium", "Medium", "Easy","Hard", 
+"Kinda Medium Kinda Hard", "Hard", "Super Easy", "Hard", "Easy", "Very Hard", "Sorta Hard", "Super Hard", "Super Hard", "Medium", "Nightmare Rage-Quit", "Super Easy", "Super Easy"];
+// Current page
+var page = "logo";
+// Whatever level you are on
+var level = 0;
+var deaths = 0;
+var x1=-100;
+var x2=700;
+var y1=100;
+var x3 = -200;
+var x4=-400;
+var y2=200;
+var sec=0;
+var skips=3;
+var thingy=0;
+var changed=false;
+var f=false;
+var fodo=0;
+var itemSize = 2;
+var fps = 100;
+var dead=false;
+var timethingy=0;
+var updateFrameRate = function() {
+    frameRate(fps);
+};
+//Set the frame rate
+updateFrameRate();
+
+// Arrays
+var blocks = [];
+var enemies = [];
+var keys = [];
+
+// Player Spawn Points
+var spawnX = 200;
+var spawnY = 200;
+//  }
+
+// levels {
+/*
+Block Chart:
+
+    p = Player
+    e = Enemy
+    
+    Building Blocks:
+        n = Normal dull gray block
+        b = Brick
+        d = Dirt
+        g = Grass
+        r = Rock or cobblestone
+    
+    Death Blocks:
+        a = Acid
+        s = Spike
+    
+    Physic Blocks:
+        P = Portal
+        W = Water
+        T = Trampoline
+        i = invisible
+        
+    This is the standard level size. You can make it bigger or smaller if you want. :)
+    
+            [
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "bp                               b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                P",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        ],
+*/
+
+// Actual Levels
+var levels = [
+    [    
+        "gp                             g",
+        "d                              d",
+        "d                              d",
+        "d                             Pd",
+        "dggggggggggggggggggggggggggggggd",
+    ],
+    [
+        "p                               ",
+        "                                ",
+        "           s           s       P",
+        "gggggggggggdgggggggggggdgggggggg",
+    ],
+    [
+        "p                              P",
+        "                                ",
+        "                                ",
+        "                                ",
+        "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+        "dddddddddddddddddddddddddddddddd",
+    ],
+    [
+        "p                              P",
+        "                                ",
+        "                                ",
+        "                                ",
+        "             g    e      g      ",
+        "gaaggggggggggdgggggggggggdggaagg",
+    ],
+    [
+        "p                              P",
+        "                                ",
+        "                                ",
+        "                                ",
+        "WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW   T",
+        "ddddddddddddddddddddddddddddddddg",
+    ],
+    [    
+        "p",
+        "ggggggggggggggggggggg",
+        "                    d",
+        "                    d",
+        "                    d",
+        "                    d",
+        "                    d",
+        "                    d",
+        "                    d",
+        "                    d",
+        "               gggP d",
+        "     ggggggggggddddgd",
+        "                    ",
+        "                    ",
+        "    T               ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "                    ",
+        "de e e e e e e e e a",
+        " aTaaaaaaaaaaaaaaaaaa",
+    ],
+    [    
+        "g                              g",
+        "d                              d",
+        "d                              d",
+        "dp                            Pd",
+        "WWWrrrWWWrrrWWWrrrWWWrrrWWWrrrW",
+    ],
+    [   "p",
+        "geeeeeeeeeeeeeeeeeeeeeeeeeeeeeeg",
+        "deeeeeeeeeeeeeeeeeeeeeeeeeeeeeed",
+        "deeeeeeeeeeeeeeeeeeeeeeeeeeeeeed",
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeePd",
+        "agagagagagagagagagagagagagagagad",
+    ],
+    [    
+        "gp                             g",
+        "dddddddd    dddddd    dddddddddd",
+        "dWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWd",
+        "dpWWWWWWWWWWWWWWWWWWWWWWWWWWWWPd",
+        "adaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    ],
+    [    
+        "P gp                             g",
+        "  d                              d",
+        "  d                              d",
+        "  deeeeeeeeeeeeeeeeeeeeeeeeeeeeeed",
+        "  dggggggggggggggggggggggggggggggd",
+    ],
+    [   
+        "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+        "r                              r",
+        "r                              r",
+        "r                              r",
+        "r                              r",
+        "r  P                           r",
+        "r                              r",
+        "r                              r",
+        "r                              r",
+        "r                              r",
+        "r                              r",
+        "r                              r",
+        "rTrrrr  r  r  r  r  r  r  r  r r",
+        "r                              r",
+        "r                              r",
+        "rprrarararararararararararararTr",
+        "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+    ],
+    [    
+        "gpgeeeeeeeeeeeeeeeeeeeeeeeeeeePg",
+        "dWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWd",
+        "dWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWd",
+        "dWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWd",
+        "dWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWd",
+        "dddddddddddddddddddddddddddddddd",
+    ],
+        [
+        "g  e  e  e  e  e  e  e  e  e  g",
+        "ddddddddddddddddddddddddddddddd",
+        "dp                            d",
+        "ddddddddddddddddddddddddddddd d",
+        "d e e e e e e e e e e e e e e d",
+        "dddddddddddddddddddddddddddd dd",
+        "r                             r",
+        "rr rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+        "reee              eee      eee         eee         eee  r",
+        "rr rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+        "                                                                                                                                                                           ",
+        "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "rP",
+        ],
+        [
+        "                         r",
+        "                        rrr",
+        "                       rrrrr",
+        "                      rrrrrrr",
+        "                     rrrrrrrrr",
+        "                    rrrrrrrrrrr",
+        "                    bP        b",
+        "                    bn n n n  b",
+        "                    b         b",
+        "                    b        nb",
+        "                    b    nnn  b",
+        "p                     n  n   nb",
+        "ggggggggggggggggggggbbaaaaaaabbg",
+        ],
+        [
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "baaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab",
+        "b                                b",
+        "b                                b",
+        "b   nnnnnnnnnnnnnnnnnnnnnnnnnnnn b",
+        "b  n                             b",
+        "b n  TTTTTTTTTTTTTTTTTTTTTTTTTTTnb",
+        "b n   aaaaaaaaaaaaaaaaaaaaaaaaaaab",
+        "b n            aaaaaaaaaaaaaaaaaab",
+        "b n                aaaaaaaaaaaaaab",
+        "b n                    aaaaaaaaaab",
+        "bpn                        aaaaaab",
+        "bTnaT                            P",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        ],
+[
+"p",
+"bbbbbbb                                      bbbbbbb",
+"bbbbbbb           bbbbbbbbbbbbbbb            bbbbbbb",
+"bbbbbbbb       bbbbbbbbbbbbbbbbbbb        bbbbbbbb",
+"    bbbbb     bbbbbbbbbbbbbbbbbbbbb     bbbbb",
+"      bbbbb  bb                    b  bbbbb",
+"        bb  bbb                    bb  bb",
+"           bbbbbbbbbbbbbbbbbbbbbbbbbbb",
+"           bbbbbb      bbbb      bbbbb",
+"           bbbbbb      bbbb      bbbbb",
+"            bbbbbb    bbbbbb    bbbbb",
+"                                          ",
+"              bbbbbbbbbbPPbbbbbbbbbb",
+"          bb   bbbbbbbbbbbbbbbbb   bb",
+"          bbbbbbbb b b b b b bbbb  bbbb",
+"         bbbbbbbbbbb b b b b bbb   bbbbb",
+"       bbbbb      bbbbbbbbbbbbb      bbbbb",
+"     bbbb          bbbbbbbbbbb          bbbb",
+" bbbbbb              bbbbbbb              bbbbb",
+" bbbbbbb                                 bbbbbbb",
+"  bbbbb                                   bbbbb",
+],
+
+
+        [
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "bpWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWb",
+        "bWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWb",
+        "beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb",
+        "bWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWb",
+        "beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb",
+        "bWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWb",
+        "beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb",
+        "bWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWb",
+        "beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb",
+        "bWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWb",
+        "beeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeb",
+        "bWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWP",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        ],
+        [
+        "bbbb",
+        "bp b",
+        "bb b",
+        "P   ",
+        "",
+        "",
+        "",
+        "",
+        "  T",
+        ],
+                    [
+        "                                 P",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "bp                               b",
+        "bb                               b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "b                                b",
+        "bssssssssssssssssssssssssssssssssP",
+        "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    ],
+    [
+    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "b                            b",
+    "b                            b",
+    "b                            b",
+    "b                            b",
+    "b                            b",
+    "b                            b",
+    "b      s       s      s      b",
+    "bp s   d   s   d     sd     Pb",
+    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        ],
+        [
+    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "bp                           b",
+    "b                            b",
+    "b                            b",
+    "b                            b",
+    "b                            b",
+    "b                           Pb",
+    "biiii             i         ib",
+    "baaaaaaaaaaaaaaaaaaaaaaaaaaaab",
+    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    ],
+    [
+    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "b                    i      Pb",
+    "b iii  iiiiiiii iiiiii      eb",
+    "b i   i              i       b",
+    "b iii i iiiiiiiiiiiiii       b",
+    "b    ii iiiiiiiiiiiiii iiiiiib",
+    "bTii i                       b",
+    "bp    i i i i i i i i i i i ib",
+    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        ],
+        [
+        "P",
+        "p",
+        "",
+        "",
+        "",
+        "",
+        "b",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "                     P",
+        ],
+        [
+            "               W",
+            "               i",
+            "    s      s   i  s      s P",
+            " nnaaanaanaaanaanaaanaanaaan",
+            "",
+            "",
+            "",
+            "",
+            "T  s  s  s  n            ",
+            "nnnnnnnnnnnnnnnn aaaaaaaan",
+            "",
+            "",
+            "",
+            "    s   s   s   s   s   s",
+            "p   n    e  ne         en ",
+            "nnnnnnnnnnnnnnnnnnnnnnnnnnT",
+        ],
+        [
+            "p                                                                                                                                                    P",
+            "nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn",
+            ],
+            [
+                "p",
+                "",
+                
+                "P",
+                ],
+];
+//  ^  Copy and Paste more levels to the end of this array
+// 
+// Displays any objects in an array
+var displayObjects = function(objects) {
+    for(var i = 0;i < objects.length; i ++) {
+        objects[i].draw();
+    }
+};
+// }
+
+// winston {
+// Rect Collision Function
+var rectCollide = function(x, y, w, h, collX, collY, collW, collH) {
+    if(collX + collW > x && collX < x + w && collY + collH > y && collY < y + h) {
+        return true;
+    }
+};
+scale(itemSize);
+/*** Player Object ***/
+var Player = function(x, y) {
+    // Object values
+    this.x = x;
+    this.y = y;
+    this.vel = 0;
+    this.gravity = 0;
+};
+Player.prototype.draw = function() {
+    /** Graphics **/
+        image (getImage ("creatures/Winston"),this.x,this.y,20,20);
+    /** Movement **/
+
+    // Applies and constrains velocity and gravity
+    this.y += this.gravity;
+    this.gravity += 0.1;
+
+    this.x += round(this.vel);
+    this.vel = constrain(this.vel, -4, 4);
+
+    // User control
+    if(keys[RIGHT]||keys[68]) {
+        this.vel += 0.17;
+    }
+    
+    if(keys[LEFT]||keys[65]) {
+        this.vel -= 0.17;
+    }
+    
+    if(keys[UP] && this.gravity === 0.1 || keys[87] && this.gravity===0.1) {
+        this.gravity = -3.3;
+    }
+    
+    // Implements friction
+    if(this.vel > 0) {
+        this.vel -= 0.1;
+    } else if(this.vel < 0) {
+        this.vel += 0.1;
+    }
+
+    // Kills the player if they go to far down
+    if(this.y > levels[level].length * 20) {
+        this.x = spawnX;
+        this.y = spawnY;
+        dead=true;
+    }
+};
+var players = [
+    new Player(spawnX,spawnY),
+];
+// }
+
+// ohNoes {
+/*** Enemy Object ***/
+var Enemy = function(x,y) {
+
+    //Object Variables
+    this.x = x;
+    this.y = y;
+    this.speed = 1.2;
+    this.gravity = 0;
+
+};
+Enemy.prototype.draw = function() {
+
+    image(getImage("creatures/OhNoes"),this.x,this.y,25,25);
+
+//Physics
+
+//Applies speed and gravity
+this.x+=this.speed;
+this.y+=this.gravity;
+this.gravity+=0.1;
+
+//Player collisions   
+if(players[0].x+20>this.x&&players[0].x<this.x+20&&
+     players[0].y+20>this.y&&players[0].y<this.y+19) {
+
+        players[0].x = spawnX;
+        players[0].y = spawnY;
+        players[0].vel = 0;
+        dead=true;
+        players[0].gravity = 0;
+}
+
+//Block collisions
+for(var i in blocks) {
+
+if(this.x+20>blocks[i].x&&this.x<blocks[i].x+20&&
+   this.y+18>blocks[i].y&&this.y+2<blocks[i].y+20) {
+       
+    if(this.y+20>blocks[i].y&&this.y+20<blocks[i].y+10&&
+                                         this.gravity>=0) {
+  
+                this.y = blocks[i].y-20;
+                this.gravity = 0;
+
+    } if(this.y<blocks[i].y+20&&this.y>blocks[i].y+10&&
+                                         this.gravity<0) {
+
+                this.y = blocks[i].y+20;
+                this.gravity = 0.1;
+                
+    }
+
+    if(this.y+18>blocks[i].y&&this.y<blocks[i].y+18){
+            
+        if(this.x+20>blocks[i].x&&this.x+20<blocks[i].x+5) {
+    
+            this.x =blocks[i].x-20;
+            this.speed=-1;
+
+        } if(this.x<blocks[i].x+20&&this.x>blocks[i].x+15) {
+    
+            this.x = blocks[i].x+20;
+            this.speed=1;
+                
+                }
+            }
+        }
+    }
+};
+// }
+
+// blocks {
+/*** Block Object ***/
+var Block = function(x,y,t) {
+
+    // Object values
+    this.x = x;
+    this.y = y;
+    this.t = t;
+    this.w = 20;
+    this.h = 20;
+
+};
+Block.prototype.draw = function() {
+    if(this.t==="Brick") {
+        fill(163,67,57);
+        rect(this.x,this.y,20,20);
+        fill(200);
+        rect(this.x,this.y,2,10);
+        rect(this.x+10,this.y+10,2,10);
+        fill(200);
+        for(var i = 0;i <3;i++) {
+            rect(this.x,this.y+i*9,20,2);
+        }
+                fill (0,49);
+        rect(this.x,this.y,10, 20);
+    } else if(this.t==="Rock") {
+        //Rock Graphics
+        fill(150);
+        rect(this.x,this.y,20,20);
+        fill(100);
+        rect(this.x,this.y,10,20);
+    } else if(this.t==="Dirt") {
+        //Dirt Graphics
+        fill(125, 101, 39);
+        rect(this.x,this.y,20,20);
+        fill(95,81,9);
+        rect(this.x,this.y,10,20);
+    } else if(this.t==="Grass") {
+        //Grass Graphics
+        fill(125, 101, 39);
+        rect(this.x,this.y,20,20);
+        
+        fill(0, 255, 0);
+        triangle(this.x,this.y,this.x,this.y+7,this.x+10,this.y);
+        triangle(this.x+6,this.y,this.x+10,this.y+9,this.x+17,this.y);
+        triangle(this.x+11,this.y,this.x+20,this.y+8,this.x+20,this.y);
+                fill (0,49);
+        rect(this.x,this.y,10,20);
+    }
+    else if(this.t==="Invisible") {
+        if(level!==25){
+        fill (255, sin(frameCount*1.2)*3+2);
+        rect (this.x, this.y, 20, 20);
+    fill(205,sin(frameCount*1.2)*3+5);
+    rect(this.x,this.y,10,20);
+        }
+        else{
+            fill(0,0);
+            rect(this.x,this.y,20,20);
+        }
+    } else if(this.t==="Normal") {
+        //Block Graphics
+        fill(randm);
+        rect(this.x,this.y,20,20);
+        fill(0,50);
+        rect(this.x,this.y,10,20);
+    }
+
+    //Player collsions
+    if(rectCollide(this.x, this.y, this.w, this.h, players[0].x, players[0].y, 20, 20)) {
+        if(rectCollide(this.x + round(players[0].vel) + 1, this.y, this.w - (round(abs(players[0].vel)) + 1), this.h / 2, players[0].x, players[0].y, 20, 20)) {
+            players[0].gravity = 0;
+            players[0].y = this.y - 20;
+        }
+        if(rectCollide(this.x + round(players[0].vel) + 1, this.y + this.h / 2, this.w - (round(abs(players[0].vel)) + 1), this.h / 2, players[0].x, players[0].y, 20, 20)) {
+            players[0].gravity = 0.1;
+            players[0].y = this.y + this.h;            
+            }
+        if(rectCollide(this.x, this.y + round(players[0].gravity) + 1, this.w / 2, this.h - (round(abs(players[0].gravity)) + 1), players[0].x, players[0].y, 20, 20)) {
+            players[0].vel = 0;
+            players[0].x = this.x - 20;
+        }
+        if(rectCollide(this.x + this.w / 2, this.y + round(players[0].gravity) + 1, this.w / 2, this.h - (round(abs(players[0].gravity)) + 1), players[0].x, players[0].y, 20, 20)) {
+            players[0].vel = 0;
+            players[0].x = this.x + this.w;
+        }
+    }
+};
+
+/*** Death Block Object ***/
+// Description: blocks that can hurt you, lava acid spikes ect. ect.
+var DeathBlock = function(x,y,t) {
+    
+    //Object variables
+    this.x = x;
+    this.y = y;
+    this.t = t;
+
+};
+DeathBlock.prototype.draw = function() {
+    if(this.t==="Spike") {
+        // Spike Graphics
+        fill(121);
+        triangle(this.x,this.y+20,this.x+5,this.y,this.x+10,this.y+20);
+        fill(171);
+        triangle(this.x+10,this.y+20,this.x+15,this.y,this.x+20,this.y+20);
+    } else if(this.t==="Acid") {
+        // Acid Graphics
+        fill(23, 173, 0);
+        rect(this.x,this.y,20,20);
+        fill(0,123,0);
+        rect(this.x,this.y,10,20);
+    }
+    // Collisions
+    if(players[0].x+20>this.x&&players[0].x<this.x+20&&players[0].y+18>this.y&&players[0].y<this.y+20) {
+        players[0].x = spawnX;
+        players[0].y = spawnY;
+        players[0].vel = 0;
+        players[0].gravity = 0;
+        dead=true;
+                background(255, 0, 0,fade);
+                fade--;
+                dead=true;
+    }
+    if(fade<0){
+        fade=255;
+    }
+};
+
+/*** Physic Block Object ***/
+// Description: blocks that have their own special mods, portals, water ect. ect.
+var PhysicBlock = function(x,y,t) {
+
+    //Object variables
+    this.x = x;
+    this.y = y;
+    this.t = t;
+
+};
+PhysicBlock.prototype.draw = function() {
+    if(this.t==="Trampoline") {
+    
+        //Trampoline Graphics
+        fill(36, 36, 36);
+        rect(this.x,this.y+18,20,2);
+        
+        fill(138, 138, 138);
+        quad(this.x+4,this.y+5,this.x,this.y+5,this.x+16,this.y+18,this.x+20,this.y+18);
+        quad(this.x+20,this.y+5,this.x+16,this.y+5,this.x,this.y+18,this.x+5,this.y+18);
+        
+        fill(168, 168, 168);
+        rect(this.x,this.y,20,5);
+
+        // Collisions
+        if(players[0].x+20>this.x&&players[0].x<this.x+20&&players[0].y+20>this.y&&players[0].y<this.y+20){
+            if(players[0].y+20>this.y&&players[0].y+20<this.y+10&&players[0].gravity>=0) {
+                players[0].y = this.y-20;
+                players[0].gravity = -5;
+      
+            }
+            if(players[0].y<this.y+20&&players[0].y>this.y + 10&&players[0].gravity<0) {
+    
+                players[0].y = this.y + 20;
+                players[0].gravity = 0.1;
+            }
+            if(players[0].y+18>this.y&&players[0].y<this.y+18){
+                if(players[0].x+20>this.x&&players[0].x+20<this.x+5) {
+                        players[0].vel = 0;
+                        players[0].x = this.x-20;
+                }
+                if(players[0].x<this.x+20&&players[0].x>this.x+15) {
+                    players[0].vel = 0;
+                    players[0].x = this.x+20;
+                }
+            }
+        }
+    }
+    if(this.t==="Water") {
+    // Water graphics
+        fill(0, 155, 155, 100);
+        rect(this.x+10,this.y,10,20);
+        fill(0,105,105,100);
+        rect(this.x+0,this.y+0,10,20);
+        //Player Collisions
+        if(players[0].x+20>this.x&&players[0].x<this.x+20&&players[0].y+19>this.y&&players[0].y<this.y+20) {
+            if(keys[UP]||keys[87]) {
+                players[0].gravity = -6;
+            }
+                
+            players[0].vel = constrain(players[0].vel,-1,1);
+            players[0].gravity=constrain(players[0].gravity,-1,0.5);
+        }
+    }
+    if(this.t==="Portal") {
+        if(level!==24){
+        // Portal Graphics
+        fill(128, 42, 42);
+        ellipse(this.x+10,this.y+10,20,20);
+        fill(0, 149, 255);
+        ellipse(this.x+10,this.y+10,5,5);
+        if(level>=14){
+            fill(0);
+            ellipse(this.x+10,this.y+10,5,5);
+        }
+        strokeWeight(2);
+        stroke(255,50);
+        noFill();
+        arc(this.x+10,this.y+10,15,15,-50,50);
+        noStroke();
+        }
+        else{
+            image(getImage("creatures/BabyWinston"),this.x,this.y,20,20);
+        }
+        // Player collisions
+        if(players[0].x+20>this.x&&players[0].x<this.x+20&&players[0].y+20>this.y&&players[0].y<this.y+20) {
+f=true;
+            blocks = [];
+            level++;
+                    score+=(level+1)*55;
+        }
+    }
+};
+// }
+
+// fps counter {
+var fpss = 0;
+var prevF = 0;
+var prevMil = 0;
+var average = function(nums){
+    var num = 0;
+    for(var i = 0; i < nums.length; i++){
+        num += nums[i];
+    }
+    num /= nums.length;
+    return num;
+};
+// }
+
+// loads level {
+/*** Loads the Current Level ***/
+var loadLevel = function() {
+    // Clear any arrays that may hold objects
+    blocks = [];
+    enemies = [];
+    
+    for(var row = 0;row < levels[level].length; row ++) {
+        for(var collumn = 0;collumn < levels[level][row].length; collumn ++) {
+            switch(levels[level][row][collumn]) {
+                case "b":
+                    blocks.push(new Block(collumn * 20, row * 20, "Brick"));
+                break;
+                case "r":
+                    blocks.push(new Block(collumn * 20, row * 20, "Rock"));
+                break;
+                case "d":
+                    blocks.push(new Block(collumn * 20, row * 20, "Dirt"));
+                break;
+                case "g":
+                    blocks.push(new Block(collumn * 20, row * 20, "Grass"));
+                break;
+                case "w":
+                    blocks.push(new Block(collumn * 20, row * 20, "Wood"));
+                break;
+                case "t":
+                    blocks.push(new Block(collumn * 20, row * 20, "Log"));
+                break;
+                case "v":
+                    blocks.push(new Block(collumn * 20, row * 20, "Leaf"));
+                break;
+                case "n":
+                    blocks.push(new Block(collumn * 20, row * 20, "Normal"));
+                break;
+                case "l":
+                    blocks.push(new DeathBlock(collumn * 20, row * 20, "Lava"));
+                break;
+                case "a":
+                    blocks.push(new DeathBlock(collumn * 20, row * 20, "Acid"));
+                break;
+                case "s":
+                    blocks.push(new DeathBlock(collumn * 20, row * 20, "Spike"));
+                break;
+                case "T":
+                    blocks.push(new PhysicBlock(collumn * 20, row * 20, "Trampoline"));
+                break;
+                case "W":
+                    blocks.push(new PhysicBlock(collumn * 20, row * 20, "Water"));
+                break;
+                case "i":
+                    blocks.push(new Block (collumn * 20, row * 20, "Invisible"));
+                break;
+                case "P":
+                    blocks.push(new PhysicBlock(collumn * 20, row * 20, "Portal"));
+                break;
+                case "e":
+                    enemies.push(new Enemy(collumn * 20, row * 20));
+                break;
+                case "p":
+                    spawnX = collumn * 20;
+                    spawnY = row * 19.9;
+                    players[0].x = spawnX;
+                    players[0].y = spawnY;
+                break;
+            }
+        }
+    }
+};
+loadLevel();
+// }
+
+// outlined text {
+var o = function(t, x, y, size, fillColor, strokeColor) {
+    textSize(size);
+    fill(strokeColor);
+    for (var i = 0; i < 30; i ++) {
+        text(t, x + sin(i * 12) * size / 20, y + cos(i * 12) * size / 20);
+    }
+    fill(fillColor);
+    text(t, x, y);
+};
+// }
+
+// draw function {
+/*** Draw Loop ***/
+var draw = function() {
+  fpss = Math.round((frameCount - prevF) / (millis() - prevMil) * 1000);
+    prevMil = millis();
+    prevF = frameCount;
+    switch(page) {
+        case 'G':
+            mouseClicked=function(){
+                delag=!delag;
+            };
+            sec += 1/100;
+            if (level < 14) {
+            // Background Color
+            fill(0, 149, 255,127);
+            rect(0,0,width,height);
+            fill (255,255,0);
+            ellipse(30,30,30,30);
+            fill (205, 205, 0);
+            arc(30, 30, 30, 30, 90, 270);
+            }        
+            else {
+                fill (0,127);
+                rect(0,0,width,height);
+                fill (255);
+                ellipse(500/2,30,30,30);
+                fill(0);
+                ellipse(485/2,30,20, 20);
+            }
+            var level1 = level + 1;
+            fill(255);
+            textSize (12);
+            var camX = width/4 - players[0].x-50;
+            var camY = height / 12 - players[0].y/1.1 +100;
+            textSize (20/2);
+            o ("Deaths: "+deaths+ " | Level: "+ level1 + " | "+round(sec) + " sec | skips left: "+skips+" | score: "+round(score)+" | delag: "+delag, 150, 10,20/2,255,0);
+            o ("Difficulty: "+difficulty[level], 150, 290,25/2,255,0);
+            textSize(15);
+            score-=1/200;
+            if(score<=0){
+                page='fail';
+            }
+            pushMatrix();
+
+                    translate(camX, camY);
+            
+            
+                players[0].draw();
+                displayObjects(blocks);
+                displayObjects(enemies);
+                            fill (255);
+    
+                //Restarts level
+                if(keys[82]) {
+                    blocks = [];
+                    players[0].gravity = 0.1;
+                    players[0].vel = 0;
+                }
+                keyTyped=function(){
+                if(keys[83] && skips>0 && level < 20){
+                    skips--;
+                    score/=1.2;
+                    level++;
+                    loadLevel();
+                    deaths++;
+                }
+                if(keys[82]){
+                    deaths++;
+                }
+                };
+                if(keys[16]){
+                    // Program.restart();
+                }
+                if(level>=20){
+                    skips='none';
+                }
+                if(blocks.length === 0) {
+                    loadLevel();   
+                }
+                //Adds text to the end of the array
+                fill (0);
+                if(level === 0) {
+                    if(delag){
+                        text("Oh no, they captured him!", 100, 50);
+                    text("I can't believe they would play dirty like that!", 450, 20);
+                    }
+                    else{
+                        o("Oh no, they captured him!", 100, 50,15,255,0);
+                    o("I can't believe they would play dirty like that!", 450, 20,15,255,0);
+                    }
+                }
+                if(level===1){
+                    if(delag){
+                                        text("Oh no, a avatar-spiking spike!",50,0);
+                    }
+                    else{
+                        o("Oh no, a avatar-spiking spike!",50,0,15,255,0);
+                    }
+                }
+                if(level===2){
+                    if(delag){
+                        text("OOh, this helps!",200,0);
+                    }
+                    else{
+                                            o("OOh, this helps!",200,0,15,255,0);
+
+                    }
+                }
+                if(level===3){
+                    if(delag){
+                        text("Watch it! That acid kills Winstons... and Avatars!\nThe Error Buddies have an excessive surplus of this...\nmake sure to watch out!", 100, 20);
+                    text("Oh noes! It's on of them!\nThey're pretty difficult to kill,\nbut you should focus on the current\nchallenge anyways.",400,0);
+                    }
+                    else {
+                        o("Watch it! That acid kills Winstons... and Avatars!\nThe Error Buddies have an excessive surplus of this...\nmake sure to watch out!", 100, 20,15,255,0);
+                    o("Oh noes! It's on of them!\nThey're pretty difficult to kill,\nbut you should focus on the current\nchallenge anyways.",400,0,15,255,0);
+                    }
+                }
+                if (level===4){
+                    if(delag){
+                        text ("Funny. I can hold my breath for infinite time.", 100, 0);
+                    }
+                    else{
+                         o ("Funny. I can hold my breath for infinite time.", 100, 0,15,255,0);
+                    }
+                }
+                if (level === 5) {
+    
+                    if(delag){
+                        text ("Where to go?", 100, -10);
+                    text ("They can swim on acid?!\nNo wonder we're losing the war...", 10, 340);
+                    }
+                    else{
+                        text ("Where to go?", 100, -10);
+                    text ("They can swim on acid?!\nNo wonder we're losing the war...", 10, 340);
+                    }
+                }
+                if (level === 6) {
+                    if(delag){
+                        text("Woah, don't fall!",80,0);
+                    }
+                    else{
+                                            o ("Woah, don't fall!", 80, 0,15,255,0);
+
+                    }
+                }
+                if (level === 7) {
+                    if(delag){
+                         text ("It appears that I just interrupted a\nenemy patrol. We must be\ngetting closer!", 50, -50);
+                    text ("Hm, that's helpful! I can walk this way without dying!", 400, 50);
+                    }
+                    else{
+                       o ("It appears that I just interrupted a\nenemy patrol. We must be\ngetting closer!", 50, -50,15,255,0);
+                    o ("Hm, that's helpful! I can walk this way without dying!", 400, 50,15,255,0); 
+                    }
+                }
+                if (level === 8){
+                    if(delag){
+                    text ("This appears to be some sort\nof torture/interrogation thingy.", 140, 60);
+                    }
+                    else{
+                        o ("This appears to be some sort\nof torture/interrogation thingy.", 140, 60,15,255,0);
+                    }
+                }
+                if (level === 9){
+                    if(delag){
+                        text ("Uh oh, we're in for some jumping!\nDid you know? If you jump on an Error Buddy,\nyou get a little height boost!", 80, 70);
+                    }
+                    else{
+                         o ("Uh oh, we're in for some jumping!\nDid you know? If you jump on an Error Buddy,\nyou get a little height boost!", 80, 70, 15,255,0);
+                    }
+                }
+                if (level === 10){
+                    if(delag){
+                        text ("A trainee room, for jump training.\nWe had one of these back at the Academy.", 171, 280);
+                    }
+                    else{
+                        o ("A trainee room, for jump training.\nWe had one of these back at the Academy.", 171, 280,15,255,0);
+                    }
+                }
+                if (level === 11){
+                    if(delag){
+                        text ("I have no clue what this is.\nThey float, though! That's a disadvantage.", 165, 50);
+                    }
+                    else{
+                        o ("I have no clue what this is.\nThey float, though! That's a disadvantage.", 165, 50,15,255,0);
+                    }
+                }
+                if (level===12){
+                    if(delag){
+                        text ("Wow, they're even patrolling the air ducts!", 140, -20);
+                    text ("Uh oh, I have to go back!", 3440, 190);
+                    }
+                    else{
+                        o ("Wow, they're even patrolling the air ducts!", 140, -20,15,255,0);
+                    o ("Uh oh, I have to go back!", 3440, 190,15,255,0);
+                    }
+                }
+                if (level===13){
+                    if(delag){
+                        text("Where am I?", 100, 180);
+                    text ("This looks like\nthe General's Quarters!", 500, 180);
+                    }
+                    else{
+                        o ("Where am I?", 100, 180,15,255,0);
+                    o ("This looks like\nthe General's Quarters!", 500, 180,15,255,0);
+                    }
+                }
+                if (level === 14) {
+                    if(delag){
+                                                                        fill(255);
+                        text ("I'm in the base! *dances*", 120, 60);
+                    text("This ought to be hard!", 190, 110);
+                    }
+                    else{
+                        o ("I'm in the base! *dances*", 120, 60,15,0,255);
+                    o("This ought to be hard!", 190, 110,15,0,255);
+                    }
+                }
+                if (level===15){
+                    if(delag){
+                                                                        fill(255);
+                        text("This place gives me the creeps...", 30, -20);
+                    text ("Ack! It's a skull!", 500,230);
+                    }
+                    else{
+                        o("This place gives me the creeps...", 30, -20,15,0,255);
+                    o ("Ack! It's a skull!", 500,230,15,0,255);
+                    }
+                }
+                if(level===16){
+                    if(delag){
+                                                                        fill(255);
+                        text ("Uh oh. I just disrupted Error Buddy swimming lessons!", 160, 30);
+                    }
+                    else{
+                        o ("Uh oh. I just disrupted Error Buddy swimming lessons!", 160, 30,15,0,255);
+                    }
+                }
+                if (level===17){
+                    if(delag){
+                                                                        fill(255);
+                        text("Simple!",20,-10);
+                    text("Or is it?",60,130);
+                    }
+                    else{
+                        o("Simple!",20,-10,15,0,255);
+                    o("Or is it?",60,130,15,0,255);
+                    }
+                }
+                if(level===18){
+                    if(delag){
+                                                                        fill(255);
+                        text("That sign says something about\nthe up key and spam...\nprobably some junky email.",130,110);
+                    }
+                    else{
+                        o("That sign says something about\nthe up key and spam...\nprobably some junky email.",130,110,15,0,255);
+                    }
+                }
+                if (level===19){
+                    if(delag){
+                                                                        fill(255);
+                        text("Hurdle Rooms. We had these back\nat the Academy as well, but they\nwere made of Trampolines, not spikes!", 159, 100);
+                    }
+                    else{
+                        o("Hurdle Rooms. We had these back\nat the Academy as well, but they\nwere made of Trampolines, not spikes!", 159, 100,15,0,255);
+                    }
+                }
+                if(level===20){
+                    if(delag){
+                                                        fill(255);
+                        text("Did they hack?\nBecause there's nothing\nunder me!\n*examines block*\nOOOOOOOH, it's\ninvisible!!!", 120,72);
+                    }
+                    else{
+                        o("Did they hack?\nBecause there's nothing\nunder me!\n*examines block*\nOOOOOOOH, it's\ninvisible!!!", 120,72,15,0,255);
+                    }
+                }
+                if(level===21){
+                    if(delag){
+                        fill(255);
+                        text("Uh oh, an invisible maze!", 110, 100);
+                    text("Seriously?!", 500, 60);
+                    }
+                    else{
+                        o("Uh oh, an invisible maze!", 110, 100,15,0,255);
+                    o("Seriously?!", 500, 60,15,0,255);
+                    }
+                }
+                if(level===22){
+                    if(delag){
+                                                                        fill(255);
+                        text("Can't reach!", 0, -120);
+                    }
+                    else{
+                        o("Can't reach!", 0, -120,15,0,255);
+}
+                }
+                if(level===23){
+                    if(delag){                                                fill(255);
+
+                        text("Uh oh, this looks hard!", 50, 250);
+                    text("Y E E E E E E E E E E E E E E E E E E E E T", 420, 150);
+                    text("I can see Baby Winston from here!\nIt can't be too far!",500,-20);
+                    }
+                    else{
+                        o("Uh oh, this looks hard!", 50, 250,15,0,255);
+                    o("Y E E E E E E E E E E E E E E E E E E E E T", 420, 150,15,0,255);
+                    o("I can see Baby Winston from here!\nIt can't be too far!",500,-20,15,0,255);
+                    }
+                }
+                if(level===24){
+                    if(delag)   {
+                        fill(255);
+                        text("Look! In the distance!", 50, -10);
+                    text("Finally reunited!", 3000, -10);
+                    }
+                    else{
+                        o("Look! In the distance!", 50, -10,15,0,255);
+                    o("Finally reunited!", 3000, -10,15,0,255);
+                    }
+                }
+                if(level===25){
+                    if(delag){
+                                                fill(255);
+                        text ("Now, you get to travel all the way back!", 50, -10);
+                    text("Just kidding!", 550, 10);
+                    }
+                    else{
+                        o ("Now, you get to travel all the way back!", 50, -10,15,0,255);
+                    o("Just kidding!", 550, 10,15,0,255);
+                    }
+                }
+                if(level===25){
+                    page="WIN!";
+                }
+                    popMatrix();
+o("if you're seeing this then\nrestart the program.\nthe scale() for the sizes\nbroke from code tampering.",300,450,47,255,0);
+                timethingy++;
+                if(timethingy>200){
+                    timethingy=0;
+    randm=color(random(0,255),random(0,255),random(0,255));
+                }
+                textSize (7);
+    text ("FPS: "+fpss, 20, 295);
+        break;
+        case 'logo':
+            if(keys[16]){
+                page='nail';
+            }
+            fill(0);
+            rect(x4,0,600,600);
+            x4+=5;
+            if(timerrr<601&&x4>0){
+                x4=0;
+                timerrr++;
+                x2-=5;
+                x1+=5;
+            }
+            if(timerrr>600){
+                page="Menu";
+            }
+            o("S",x1/2, y1, 100, 127.5, 255);
+            o("P", x2/2, y1, 100, 127.5,255);
+            if(x1>235){
+                x1=235;
+            }
+            if(x2<365){
+                x2=365;
+            }
+            if(timerrr>200){
+                o("Presents...",x3/2,y2,50,127.5,255);
+                x3+=5;
+                if(x3>300){
+                    x3=300;
+                }
+            }
+            if(timerrr>500){
+                y1+=5;
+                y2-=5;
+            }
+            o("if you're seeing this then\nrestart the program.\nthe scale() for the sizes\nbroke from code tampering.",300,450,47,255,0);
+        break;
+        case "Menu":
+            background(0, 149, 255);
+            fill(0);
+            rect(150, 0, 300, 300);
+            image (getImage ("creatures/Winston"), 50, 160*1.63, 20, 20);
+            pushMatrix ();
+            translate (250, 162*1.616);
+            scale (-1, 1);
+            image (getImage ("creatures/OhNoes"), 0, 0, 20, 20);
+            popMatrix ();
+            for(var i = -10; i < 140; i += 20){
+                this.x=i;
+                this.y=560/2;
+        //Grass Graphics
+        fill(125, 101, 39);
+        rect(this.x,this.y,20,20);
+        
+        fill(0, 255, 0);
+        triangle(this.x,this.y,this.x,this.y+7,this.x+10,this.y);
+        triangle(this.x+6,this.y,this.x+10,this.y+9,this.x+17,this.y);
+        triangle(this.x+11,this.y,this.x+20,this.y+8,this.x+20,this.y);
+                fill (0,49);
+        rect(this.x,this.y,10,20);
+            }
+            for (var j = 150; j < width/2; j+=20){
+                this.x=j;
+                this.y=560/2;
+                fill(163,67,57);
+        rect(this.x,this.y,20,20);
+        fill(200);
+        rect(this.x,this.y,2,10);
+        rect(this.x+10,this.y+10,2,10);
+        fill(200);
+        for(var i = 0;i <3;i++) {
+            rect(this.x,this.y+i*9,20,2);
+        }
+                fill (0,49);
+        rect(this.x,this.y,10, 20);
+            }
+            fill (255,255,0);
+            ellipse(30,30,30,30);
+            fill (205, 205, 0);
+            arc(30, 30, 30, 30, 90, 270);
+            fill (255);
+                ellipse(500/2,30,30,30);
+                fill(0);
+                ellipse(485/2,30,20, 20);
+                o("Winston's", 150, 50, 40, color(255), color(0));
+                o("Adventure",120, 100, 45, color(255),color(0));
+                fill(255, 221, 0);
+                rect(125,150,50,40,5);
+                                o("PLAY",150,170,20,color(255),color(0));
+                                o("if you're seeing this then\nrestart the program.\nthe scale() for the sizes\nbroke from code tampering.",300,450,47,255,0);
+
+                if(mouseX>125*2&&mouseY>150*2&&mouseX<175*2&&mouseY<190*2){
+                    fill(205,171,0);
+                rect(125,150,50,40,5);
+                cursor(HAND);
+                                o("PLAY",150,170,21,color(205),color(0));
+
+                if(clicked===true){
+                    page="How";
+                }
+                }
+else{
+    cursor(ARROW);
+}
+clicked=false;
+            break;
+            case "How":
+background(0, 149, 255);
+            fill(0);
+            rect(150, 0, 300, 300);
+            image (getImage ("creatures/Winston"), 50, 160*1.63, 20, 20);
+            pushMatrix ();
+            translate (250, 162*1.616);
+            scale (-1, 1);
+            image (getImage ("creatures/OhNoes"), 0, 0, 20, 20);
+            popMatrix ();
+            for(var i = -10; i < 140; i += 20){
+                this.x=i;
+                this.y=560/2;
+        //Grass Graphics
+        fill(125, 101, 39);
+        rect(this.x,this.y,20,20);
+        
+        fill(0, 255, 0);
+        triangle(this.x,this.y,this.x,this.y+7,this.x+10,this.y);
+        triangle(this.x+6,this.y,this.x+10,this.y+9,this.x+17,this.y);
+        triangle(this.x+11,this.y,this.x+20,this.y+8,this.x+20,this.y);
+                fill (0,49);
+        rect(this.x,this.y,10,20);
+            }
+            for (var j = 150; j < width/2; j+=20){
+                this.x=j;
+                this.y=560/2;
+                fill(163,67,57);
+        rect(this.x,this.y,20,20);
+        fill(200);
+        rect(this.x,this.y,2,10);
+        rect(this.x+10,this.y+10,2,10);
+        fill(200);
+        for(var i = 0;i <3;i++) {
+            rect(this.x,this.y+i*9,20,2);
+        }
+                fill (0,49);
+        rect(this.x,this.y,10, 20);
+            }
+            fill (255,255,0);
+            ellipse(30,30,30,30);
+            fill (205, 205, 0);
+            arc(30, 30, 30, 30, 90, 270);
+            fill (255);
+                ellipse(500/2,30,30,30);
+                fill(0);
+                ellipse(485/2,30,20, 20);      
+                o("How to play?",150,50,50,255,0);
+                o("It's pretty simple.\nUse the arrow keys or WASD to move.\nPress \"R\" to restart your level (though it will\ngive you a death).\nPress\"S\" to skip your level, but be warned\nthat you only have 3 skips that die at level\n22, and they will also cost a death.\nYou can click to delag/undelag.\nThere are 25 levels, and they are all possible.", 150, 150, 15, 255, 0);
+                                fill(255, 221, 0);
+                rect(125,230,50,40,5);
+                                o("CONTINUE",150,250,9,color(255),color(0));
+o("if you're seeing this then\nrestart the program.\nthe scale() for the sizes\nbroke from code tampering.",300,450,47,255,0);
+                if(mouseX>125*2&&mouseY>230*2&&mouseX<175*2&&mouseY<270*2){
+                    fill(205,171,0);
+                rect(125,230,50,40,5);
+                cursor(HAND);
+                                o("CONTINUE",150,250,10,color(205),color(0));
+                                if(clicked===true){
+                    page=1;
+                }
+                }
+else{
+    cursor(ARROW);
+}
+clicked=false;
+            break;
+            case 'nail':
+                background(0, 149, 255);
+            fill(0);
+            rect(150, 0, 300, 300);
+            image (getImage ("creatures/Winston"), 50, 160*1.63, 20, 20);
+            pushMatrix ();
+            translate (250, 162*1.616);
+            scale (-1, 1);
+            image (getImage ("creatures/OhNoes"), 0, 0, 20, 20);
+            popMatrix ();
+            for(var i = -10; i < 140; i += 20){
+                this.x=i;
+                this.y=560/2;
+        //Grass Graphics
+        fill(125, 101, 39);
+        rect(this.x,this.y,20,20);
+        
+        fill(0, 255, 0);
+        triangle(this.x,this.y,this.x,this.y+7,this.x+10,this.y);
+        triangle(this.x+6,this.y,this.x+10,this.y+9,this.x+17,this.y);
+        triangle(this.x+11,this.y,this.x+20,this.y+8,this.x+20,this.y);
+                fill (0,49);
+        rect(this.x,this.y,10,20);
+            }
+            for (var j = 150; j < width/2; j+=20){
+                this.x=j;
+                this.y=560/2;
+                fill(163,67,57);
+        rect(this.x,this.y,20,20);
+        fill(200);
+        rect(this.x,this.y,2,10);
+        rect(this.x+10,this.y+10,2,10);
+        fill(200);
+        for(var i = 0;i <3;i++) {
+            rect(this.x,this.y+i*9,20,2);
+        }
+                fill (0,49);
+        rect(this.x,this.y,10, 20);
+            }
+            fill (255,255,0);
+            ellipse(30,30,30,30);
+            fill (205, 205, 0);
+            arc(30, 30, 30, 30, 90, 270);
+            fill (255);
+                ellipse(500/2,30,30,30);
+                fill(0);
+                ellipse(485/2,30,20, 20);
+                o("Winston's", 150, 50, 40, color(255), color(0));
+                o("Adventure",120, 100, 45, color(255),color(0));
+                o("Only 1% can finish the game!", 150, 200, 20, 255, 0);
+                break;
+                case 1:
+                    background(0, 149, 255);
+            fill(0);
+            rect(150, 0, 300, 300);
+            image (getImage ("creatures/Winston"), 50, 160*1.63, 20, 20);
+            pushMatrix ();
+            translate (250, 162*1.616);
+            scale (-1, 1);
+            image (getImage ("creatures/OhNoes"), 0, 0, 20, 20);
+            popMatrix ();
+            for(var i = -10; i < 140; i += 20){
+                this.x=i;
+                this.y=560/2;
+        //Grass Graphics
+        fill(125, 101, 39);
+        rect(this.x,this.y,20,20);
+        
+        fill(0, 255, 0);
+        triangle(this.x,this.y,this.x,this.y+7,this.x+10,this.y);
+        triangle(this.x+6,this.y,this.x+10,this.y+9,this.x+17,this.y);
+        triangle(this.x+11,this.y,this.x+20,this.y+8,this.x+20,this.y);
+                fill (0,49);
+        rect(this.x,this.y,10,20);
+            }
+            for (var j = 150; j < width/2; j+=20){
+                this.x=j;
+                this.y=560/2;
+                fill(163,67,57);
+        rect(this.x,this.y,20,20);
+        fill(200);
+        rect(this.x,this.y,2,10);
+        rect(this.x+10,this.y+10,2,10);
+        fill(200);
+        for(var i = 0;i <3;i++) {
+            rect(this.x,this.y+i*9,20,2);
+        }
+                fill (0,49);
+        rect(this.x,this.y,10, 20);
+            }
+            clicked=false;
+            fill (255,255,0);
+            ellipse(30,30,30,30);
+            fill (205, 205, 0);
+            arc(30, 30, 30, 30, 90, 270);
+            fill (255);
+                ellipse(500/2,30,30,30);
+                fill(0);
+                ellipse(485/2,30,20, 20);      
+                o("STORY",150,50,50,255,0);
+                o("It's the middle of the Avatar War, and all of the\navatars are battling the evil Oh Noes to stop\nthem from taking over the kingdom.\nYour son Baby Winston came as a\nphotographer for the Avatar News and was\ncaptured as a POW, despite the fact that there\nwas a truce between the Avatars and the\nError Buddies forbidding that.\nYou will have to trek deep through enemy\nterrirory to save your son.\nEvery second you wait is another second\nwasted, so go as soon as you can!", 150, 160, 12, 255, 0);
+                            
+                                o("CLICK TO START YOUR MISSION",150,250,12,color(255),color(0));
+                                o("if you're seeing this then\nrestart the program.\nthe scale() for the sizes\nbroke from code tampering.",300,450,47,255,0);
+mouseClicked=function(){
+    page='G';
+};
+cursor(ARROW);
+                break;
+                case 'fail':
+                    background(0, 149, 255);
+            fill(0);
+            rect(150, 0, 300, 300);
+            image (getImage ("creatures/Winston"), 50, 160*1.63, 20, 20);
+            pushMatrix ();
+            translate (250, 162*1.616);
+            scale (-1, 1);
+            image (getImage ("creatures/OhNoes"), 0, 0, 20, 20);
+            popMatrix ();
+            for(var i = -10; i < 140; i += 20){
+                this.x=i;
+                this.y=560/2;
+        //Grass Graphics
+        fill(125, 101, 39);
+        rect(this.x,this.y,20,20);
+        
+        fill(0, 255, 0);
+        triangle(this.x,this.y,this.x,this.y+7,this.x+10,this.y);
+        triangle(this.x+6,this.y,this.x+10,this.y+9,this.x+17,this.y);
+        triangle(this.x+11,this.y,this.x+20,this.y+8,this.x+20,this.y);
+                fill (0,49);
+        rect(this.x,this.y,10,20);
+            }
+            for (var j = 150; j < width/2; j+=20){
+                this.x=j;
+                this.y=560/2;
+                fill(163,67,57);
+        rect(this.x,this.y,20,20);
+        fill(200);
+        rect(this.x,this.y,2,10);
+        rect(this.x+10,this.y+10,2,10);
+        fill(200);
+        for(var i = 0;i <3;i++) {
+            rect(this.x,this.y+i*9,20,2);
+        }
+                fill (0,49);
+        rect(this.x,this.y,10, 20);
+            }
+            clicked=false;
+            fill (255,255,0);
+            ellipse(30,30,30,30);
+            fill (205, 205, 0);
+            arc(30, 30, 30, 30, 90, 270);
+            fill (255);
+                ellipse(500/2,30,30,30);
+                fill(0);
+                ellipse(485/2,30,20, 20);  
+                o("FAIL",150,50,50,255,0);
+                o("You were captured by the enemy and starved to death\nin captivity.", 150, 160, 12, 255, 0);
+                o("if you're seeing this then\nrestart the program.\nthe scale() for the sizes\nbroke from code tampering.",300,450,47,255,0);
+                    break;
+                    case 'WIN!':
+                        background(0, 149, 255);
+            fill(0);
+            rect(150, 0, 300, 300);
+            image (getImage ("creatures/Winston"), 50, 160*1.63, 20, 20);
+            pushMatrix ();
+            translate (250, 162*1.616);
+            scale (-1, 1);
+            image (getImage ("creatures/OhNoes"), 0, 0, 20, 20);
+            popMatrix ();
+            for(var i = -10; i < 140; i += 20){
+                this.x=i;
+                this.y=560/2;
+        //Grass Graphics
+        fill(125, 101, 39);
+        rect(this.x,this.y,20,20);
+        
+        fill(0, 255, 0);
+        triangle(this.x,this.y,this.x,this.y+7,this.x+10,this.y);
+        triangle(this.x+6,this.y,this.x+10,this.y+9,this.x+17,this.y);
+        triangle(this.x+11,this.y,this.x+20,this.y+8,this.x+20,this.y);
+                fill (0,49);
+        rect(this.x,this.y,10,20);
+            }
+            for (var j = 150; j < width/2; j+=20){
+                this.x=j;
+                this.y=560/2;
+                fill(163,67,57);
+        rect(this.x,this.y,20,20);
+        fill(200);
+        rect(this.x,this.y,2,10);
+        rect(this.x+10,this.y+10,2,10);
+        fill(200);
+        for(var i = 0;i <3;i++) {
+            rect(this.x,this.y+i*9,20,2);
+        }
+                fill (0,49);
+        rect(this.x,this.y,10, 20);
+            }
+            clicked=false;
+            fill (255,255,0);
+            ellipse(30,30,30,30);
+            fill (205, 205, 0);
+            arc(30, 30, 30, 30, 90, 270);
+            fill (255);
+                ellipse(500/2,30,30,30);
+                fill(0);
+                ellipse(485/2,30,20, 20);  
+                strokeWeight(2);
+                stroke(255, 0, 0);
+                line(250,280,232,262);
+                line(250,262,232,280);
+                noStroke();
+                o("SUCCESS!",150,50,40,255,0);
+                o("You saved your son from captivity and the\nAvatars won the war against the Error\nBuddies! For completing the challenge with\n"+deaths+" deaths in "+round(sec)+ " seconds, you earned "+round(5000-deaths-sec)+"\npoints! Make a spin-off to get on the\nleaderboard!",150,130,15,255,0);
+                o(round(score-deaths-sec),150,230,80,255,0);
+                score+=5;
+                o("if you're seeing this then\nrestart the program.\nthe scale() for the sizes\nbroke from code tampering.",300,450,47,255,0);
+                                thingy+=5;
+                if(thingy>5000){
+                    score=score-5;
+                }
+                        break;
+    }
+    if(dead){
+                        fill(255, 0, 0,fade);
+                        rect(0,0,width,height);
+                fade-=2.5;
+                dead=true;
+
+    if(fade<0){
+        fade=255;
+        dead=false;
+    }
+    if(fade>250&&fade!==255){
+                score-=score*0.01+20;
+                deaths++;
+    randm=color(random(0,255),random(0,255),random(0,255));
+    }
+    }
+        if(f){
+                        fill(0, 163, 38,fodo);
+                        rect(0,0,width,height);
+                fodo-=2.5;
+                f=true;
+
+    if(fodo<0){
+        fodo=255;
+        f=false;
+    randm=color(random(0,255),random(0,255),random(0,255));
+    }
+    }
+    if(level>=27){
+        page='WIN!';
+    }
+};
+// }
+
+// keys & clicks{
+/*** Key Events ***/
+var keyPressed = function() {
+    keys[keyCode] = true;
+};
+var keyReleased = function() {
+    keys[keyCode] = false;
+};  
+mouseClicked=function(){
+    clicked=true;
+};
+clicked=false;
+// }
+
+// security versus The Hackers {
+if(score>500&&sec<1){
+    changed=true;
+}
+if(changed&&score>500){
+    throw{
+        message:"Hey! You changed your score!",
+    };
+}
+if (fps>100){
+    throw{
+        message:"Why is the \"fps\" more than 100?",
+        row:133,
+    };
+}
+if (changed!==true&&changed!==false){
+    throw{
+        message:"Woah woah woah woah. Dont tamper with my code.",
+        row:128,
+    };
+}
+if(fps<100){
+    throw{
+        message:"Why is the \"fps\" less than 100?",
+        row:133,
+    };
+}
+if(itemSize>2){
+    throw{
+        message:"The \"itemSize\" is too big. That breaks the program and cam.",
+        row:131,
+    };
+}
+if(itemSize<2){
+    throw{
+        message:"The \"itemSize\" is too small. That breaks the program and cam.",
+        row:131,
+    };
+}
+if (level>2&&sec<1){
+    changed=true;
+}
+if(changed&&level>2){
+    throw{
+        message:"Cheater! You set \"level\" to a higher place! NO CHEATING!!!",
+        row:117,
+    };
+}
+if(thingy>0&&page!=="WIN!"){
+    throw{
+        message:"Cheater! You set \"thingy\" to something bigger than 0!\n\n\n\nOn second thought, that just lowers your score so...",
+        row:127,
+    };
+}
+if(thingy<0&&page!=="WIN!"){
+    throw{
+        message:"Cheater! You set \"thingy\" to something less than 0 to get a bigger score!",
+        row:127,
+    };
+}
+if(sec<0){
+    throw{
+        message:"Cheater! \"sec\" is too low!",
+        row:125,
+    };
+}
+if(level<0){
+    throw{
+        message:"Error! \"level\" should be no less than 0!",
+        row:117,
+    };
+}
+if(skips>3){
+    throw{
+        message:"Cheater! \"skips\" should be no more than 3!",
+        row:126,
+    };
+}
+if(level>30){
+    throw{
+        message:"Error! \"level\" is too high!",
+        row:117,
+    };
+}
+if(deaths<0){
+    throw{
+        message:"Error! \"deaths\" is too small!",
+        row:118,
+    };
+}
+if(width!==600){
+    throw{
+        message:"The width needs to be 600 for proper gameplay, not \""+width+"\"!",
+    };
+}
+if(height!==600){
+    throw{
+        message:"The height needs to be 600 for proper gameplay, not \""+height+"\"!",
+    };
+}
+if (creator !== 'SP') {
+    throw{
+        message:"PLAGARISM ALERT!\n\"SP\" is the creator! Flag if you see this! \""+creator+"\" plagarized!", 
+        row:1,
+    };
+}
+if(tutorialMaker!=='CheesyMonster') {
+    throw{
+        message:"FRAUD ALERT!\n\"CheesyMonster\" made the tutorials! Flag if you see this! \""+tutorialMaker+ "\" commited fraud!",
+        row:5,
+    };
+}
+if(level>27){
+    throw{
+        message:"Error! \"level\" is too high!",
+        row:117,
+    };
+}
+if(page==="WIN!"&&level!==26){
+    throw{
+        message: "CHEATER! You thought you won but............",
+        row: 115,
+    };
+}
+//}
+
+// done!!!
+//woohoo over triple my second highest program (555) to 1902 🎉
