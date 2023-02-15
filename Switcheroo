@@ -1,0 +1,1269 @@
+/** 
+ * 
+ * My new program, which is the card game called "Switcheroo"!
+ * 
+ * ╔═══╦╗╔╗╔╦══╦════╦═══╦╗ ╔╦═══╦═══╦═══╦═══╗
+ * ║╔═╗║║║║║╠╣╠╣╔╗╔╗║╔═╗║║ ║║╔══╣╔═╗║╔═╗║╔═╗║
+ * ║╚══╣║║║║║║║╚╝║║╚╣║ ╚╣╚═╝║╚══╣╚═╝║║ ║║║ ║║
+ * ╚══╗║╚╝╚╝║║║  ║║ ║║ ╔╣╔═╗║╔══╣╔╗╔╣║ ║║║ ║║
+ * ║╚═╝╠╗╔╗╔╬╣╠╗ ║║ ║╚═╝║║ ║║╚══╣║║╚╣╚═╝║╚═╝║
+ * ╚═══╝╚╝╚╝╚══╝ ╚╝ ╚═══╩╝ ╚╩═══╩╝╚═╩═══╩═══╝
+ * 
+ * SP @Prodigy6 - 2021
+ * 
+ * Thank you for playing the game!
+ * 
+ * NOTE -- 7.24.22 fixed bug with logo
+ * 
+ * CREDITS {
+ * - Larry Serflaten was a big help to me becuase he helped me fix an issue with distrubuting cards (which I later removed and made more efficient), and he helped me fix another bug which was probably the most difficult bug in the whole program. Check him out @LarrySerflaten.
+ * - To ksat.com/features/2020/12/31/these-were-the-50-most-popular-baby-names-in-2020/ for giving me a list of popular baby names for potential opponents. (if I should remove that then let me know)
+ * - All else by me.
+ * }
+ * 
+ * START/FINISH {
+ * - Idea gotten - 12/09
+ * - Started coding it - 2/28
+ * - Finished - 3/12
+ * - Released - 3/13
+ * }
+ * 
+ * TIPS {
+ * The Opponent is pretty good and actually beat me a lot (lol).
+ * The best strat is your opponent's, so I would suggest using your ultimate/golden cards, and if you don't have any of those then use a "draw random cards" card, which can get you up to five random extra cards.
+ * If you have a low amount of cards and no cursed/switcheroo cards then you can run out of cards to get five more.
+ * Now, if you have none of those cards then I would suggest using a switcheroo card if your opponent has more or the same amount of cards, because you can steal some of their cards which can be some big point gopponentns. However, make sure you didn't have multiple switcheroo cards because then the opponent can just take their cards back.
+ * Maybe you don't have any of the above. You could use the normal cards, or if you don't have those or you are pretty far behind the opponent you should probably use the "draw two cards" button, which is a gamble. It could make you lose a turn or you could get golden or even ultimate cards.
+ * This game is mostly rng-dependent, but with the right strategies then you can win almost all of the time.
+ * }
+ * 
+ * HOW TO PLAY {
+ * The way the game works is pretty simple. Each team starts with 5 completely randomized cards, and it's you vs the opponent. The goal is to get to 50 points before the opponent by strategically playing your cards. On your turn, there are two things you can do - you can either draw two cards, or place down a card. Here is a list of all of the different cards:
+ * 
+ * -Normal: Adds one single point to the team that places it down.
+ * -Golden: Adds 5 points to the team that places it down.
+ * -Ultimate: Adds 15 points to the team that places it down.
+ * -Cursed: Subtracts 10 points from the team that places it down.
+ * -Draw Random: Gives between 1-5 cards to the team that places it down.
+ * -Switcheroo: Swaps all of your cards with the opponent's cards. It's also the name of the game.
+ * }
+ * 
+ * NOTES {
+ * - Your opponent is completely randomized off a list of 30 of the most popular baby names of 2020. I link my source on line 16.
+ * - Your opponent also does not have a set skill - if it beats you once, that does not mean it is more likely to beat you again. That is up to RNG.
+ * - Speaking of RNG, you are not "luckier" than your opponent.
+ * - If your fps drops low (below 20), then you will be put in "delag mode", where neither you nor the ai will be able to draw cards - you must use them. You can use draw random cards though.
+ * - Reading the how section will help you at the beginning of the game. :)
+ * - If oh noes starts yelling "Oh noes, a for loop is taking too long to run", then just restart the program.
+ * - That's all! Enjoy the game!
+ * }
+ * 
+ * VOTE LOG {
+ * Day 1: +25 votes, 25 total.
+ * Day 2: +29 votes, 54 total.
+ * Day 3: +81 votes, 135 total.
+ * Day 4: +23 votes, 158 total.
+ * Day 5: +12 votes, 170 total.
+ * Day 6: +4 votes, 174 total.
+ * }
+ * 
+**/
+
+// {
+var playerNames = ["Liam", "Sophia", "Olivia", "Noah", "Riley", "Emma", "Aiden", "Ava", "Elijah", "Grayson", "Aria", "Lucas", "Aaliyah", "Oliver", "Amelia", "Caden", "Mia", "Mateo", "Layla", "Zoe", "Mason", "Camilla", "Carter", "Jayden", "Eliana", "Ethan", "SP", "SP"];
+var wins = 0;
+var losses = 0;
+var continents = ["Africa", "North America", "South America", "Europe", "Australia", "Asia", "Antarctica"];
+var oppsPlayed = [];
+var pNp = playerNames[floor(random(0, playerNames.length))];
+var pC = continents[floor(random(0, continents.length))];
+var tagMsg = "";
+var matchupTime = 0;
+var tagLength = 0;
+var howPage = 0;
+var tagTime = 0;
+var opponentWaitTime = 1.6;
+frameRate(80);
+var page = "logo";
+var cardsArray = [];
+var ranPick = 0;
+var playerCards = [];
+var opponentSel = 0;
+var opponentCards = [];
+var testY = 0;
+var cardMove = 0;
+var op = 0;
+var m = 0;
+var clicked = false;
+var overButton = false;
+var isPlayerOver = false;
+var cardPicked = -1;
+var canUseCards = true;
+var cardJustUsed = -1;
+var playerPoints = 0;
+var opponentPoints = 0;
+var turn = 1;
+var opponentTimey = 0;
+var drewCards = false;
+var cardOpponentJustUsed = -1;
+var cardPlayerJustUsed = -1;
+var beginningOfGame = true;
+var cardToDisplay = "";
+var cardsKeep;
+var opponentCards2;
+var img;
+var imgrot = 0;
+var imgsize = 600;
+
+// the code for the logo
+var imgs = [];
+var bck;
+var presents = [];
+var pMsg = ["P", "R", "E", "S", "E", "N", "T", "S"];
+var transImg, transImgX = 0.1;
+var logoTimer = 1;
+for(var i = 0; i < 8; i++) {
+    presents.push([i * 50 + 125, 525, 300, 615]);
+}
+background(0, 0, 0, 0);
+fill(0);
+textSize(380);
+textFont(createFont("Montserrat Bold"));
+textAlign(CENTER, CENTER);
+text("SP", 295, 295);
+fill(127.5);
+text("SP", 300, 300);
+fill(255);
+text("SP", 305, 305);
+for(var i = 0; i < 30; i++) {
+    for(var j = 0; j < 30; j++) {
+        imgs.push([get(i*30, j*30, 30, 30), i*30, j*30, 0, 285, false]);
+    }
+}
+
+noStroke();
+background(21, 0, 158);
+for(var i = 0; i < height; i+= 10) {
+    fill(0, 3);
+    rect(0, i, width, height - i);
+}
+for(var i = 0; i < 600; i++) {
+    fill(255);
+    ellipse(random(0, width), random(0, height), random(0.5, 2.5), random(0.5, 2.5));
+}
+
+bck = get(0, 0, 600, 600);
+
+stroke(0);
+
+var drawBackground = function() {
+    background(250);
+    textFont(createFont("SP Custom Bold"));
+    fill(255);
+    if(this.__frameRate >= 20) {
+        for(var i = 0; i < 600; i += 20) {
+            for(var j = 0; j < 620; j += 20) {
+                textSize(50);
+                text("o", i, j);
+            }
+        }
+    }
+};
+var drawNormalCard = function(x, y, s) {
+    pushMatrix();
+    translate(x, y);
+    scale(s);
+    strokeWeight(5);
+    stroke(0);
+    fill(0, 145, 255);
+    rect(240, 200, 120, 180, 5);
+    fill(227, 216, 0);
+    beginShape();
+    vertex(257, 330);
+    vertex(258, 350);
+    vertex(341, 350);
+    vertex(338, 329);
+    vertex(310, 329);
+    vertex(305, 220);
+    vertex(297, 209);
+    vertex(269, 230);
+    vertex(273, 246);
+    vertex(289, 242);
+    vertex(284, 329);
+    endShape(CLOSE);
+    textFont(createFont("SP Custom Bold"));
+    fill(0);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("Normal", 300, 365);
+    popMatrix();
+};
+var drawGoldenCard = function(x, y, s) {
+    pushMatrix();
+    translate(x, y);
+    scale(s);
+    strokeWeight(5);
+    stroke(0);
+    fill(102, 242, 109);
+    rect(240, 200, 120, 180, 5);
+fill(227, 216, 0);
+beginShape();
+vertex(343, 214);
+vertex(345, 237);
+vertex(277, 229);
+vertex(276, 271);
+vertex(339, 276);
+vertex(341, 330);
+vertex(275, 327);
+vertex(264, 325);
+vertex(263, 311);
+vertex(330, 311);
+vertex(328, 287);
+vertex(261, 278);
+vertex(261, 214);
+endShape(CLOSE);
+fill(227, 0, 0);
+    beginShape();
+vertex(242, 363);
+vertex(260, 330);
+vertex(274, 350);
+vertex(286, 330);
+vertex(298, 349);
+vertex(318, 321);
+vertex(335, 346);
+vertex(349, 319);
+vertex(360, 348);
+vertex(360, 377);
+vertex(242, 377);
+endShape(CLOSE);
+    textFont(createFont("SP Custom Bold"));
+    fill(0);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("Golden", 300, 365);
+    popMatrix();
+};
+var drawUltimateCard = function(x, y, s) {
+    pushMatrix();
+    translate(x, y);
+    scale(s);
+    strokeWeight(5);
+    stroke(0);
+    fill(240, 104, 126);
+    rect(240, 200, 120, 180, 5);
+    fill(240, 189, 198);
+    rotate(-2);
+    rect(250, 264, 60, 90, 12);
+    rotate(2);
+    fill(235, 223, 3);
+    beginShape();
+vertex(248, 248);
+vertex(253, 227);
+vertex(266, 245);
+vertex(273, 221);
+vertex(285, 240);
+vertex(288, 222);
+vertex(304, 245);
+vertex(307, 216);
+vertex(322, 238);
+vertex(324, 250);
+vertex(326, 266);
+vertex(254, 270);
+vertex(251, 257);
+endShape(CLOSE);
+fill(255, 0, 0);
+noStroke();
+ellipse(264, 258, 10, 10);
+ellipse(313, 255, 10, 10);
+fill(0, 0, 255);
+ellipse(288, 256, 11, 11);
+    textFont(createFont("SP Custom Bold"));
+    fill(0);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("Ultimate", 300, 365);
+    popMatrix();
+};
+var drawCursedCard = function(x, y, s) {
+    pushMatrix();
+    translate(x, y);
+    scale(s);
+    strokeWeight(5);
+    stroke(0);
+    fill(255, 80, 80);
+    rect(240, 200, 120, 180, 5);
+    fill(255, 0, 0);
+    beginShape();
+    vertex(277, 243);
+    vertex(265, 256);
+    vertex(290, 284);
+    vertex(272, 302);
+    vertex(282, 315);
+    vertex(301, 295);
+    vertex(315, 310);
+    vertex(333, 300);
+    vertex(312, 280);
+    vertex(327, 248);
+    vertex(308, 243);
+    vertex(298, 270);
+    endShape(CLOSE);
+    textFont(createFont("SP Custom Bold"));
+    fill(0);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("Cursed", 300, 365);
+    popMatrix();
+};
+var drawSwitcherooCard = function(x, y, s) {
+    strokeWeight(5);
+    pushMatrix();
+    translate(x, y);
+    scale(s);
+    stroke(0);
+    fill(255, 186, 82);
+    rect(240, 200, 120, 180, 5);
+    fill(235);
+    strokeWeight(3);
+    beginShape();
+    vertex(338, 304);
+    vertex(338, 327);
+    vertex(286, 322);
+    vertex(286, 337);
+    vertex(264, 314);
+    vertex(286, 290);
+    vertex(286, 303);
+    endShape(CLOSE);
+    beginShape();
+    vertex(264, 234);
+    vertex(264, 257);
+    vertex(316, 252);
+    vertex(316, 267);
+    vertex(338, 244);
+    vertex(316, 220);
+    vertex(316, 233);
+    endShape(CLOSE);
+    textFont(createFont("SP Custom Bold"));
+    fill(0);
+    textSize(20);
+    textAlign(CENTER, CENTER);
+    text("Switcheroo", 300, 365);
+    popMatrix();
+};
+var drawDrawCardsCard = function(x, y, s) {
+    pushMatrix();
+    translate(x, y);
+    scale(s);
+    strokeWeight(5);
+    stroke(0);
+    fill(255, 186, 82);
+    rect(240, 200, 120, 180, 5);
+    fill(255);
+    rect(260, 225, 60, 90, 10);
+    rect(267, 233, 60, 90, 10);
+    rect(274, 240, 60, 90, 10);
+    rect(281, 247, 60, 90, 10);
+    strokeWeight(2);
+    fill(119, 0, 255);
+    beginShape();
+    vertex(269, 227);
+    vertex(279, 225);
+    vertex(280, 244);
+    vertex(292, 243);
+    vertex(294, 254);
+    vertex(279, 253);
+    vertex(281, 268);
+    vertex(270, 268);
+    vertex(269, 253);
+    vertex(255, 252);
+    vertex(253, 241);
+    vertex(269, 242);
+    endShape(CLOSE);
+    strokeWeight(3);
+    textFont(createFont("SP Custom Bold"));
+    fill(0);
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text("Draw Random\nCards", 300, 360);
+    popMatrix();
+};
+var drawSwitcherooCardLogo = function(x, y, s) {
+    pushMatrix();
+    translate(x, y);
+    scale(s);
+    strokeWeight(5);
+    stroke(0);
+    fill(255, 84, 84);
+    rect(240, 200, 120, 180, 5);
+    textFont(createFont("SP Custom Bold"));
+    fill(0);
+    textSize(15.4);
+    textAlign(CENTER, CENTER);
+    pushMatrix();
+    translate(0, -18);
+    text("SWITCHEROO\nTHE GAME", 297, 260);
+    fill(50);
+    text("SWITCHEROO\nTHE GAME", 298, 261);
+    fill(100);
+    text("SWITCHEROO\nTHE GAME", 299, 262);
+    fill(150);
+    text("SWITCHEROO\nTHE GAME", 300, 263);
+    fill(200);
+    text("SWITCHEROO\nTHE GAME", 301, 264);
+    fill(250);
+    text("SWITCHEROO\nTHE GAME", 302, 265);
+    popMatrix();
+    pushMatrix();
+    translate(303, 288);
+    rotate(10);
+    fill(255);
+    strokeWeight(4);
+    rect(0, 0, 50, 75, 5);
+    translate(-56, 19);
+    rotate(-20);
+    rect(0, 0, 50, 75, 5);
+    rotate(10);
+    translate(26, -17);
+    rect(0, 0, 54, 81, 5);
+    popMatrix();
+    popMatrix();
+};
+var cards = [{
+        // normal
+        num: 150,
+        precedence: 5
+    },
+    {
+        // golden
+        num: 50,
+        precedence: 2
+    },
+    {
+        // ultimate
+        num: 10,
+        precedence: 1
+    },
+    {
+        
+        // switcheroo
+        num: 50,
+        precedence: 4
+    },
+    {
+        // draw random
+        num: 50,
+        precedence: 3
+    },
+    {
+        // cursed
+        num: 23,
+        precedence: 6
+    },
+];
+for (var i = 0; i < cards.length; i++) {
+    for (var j = 0; j < cards[i].num; j++) {
+        cardsArray.push([cards[i].precedence]);
+    }
+}
+playerCards.push(0);
+opponentCards.push(0);
+// if team = 1 its player, else = opponent.
+var drawCard = function(amt, team) {
+    while (testY < amt) {
+        ranPick = floor(random(0, cardsArray.length));
+        if (team === 1) {
+            playerCards.push(cardsArray[ranPick]);
+            testY++;
+        }
+        else {
+            opponentCards.push(cardsArray[ranPick]);
+            testY++;
+        }
+    }
+};
+for(var i = 0; i < 5; i++) {
+    playerCards.push(cardsArray[floor(random(0, cardsArray.length))]);
+    opponentCards.push(cardsArray[floor(random(0, cardsArray.length))]);
+}
+playerCards.splice(0, 1);
+opponentCards.splice(0, 1);
+draw = function() {
+    switch(page) {
+        case "logo":
+            image(bck, 0, 0);
+    imageMode(CENTER);
+    for(var i in imgs) {
+        pushMatrix();
+        translate(imgs[i][3] + 15, imgs[i][4]);
+        image(imgs[i][0], 0, 0);
+        popMatrix();
+        if(imgs[i][5]) {
+            imgs[i][3] += (imgs[i][1] - imgs[i][3]) / 10;
+            imgs[i][4] += (imgs[i][2] - imgs[i][4]) / 10;
+        }
+    }
+    if(logoTimer < 180) {
+        imgs[logoTimer * 5][5] = true;
+        imgs[logoTimer * 5 - 1][5] = true;
+        imgs[logoTimer * 5 - 2][5] = true;
+        imgs[logoTimer * 5 - 3][5] = true;
+        imgs[logoTimer * 5 - 4][5] = true;
+    }
+    imageMode(CORNER);
+    if(logoTimer > 60) {
+        for(var i in presents) {
+            textSize(40);
+            textFont(createFont("Montserrat Bold"));
+            fill(255);
+            text(pMsg[i], presents[i][2], presents[i][3]);
+            if(logoTimer > 135) {
+                presents[i][2] += (presents[i][0] - presents[i][2]) / 15;
+                presents[i][3] += (presents[i][1] - presents[i][3]) / 15;
+            }
+        }
+    }
+    if(logoTimer > 280) {
+        transImg = get(0, 0, 600, 600);
+        page = "menu";
+    }
+    logoTimer ++;
+        break;
+        case "matchup":
+            drawBackground();
+            fill(0);
+            matchupTime += 1/60;
+            if(frameCount % 110 > 85) {
+                text("Finding an opponent...", 300, 200);
+            }
+            else if(frameCount % 110 > 60) {
+                text("Finding an opponent..", 300, 200);
+            }
+            else if(frameCount % 110 > 35) {
+                text("Finding an opponent.", 300, 200);
+            }
+            else {
+                text("Finding an opponent", 300, 200);
+            }
+            if(matchupTime > random(0.1, 500)) {
+                if(random(0, 50) > 20 || oppsPlayed.length === 0) {
+                matchupTime = 0;
+                pNp = playerNames[floor(random(0, playerNames.length))];
+                pC = continents[floor(random(0, continents.length))];
+                oppsPlayed.push([pNp, pC]);
+                }
+                else {
+                    matchupTime = 0;
+                    op = floor(random(0, oppsPlayed.length));
+                    pNp = oppsPlayed[op][0];
+                pC = oppsPlayed[op][1];
+                }
+                page = "matchup-found";
+            }
+        break;
+        case "matchup-found":
+            drawBackground();
+            fill(0);
+            matchupTime += 1/80;
+            text("Your opponent is...\n" + pNp + " from " + pC + "!", 0, -100, 600, 600);
+            if(matchupTime > 3) {
+                page = "game";
+            }
+        break;
+        case "menu":
+            stroke(0);
+            turn = 1;
+            matchupTime = 0;
+            howPage = 0;
+            drawBackground();
+            strokeWeight(5);
+            fill(255);
+            ellipse(300, 300, 200, 200);
+            ellipse(300, 500, 120, 120);
+            textAlign(CENTER, CENTER);
+            textFont(createFont("SP Custom Bold"));
+            textSize(80);
+            pushMatrix();
+            scale(-1, 1);
+            fill(0, 50);
+            translate(-300, 160);
+            text("SWITCHEROO", -2, -2);
+            popMatrix();
+            fill(220);
+            text("SWITCHEROO", 298, 98);
+            fill(110);
+            text("SWITCHEROO", 300, 100);
+            fill(0);
+            text("SWITCHEROO", 302, 102);
+            beginShape();
+            vertex(350, 300);
+            vertex(270, 260);
+            vertex(270, 340);
+            endShape(CLOSE);
+            textSize(60);
+            text("?", 300, 500);
+            if(dist(mouseX, mouseY, 300, 300) < 112.5) {
+                tagMsg = "Play the game";
+                tagLength = 78;
+                overButton = true;
+                fill(255);
+                ellipse(300, 300, 250, 250);
+                fill(0);
+                beginShape();
+                vertex(370, 300);
+                vertex(260, 250);
+                vertex(260, 350);
+                endShape(CLOSE);
+                if(clicked) {
+                    page = "matchup";
+                }
+            }
+            if(dist(mouseX, mouseY, 300, 500) < 67.5) {
+                tagMsg = "How to play";
+                tagLength = 66;
+                overButton = true;
+                fill(255);
+                ellipse(300, 500, 150, 150);
+                fill(0);
+                textSize(76);
+                text("?", 300, 500);
+                fill(0);
+                if(clicked) {
+                    page = "how";
+                }
+            }
+            imageMode(CORNER);
+            image(transImg, transImgX, 0);
+        transImgX += (600 - transImgX) / 10;
+        break;
+        case "how":
+            switch(howPage) {
+                case 0:
+                drawBackground();
+                fill(0);
+                textSize(30);
+                text("How to play?\nThe game is pretty simple. Each person starts with 5 cards, which are completely randomized. You will see a wide variety of cards pop up. The goal of the game is to be the first to get to 50 points by strategically playing your cards. On your turn you can either use a card or draw two cards.", 10, -70, 580, 600);
+                break;
+                case 1:
+                drawBackground();
+                fill(0);
+                textSize(60);
+                text("Normal Card", 300, 60);
+                drawNormalCard(-150, -170, 1.5);
+                textSize(30);
+                text("This adds one point to whichever team puts it down. 45% of cards are this one.", 0, 150, 600, 600);
+                break;
+                case 2:
+                drawBackground();
+                fill(0);
+                textSize(60);
+                text("Golden Card", 300, 60);
+                drawGoldenCard(-150, -170, 1.5);
+                textSize(30);
+                text("This adds five points to whichever team puts it down. 15% of cards are this one.", 0, 150, 600, 600);
+                break;
+                case 3:
+                drawBackground();
+                fill(0);
+                textSize(60);
+                text("Ultimate Card", 300, 60);
+                drawUltimateCard(-150, -170, 1.5);
+                textSize(29);
+                text("This adds fifteen points to whichever team puts it down. 3% of cards are this one.", 0, 150, 600, 600);
+                break;
+                case 4:
+                drawBackground();
+                fill(0);
+                textSize(60);
+                text("Draw Cards Card", 300, 60);
+                drawDrawCardsCard(-150, -170, 1.5);
+                textSize(23);
+                text("This draws between one and five cards to whichever team puts it down. 15% of cards are this one.", 0, 150, 600, 600);
+                break;
+                case 5:
+                drawBackground();
+                fill(0);
+                textSize(60);
+                text("Switcheroo Card", 300, 60);
+                drawSwitcherooCard(-150, -170, 1.5);
+                textSize(30);
+                text("This swaps all of your cards with the AI's. 15% of cards are this one", 0, 150, 600, 600);
+                break;
+                case 6:
+                drawBackground();
+                fill(0);
+                textSize(60);
+                text("Cursed Card", 300, 60);
+                drawCursedCard(-150, -170, 1.5);
+                textSize(28);
+                text("This subtracts ten points from whichever team puts it down. 7% of cards are this one.", 0, 150, 600, 600);
+                break;
+            }
+            fill(255);
+            stroke(0);
+            strokeWeight(6);
+            rect(15, 505, 170, 80, 5);
+            rect(210, 505, 175, 80, 5);
+            rect(410, 505, 170, 80, 5);
+            fill(0);
+            textSize(40);
+            text("Menu", 300, 545);
+            textSize(84);
+            text("←             →", 300, 537);
+            if(mouseX > 210 && mouseX < 385 && mouseY > 505 && mouseY < 585) {
+                tagMsg = "Go back to menu";
+                tagLength = 90;
+                overButton = true;
+                if(clicked) {
+                    page = "menu";
+                }
+            }
+            if(mouseX > 15 && mouseX < 185 && mouseY > 505 && mouseY < 585) {
+                tagMsg = "Go back a page";
+                tagLength = 83;
+                overButton = true;
+                if(clicked) {
+                    howPage --;
+                }
+            }
+            if(mouseX > 410 && mouseX < 580 && mouseY > 505 && mouseY < 585) {
+                tagMsg = "Go forward a page";
+                tagLength = 98;
+                overButton = true;
+                if(clicked) {
+                    howPage ++;
+                }
+            }
+            if(howPage < 0) {
+                howPage = 6;
+            }
+            if(howPage > 6) {
+                howPage = 0;
+            }
+        break;
+        case "game":
+        if(playerCards.length < 1) {
+            testY = 0;
+            drawCard(5, 1);
+        }
+    drawBackground();
+    for (var i = 20; i < playerCards.length * 100; i += 100) {
+        fill(255);
+        rect(i + cardMove, 400, 80, 120, 5);
+        m = playerCards[(i - 20) / 100][0];
+        switch (m) {
+            case 1:
+                drawUltimateCard(i + cardMove - 155, 272, 0.65);
+                break;
+            case 3:
+                drawDrawCardsCard(i + cardMove - 155, 272, 0.65);
+                break;
+            case 2:
+                drawGoldenCard(i + cardMove - 155, 272, 0.65);
+                break;
+            case 4:
+                drawSwitcherooCard(i + cardMove - 155, 272, 0.65);
+                break;
+            case 5:
+                drawNormalCard(i + cardMove - 155, 272, 0.65);
+                break;
+            case 6:
+                drawCursedCard(i + cardMove - 155, 272, 0.65);
+                break;
+        }
+        if (turn === 1) {
+            opponentSel = 0;
+            opponentTimey = 0;
+            if (canUseCards) {
+                fill(255);
+                rect(25, 300, 125, 75, 5);
+                fill(0);
+                textSize(18);
+                text("Draw Two\nCards", 25 + (125 / 2), 300 + (75 / 2));
+                if (mouseX > 25 && mouseX < 150 && mouseY > 300 && mouseY < 375 && this.__frameRate > 20) {
+                    tagMsg = "Draw two cards";
+                    tagLength = 83;
+                    overButton = true;
+                    if (clicked) {
+                        cardPlayerJustUsed = cardOpponentJustUsed;
+                        drewCards = true;
+                        testY = 0;
+                        drawCard(2, 1);
+                        turn = 2;
+                    }
+                }
+                if (mouseX > i + cardMove && mouseX < i + cardMove + 80 && mouseY > 400 && mouseY < 520) {
+                    if (clicked) {
+                        beginningOfGame = false;
+                        cardPicked = (i - 20) / 100;
+                        cardJustUsed = playerCards[(i - 20) / 100][0];
+                        cardPlayerJustUsed = playerCards[(i - 20) / 100][0];
+                        playerCards.splice(floor((i - 20) / 100), 1);
+                    turn = 2;
+                    }
+                    tagMsg = "Pick this card";
+                    tagLength = 75;
+                    overButton = true;
+                    isPlayerOver = false;
+                    if (!isPlayerOver) {
+                        isPlayerOver = true;
+                    }
+                }
+            }
+        }
+        fill(0);
+        textAlign(CENTER, CENTER);
+        textSize(15);
+    }
+    if (playerCards.length > 6) {
+        cardMove = constrain(cardMove, -(playerCards.length * 100) + 580, 0);
+    }
+    else {
+        cardMove = -10;
+    }
+    fill(255);
+    fill(0);
+    if (turn === 2) {
+        drewCards = false;
+        opponentTimey += 1 / 60;
+        if (opponentTimey > opponentWaitTime) {
+            beginningOfGame = false;
+            if (round(opponentCards2[opponentSel]) === 1) {
+                if(turn === 2) {
+                opponentCards.splice(opponentSel, 1);
+                cardJustUsed = 1;
+                cardOpponentJustUsed = 1;
+                turn = 1;
+                }
+            }
+            else if (round(opponentCards2[opponentSel]) === 2) {
+                if(turn === 2) {
+                opponentCards.splice(opponentSel, 1);
+                cardJustUsed = 2;
+                turn = 1;
+                cardOpponentJustUsed = 2;
+                }
+            }
+             else if (round(opponentCards2[opponentSel]) === 3) {
+                 if(turn === 2) {
+                opponentCards.splice(opponentSel, 1);
+                cardJustUsed = 3;
+                turn = 1;
+                cardOpponentJustUsed = 3;
+                 }
+            }
+            else if (round(opponentCards2[opponentSel]) === 4) {
+                if(opponentCards.length <= playerCards.length) {
+                    if(turn === 2) {
+                    opponentCards.splice(opponentSel, 1);
+                    cardJustUsed = 4;
+                    turn = 1;
+                    cardOpponentJustUsed = 4;
+                    }
+                }
+                else {
+                    opponentSel ++;
+                }
+            }
+            else if(opponentCards.length < 4 && this.__frameRate > 20) {
+                cardOpponentJustUsed = cardPlayerJustUsed;
+                testY = 0;
+                drawCard(2, 2);
+                drewCards = true;
+                turn = 1;
+            }
+            else if (round(opponentCards2[opponentSel]) === 5) {
+                if (opponentCards.length > random(5, 15)) {
+                    opponentCards.splice(opponentSel, 1);
+                    cardJustUsed = 5;
+                    turn = 1;
+                    cardOpponentJustUsed = 5;
+                }
+                else {
+                    if(this.__frameRate > 20) {
+                        cardOpponentJustUsed = cardPlayerJustUsed;
+                        testY = 0;
+                        drawCard(2, 2);
+                        drewCards = true;
+                        turn = 1;
+                    }
+                    else {
+                        opponentSel ++;
+                    }
+                }
+            }
+            else if (round(opponentCards2[opponentSel]) === 6) {
+                if (opponentCards.length > random(3, 10)) {
+                    opponentCards.splice(opponentSel, 1);
+                    cardJustUsed = 6;
+                    turn = 1;
+                    cardOpponentJustUsed = 6;
+                }
+                else {
+                    if(this.__frameRate > 20) {
+                        cardOpponentJustUsed = cardPlayerJustUsed;
+                        testY = 0;
+                        drawCard(2, 2);
+                        drewCards = true;
+                        turn = 1;
+                    }
+                    else {
+                        opponentCards.splice(opponentSel, 1);
+                        cardJustUsed = 6;
+                        turn = 1;
+                        cardOpponentJustUsed = 6;
+                    }
+                }
+            }
+        }
+    }
+    switch (cardJustUsed) {
+        case 1:
+            if (turn === 1) {
+                opponentPoints += 15;
+            }
+            if (turn === 2) {
+                playerPoints += 15;
+            }
+            cardJustUsed = -1;
+            break;
+        case 2:
+            if (turn === 1) {
+                opponentPoints += 5;
+            }
+            if (turn === 2) {
+                playerPoints += 5;
+            }
+            cardJustUsed = -1;
+            break;
+            case 3:
+            cardJustUsed = -1;
+            testY = 0;
+            if (turn === 1) {
+                drawCard(round(random(1, 5)), 2);
+            }
+            if (turn === 2) {
+                drawCard(round(random(1, 5)), 1);
+            }
+            break;
+        case 4:
+            cardJustUsed = -1;
+            cardsKeep = playerCards;
+            playerCards = opponentCards;
+            opponentCards = cardsKeep;
+            break;
+        case 5:
+            if (turn === 1) {
+                opponentPoints += 1;
+            }
+            if (turn === 2) {
+                playerPoints += 1;
+            }
+            cardJustUsed = -1;
+            break;
+        case 6:
+            if (turn === 1) {
+                opponentPoints -= 10;
+            }
+            if (turn === 2) {
+                playerPoints -= 10;
+            }
+            cardJustUsed = -1;
+            break;
+    }
+    opponentCards2 = opponentCards.sort();
+    textAlign(CENTER, CENTER);
+    textSize(20);
+    if (beginningOfGame) {
+        cardToDisplay = "";
+    }
+    else if (turn === 2) {
+         if(drewCards === false) {
+             cardToDisplay = cardPlayerJustUsed;
+         }
+        else {
+            cardToDisplay = cardOpponentJustUsed;
+            drewCards = false;
+        }
+        switch (cardToDisplay) {
+            case 1:
+                cardToDisplay = "";
+                drawUltimateCard(0, -15, 1);
+                break;
+            case 2:
+                cardToDisplay = "";
+                drawGoldenCard(0, -15, 1);
+                break;
+                case 3:
+                cardToDisplay = "";
+                drawDrawCardsCard(0, -15, 1);
+                break;
+            case 4:
+                cardToDisplay = "";
+                drawSwitcherooCard(0, -15, 1);
+                break;
+            case 5:
+                cardToDisplay = "";
+                drawNormalCard(0, -15, 1);
+                break;
+            case 6:
+                cardToDisplay = "";
+                drawCursedCard(0, -15, 1);
+            break;
+        }
+    }
+    else if (turn === 1) {
+        if(drewCards === false) {
+             cardToDisplay = cardOpponentJustUsed;
+         }
+        else {
+            cardToDisplay = cardPlayerJustUsed;
+            drewCards = false;
+        }
+        switch (cardToDisplay) {
+            case 1:
+                cardToDisplay = "";
+                drawUltimateCard(0, -15, 1);
+                break;
+                case 2:
+                cardToDisplay = "";
+                drawGoldenCard(0, -15, 1);
+                break;
+            case 3:
+                cardToDisplay = "";
+                drawDrawCardsCard(0, -15, 1);
+                break;
+            case 4:
+                cardToDisplay = "";
+                 drawSwitcherooCard(0, -15, 1);
+                break;
+            case 5:
+                cardToDisplay = "";
+                drawNormalCard(0, -15, 1);
+                break;
+            case 6:
+                cardToDisplay = "";
+                drawCursedCard(0, -15, 1);
+                break;
+        }
+    }
+    for (var i = 20; i < 520; i += 500 / opponentCards.length) {
+        drawSwitcherooCardLogo(i - 155, -98, 0.65);
+    }
+    textSize(30);
+    fill(0);
+    if(playerCards.length > 6) {
+    if (keyCode === LEFT && keyIsPressed) {
+        cardMove += 5.5;
+        text("Arrow keys to move", 300, 570);
+    }
+    else if (keyCode === RIGHT && keyIsPressed) {
+        cardMove -= 5.5;
+        text("Arrow keys to move", 300, 570);
+    }
+    else {
+        text("← Arrow keys to move →", 300, 570);
+    }
+    }
+    textSize(20);
+    text(pNp + "'s Points: " + opponentPoints, 133, 200);
+    text("Your Points: " + playerPoints, 479, 350);
+    text("Wins: " + wins + " | Losses: " + losses, 300, 547);
+    if(playerPoints >= 50 || opponentPoints < 0) {
+        img = get();
+        page = "player-win";
+        wins ++;
+    }
+    if(opponentPoints >= 50 || playerPoints < 0) {
+        img = get();
+        page = "opponent-win";
+        losses ++;
+    }
+    break;
+    case "opponent-win":
+        drawBackground();
+    fill(0);
+    textSize(50);
+    text("You lost\n:(", 300, 100);
+    textSize(20);
+    text("Wins: " + wins + " | Losses: " + losses, 300, 586);
+    imgrot += 1.8;
+    imgsize -= 2;
+    if(imgsize < 200) {
+        imgsize = 200;
+        imgrot = 360;
+    }
+    fill(255);
+    strokeWeight(7);
+    stroke(0);
+    rect(180, 410, 240, 70, 20);
+    fill(0);
+    textSize(30);
+    text("Play again?", 300, 445);
+    fill(255);
+    rect(180, 500, 240, 70, 20);
+    fill(0);
+    textSize(30);
+    text("Menu", 300, 535);
+    matchupTime = 0;
+    if(mouseX > 180 && mouseX < 420 && mouseY > 410 && mouseY < 480 && imgsize === 200) {
+        overButton = true;
+        tagMsg = "Play again";
+        tagLength = 59;
+        if(clicked) {
+            imgrot = 0;
+            imgsize = 600;
+            playerCards = [];
+            opponentCards = [];
+            for(var i = 0; i < 5; i++) {
+                playerCards.push(cardsArray[floor(random(0, cardsArray.length))]);
+                opponentCards.push(cardsArray[floor(random(0, cardsArray.length))]);
+            }
+            playerPoints = 0;
+            opponentPoints = 0;
+            cardJustUsed = "";
+            cardPlayerJustUsed = "";
+            cardOpponentJustUsed = "";
+            cardToDisplay = "";
+            turn = 1;
+            page = "matchup";
+        }
+    }
+    if(mouseX > 180 && mouseX < 420 && mouseY > 500 && mouseY < 570) {
+        tagMsg = "Menu";
+        tagLength = 35;
+        overButton = true;
+        if(clicked) {
+            imgrot = 0;
+            imgsize = 600;
+            playerCards = [];
+            opponentCards = [];
+            for(var i = 0; i < 5; i++) {
+                playerCards.push(cardsArray[floor(random(0, cardsArray.length))]);
+                opponentCards.push(cardsArray[floor(random(0, cardsArray.length))]);
+            }
+            playerPoints = 0;
+            opponentPoints = 0;
+            cardJustUsed = "";
+            cardPlayerJustUsed = "";
+            cardOpponentJustUsed = "";
+            cardToDisplay = "";
+            page = "menu";
+        }
+    }
+    pushMatrix();
+    translate(300, 300);
+    rotate(imgrot);
+    imageMode(CENTER);
+    image(img, 0, 0, imgsize, imgsize);
+    popMatrix();
+    break;
+    case "player-win":
+        drawBackground();
+        fill(0);
+    textSize(50);
+    text("You won\n:)", 300, 100);
+    textSize(20);
+    text("Wins: " + wins + " | Losses: " + losses, 300, 586);
+    imgrot += 1.8;
+    imgsize -= 2;
+    if(imgsize < 200) {
+        imgsize = 200;
+        imgrot = 360;
+    }
+    fill(255);
+    strokeWeight(7);
+    stroke(0);
+    rect(180, 410, 240, 70, 20);
+    fill(0);
+    textSize(30);
+    text("Play again?", 300, 445);
+    fill(255);
+    rect(180, 500, 240, 70, 20);
+    fill(0);
+    textSize(30);
+    text("Menu", 300, 535);
+    matchupTime = 0;
+    if(mouseX > 180 && mouseX < 420 && mouseY > 410 && mouseY < 480 && imgsize === 200) {
+        overButton = true;
+        tagMsg = "Play again";
+        tagLength = 59;
+        if(clicked) {
+            imgrot = 0;
+            imgsize = 600;
+            playerCards = [];
+            opponentCards = [];
+            for(var i = 0; i < 5; i++) {
+                playerCards.push(cardsArray[floor(random(0, cardsArray.length))]);
+                opponentCards.push(cardsArray[floor(random(0, cardsArray.length))]);
+            }
+            playerPoints = 0;
+            opponentPoints = 0;
+            cardJustUsed = "";
+            cardPlayerJustUsed = "";
+            cardOpponentJustUsed = "";
+            cardToDisplay = "";
+            turn = 1;
+            page = "matchup";
+        }
+    }
+    if(mouseX > 180 && mouseX < 420 && mouseY > 500 && mouseY < 570) {
+        tagMsg = "Menu";
+        tagLength = 35;
+        overButton = true;
+        if(clicked) {
+            imgrot = 0;
+            imgsize = 600;
+            playerCards = [];
+            opponentCards = [];
+            for(var i = 0; i < 5; i++) {
+                playerCards.push(cardsArray[floor(random(0, cardsArray.length))]);
+                opponentCards.push(cardsArray[floor(random(0, cardsArray.length))]);
+            }
+            playerPoints = 0;
+            opponentPoints = 0;
+            cardJustUsed = "";
+            cardPlayerJustUsed = "";
+            cardOpponentJustUsed = "";
+            cardToDisplay = "";
+            page = "menu";
+        }
+    }
+    pushMatrix();
+    translate(300, 300);
+    rotate(imgrot);
+    imageMode(CENTER);
+    image(img, 0, 0, imgsize, imgsize);
+    popMatrix();
+    break;
+    }
+    if(tagTime > 1.25) {
+        textSize(10);
+        strokeWeight(1.5);
+        fill(255);
+        rect(mouseX + 15, mouseY + 5, tagLength, 15);
+        fill(0);
+        textAlign(LEFT);
+        text(tagMsg, mouseX + 20, mouseY + 15);
+        textAlign(CENTER, CENTER);
+    }
+    fill(255);
+    if (overButton) {
+        tagTime += 1/80;
+        cursor(HAND);
+    }
+    else {
+        tagTime = 0;
+        tagMsg = "";
+        cursor(ARROW);
+    }
+    overButton = false;
+    clicked = false;
+    if(page !== "matchup" && page !== "matchup-found") {
+        matchupTime = 0;
+    }
+};
+mouseClicked = function() {
+    clicked = true;
+};
+
+// } messy, be warned
+
