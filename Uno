@@ -1,0 +1,2524 @@
+/**
+`UUUU'   `UUU'`7NN.   `NNN' .0O""O0.   
+  UU       U    NNN.    N .oO'    `OO. 
+  UU       U    N NNN   N oO'      `OO 
+  UU       U    N  `NN. N OO        OO 
+  UU       U    N   `NN.N OO.      ,OO 
+  UU.     ,U    N     NNN `Ob.    ,oO' 
+   `UuuuuU"'  .NNN.    NN   `"0oo0"'   
+ * 
+ * SP @Prodigy6 - 2021
+ * 
+ * Presenting my fifth game... UNO!!!
+ * 
+ * Based off of the classic card game by Mattel, this game contains the natural card designs along with more than thirty achievements to earn AND a way to save your progress.
+ * 
+ * This game was made in around a month but very much on and off.
+ * 
+ * If you have any questions, notes, bugs, comments, critiques, suggestions, or virtually anything else, please mention it to me below!
+ * 
+ * If anyone has a suggestion for another game for me to remake, then let me know! (I'm thinking something like Mancala?)
+ * 
+ * If you would like to save your progress, press SHIFT and S at the same time to open up a little box on the bottom of the screen. Copy it and paste it below. Then, create a spin-off of this program and you can play it whenever you want, as long as you keep updating the save code. Let me know if there's an issue.
+ *  ↓  ↓  ↓  ↓  ↓  ↓  PUT SAVE CODE HERE  ↓  ↓  ↓  ↓  ↓  ↓    **/
+var saveCode = [[0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], [0, false], 0, 0, 0, 0, 0, 0, 0];
+
+var HALLOWEEN = false; // this program was made a few days before halloween, so i made a little theme for it! (will force-on if the date is in fact halloween). you may need to restart the program.
+
+
+
+// player cards
+var playerCards = [];
+
+// ai cards
+var aiCards = [];
+
+// list of cards
+var cardList = [];
+
+// what card number gets picked when card is added (see later oop)
+var cardPick = 0;
+
+// whose turn it is -- 
+// 1 = player
+// 2 = ai
+var turn = 1;
+
+// the details of the card in the center. simply put - 
+// [number/id (e.g. 2, skip, wild), color (e.g. red, green, yellow)]
+var cardInCenter = [];
+
+// if the mouse is clicked
+var clicked = false;
+
+var mouseOOC = false;
+
+// if the cursor is over a button
+var overButton = false;
+
+var achievementsEarned = saveCode[36];
+
+// if the cursor is over something you can not click (more specifically, if a cursor is over a card you can not play)
+var cursorN = false;
+
+// the color the ai will pick for their wild/wd4s
+var aiCol;
+
+// what the page is
+var page = "logo";
+
+// the scroll for the player cards on the bottom-ish side of the play screen
+var cardLayout = 0;
+
+// the scroll on the achievements page
+var aScroll = 0;
+
+// the image shown on the background of the page for when the player plays wilds/wd4s
+var wildImg;
+
+// the color that the wild/wd4 will be after you select it
+var colForCenter = 0;
+
+// the color you selected for wilds/wd4s
+var wCol = color(255);
+
+// the different ai wild/wd4 color options
+var colorOptions = ["Red", "Blue", "Yellow", "Green"];
+
+// the random color the ai picks
+var ranCol = 0;
+
+// how many wins or losses you have (i mean, the name basically gives it away xD)
+var wins = saveCode[38];
+var losses = saveCode[39];
+
+// the cards drawn
+var cardsDrawn = 0;
+
+// mouse is over scroll thingy
+var mos = false;
+
+// the cards played
+var cardsPlayed = 0;
+
+// wild and wild draw 4 cards played
+var wwd4cp = saveCode[37];
+
+// the win streak
+var winStreak = saveCode[35];
+
+// drawing the skip symbol -- used just to simplify the code for me a bit. parameters are x, y, then size.
+var drawSkipSymbol = function(x, y, s) {
+
+    // sets the basic sizes and position
+    pushMatrix();
+    translate(x, y);
+    scale(s / 600);
+
+    // sets the "background" (more appropriately, shadow) of the skip
+    for (var i = 45; i > 40; i -= 0.5) {
+
+        // translucent ellipse
+        noFill();
+        strokeWeight(7);
+        stroke(0);
+        ellipse(i, i + 10, 40, 40);
+
+        // rect through the ellipse
+        rotate(30);
+        rect(i, i - 19, 35, 0);
+        rotate(-30);
+    }
+
+    // draws the white skip ellipse
+    stroke(255);
+    ellipse(40, 50, 40, 40);
+
+    // rect through the ellipse
+    rotate(30);
+    rect(41, 23, 37, 0);
+    rotate(-30);
+    popMatrix();
+};
+
+
+// drawing the wild symbol -- just simplifies the code a bit for me =). parameters: x, y, size
+var drawWildSymbol = function(x, y, s) {
+
+    // sets the scale & position
+    pushMatrix();
+    translate(x, y);
+    scale(s / 600);
+
+    // different colored segments
+    noStroke();
+
+    // red
+    fill(232, 0, 0);
+    arc(64.5, 36, 60, 121, 180, 270);
+
+    // blue
+    fill(38, 0, 209);
+    arc(64.5, 36, 60, 121, 270, 360);
+
+    // green
+    fill(0, 230, 31);
+    arc(64.5, 36, 60, 121, -1, 90);
+
+    // yellow
+    fill(255, 255, 51);
+    arc(64.5, 36, 60, 121, 90, 179);
+    popMatrix();
+};
+
+
+// drawing the little "+4" seen in the corners of the wd4 (or wild draw 4, if that might've confused you ;) parameters: x, y, size
+var drawWildDraw4Symbol = function(x, y, s) {
+
+    // sets the size and position
+    pushMatrix();
+    translate(x, y);
+    scale(s / 600);
+
+    // the entire border... you can skip this, boring methodical lines
+    // sets the thickness & color of the outline
+    stroke(255);
+    strokeWeight(2);
+
+    // actual outline
+    line(10, 9, 5, 10);
+    line(5, 10, 5, 13);
+    line(5, 13, 2, 13);
+    line(2, 13, 2, 16);
+    line(2, 16, 7, 22);
+    line(7, 22, 10, 22);
+    line(12, 22, 12, 19);
+    line(12, 22, 15, 22);
+    line(15, 21, 19, 23);
+    line(19, 23, 22, 23);
+    line(22, 23, 22, 20);
+    line(22, 20, 24, 20);
+    line(24, 20, 24, 16);
+    line(24, 16, 22, 16);
+    line(22, 16, 22, 8);
+    line(22, 8, 18, 8);
+    line(18, 8, 17, 9);
+    line(17, 9, 15, 9);
+    line(15, 9, 12, 12);
+    line(12, 12, 12, 10);
+
+    // makes the text shadow-y thingymajig
+    for (var i = 40; i > 35; i -= 0.5) {
+
+        // sets the font & align
+        textAlign(CENTER, CENTER);
+        textFont(createFont("Montserrat Bold"));
+
+        // then the color & size
+        fill(0);
+        textSize(16);
+
+        // and now the text
+        text("+4", i / 2 - 7, i / 2 - 3);
+    }
+
+    // and the actual text
+    fill(255);
+    textSize(16);
+    text("+4", 13, 13.5);
+
+    popMatrix();
+};
+
+
+// award icon (for when you get an achievement)
+var drawAward = function(x, y, s) {
+
+    // x and y and size
+    pushMatrix();
+    translate(x, y);
+    scale(s);
+
+    // the ribbon pt. 1
+    noStroke();
+    fill(44, 0, 189);
+    beginShape();
+    vertex(160, 200);
+    vertex(150, 350);
+    vertex(170, 330);
+    vertex(190, 350);
+    vertex(210, 200);
+    endShape(CLOSE);
+
+    // the ribbon pt. 2
+    beginShape();
+    vertex(240, 200);
+    vertex(250, 350);
+    vertex(230, 330);
+    vertex(210, 350);
+    vertex(190, 200);
+    endShape(CLOSE);
+
+    // the medal-thingy
+    fill(255, 255, 0);
+    stroke(156, 156, 0);
+    strokeWeight(15);
+    ellipse(200, 200, 100, 100);
+    popMatrix();
+};
+
+// the uno logoooo
+// parameters: x, y, size
+var unoLogo = function(x, y, size) {
+
+    // x, y, size
+    pushMatrix();
+    translate(x, y);
+    scale(size / 600);
+
+    // the text that says "UNO" shadow
+    textSize(100);
+    textFont(createFont("SP Custom Bold"));
+    for (var i = 285; i < 300; i++) {
+        fill(0);
+        textAlign(CENTER, CENTER);
+        textSize(100);
+
+        // well, the actual text shadow
+        text("UNO", i, -i + 400);
+    }
+    fill(225, 255, 0);
+    textAlign(CENTER, CENTER);
+
+    // the yellow text
+    text("UNO", 300, 100);
+
+    // the outline of it all
+    strokeWeight(4);
+    stroke(255);
+    line(179, 80, 195, 66);
+    line(196, 65, 211, 65);
+    line(211, 66, 211, 110);
+    noFill();
+    arc(223, 110, 24, 29, 90, 180);
+    line(225, 124, 225, 75);
+    line(226, 75, 236, 66);
+    line(237, 65, 252, 65);
+    line(253, 66, 253, 76);
+    line(253, 78, 266, 66);
+    line(266, 65, 283, 65);
+    line(284, 66, 295, 84);
+    line(295, 84, 295, 79);
+    line(295, 79, 310, 66);
+    line(310, 65, 325, 65);
+    line(326, 66, 326, 93);
+    arc(576, 100, 500, 128, 185, 200);
+    arc(371, 102, 74, 79, 220, 410);
+    arc(359, 123, 72, 65, 19, 152);
+    line(311, 152, 326, 138);
+    line(309, 152, 295, 152);
+    line(294, 152, 283, 132);
+    line(283, 132, 283, 136);
+    line(283, 136, 267, 152);
+    line(266, 152, 254, 152);
+    line(253, 151, 253, 123);
+    arc(239, 122, 27, 27, 0, 82);
+    arc(212, 124, 66, 60, 26, 180);
+    line(178.5, 126, 178, 81);
+    arc(370, 90, 37, 70, 66, 170);
+    arc(360, 115, 37, 44, 261, 380);
+    line(360, 93, 354, 93);
+    line(354, 93, 352, 95);
+
+    // resets the font
+    textFont(createFont("Montserrat"));
+    noStroke();
+    popMatrix();
+};
+
+
+/** CONFETTI **/
+
+// the array with the confetti objects
+var confettiS = [];
+
+// the confetti function
+var confetti = function(x, y) {
+
+    // the variables
+    this.col = color(random(50, 205), random(50, 205), random(50, 205));
+    this.rot = random(-30, 30);
+    this.x = x;
+    this.y = y;
+    this.ys = random(2, 4);
+    this.xs = random(-0.7, 0.7);
+    this.rotS = random(-3, 3);
+};
+
+// shows the confetti
+confetti.prototype.show = function() {
+
+    // shows the rectangle
+    rectMode(CENTER);
+    pushMatrix();
+    translate(this.x, this.y);
+    rotate(this.rot);
+    fill(this.col);
+    rect(0, 0, 40, 15);
+    popMatrix();
+
+    // moves the x, y, and rotate
+    this.y += this.ys;
+    this.x += this.xs;
+    this.rot += this.rotS;
+    rectMode(CORNER);
+};
+
+// resets the confetti
+var confettiReset = function() {
+
+    // clears the array
+    confettiS = [];
+
+    // then reloads it
+    for (var i = 0; i < 100; i++) {
+        confettiS.push(new confetti(random(-40, 640), random(-500, -40)));
+    }
+
+};
+
+// calls the c.r.
+confettiReset();
+
+// the achievements that are being shown on the screen at that particular second
+var achievements = [];
+
+// the function
+var achievement = function(name, descr, goal, goalDesc, ss, progress, gotten) {
+
+    // all of the BORING variables
+    this.name = name;
+    this.descript = descr;
+    this.x = -600;
+    this.xs = 5;
+    this.timer = 0;
+    this.gotten = gotten;
+    this.y = 4;
+    this.goal = goal;
+    this.goalDesc = goalDesc;
+    this.sSpot = ss;
+    this.progress = progress;
+    this.earned = this.gotten;
+};
+
+// the achievements for getting achievements (they need to go here so they can be earned later)
+
+// complete 5 achievements
+var fiveA = new achievement("Hot five", "Complete five achievements", 5, "achievements completed", 29, saveCode[0][0], saveCode[0][1]);
+
+// 10 achievements
+var tenA = new achievement("Flyin' by", "Complete ten achievements", 10, "achievements completed", 30, saveCode[1][0], saveCode[1][1]);
+
+// 16 achivements
+var halfA = new achievement("Halfway there", "Complete sixteen achievements", 16, "achievements completed", 31, saveCode[2][0], saveCode[2][1]);
+
+// 32 (all) achievements
+var overachiever = new achievement("The overachiever", "Complete EVERY SINGLE ACHIEVEMENT", 32, "achievements completed", 32, saveCode[3][0], saveCode[3][1]);
+
+
+// to advance in an achievement
+achievement.prototype.adv = function() {
+
+    // if you haven't gotten it
+    if (!this.gotten) {
+        this.progress++;
+    }
+};
+
+// to earn an achievent
+achievement.prototype.earn = function() {
+
+    // progressure
+    this.progress = this.goal;
+
+    // if you haven't gotten it
+    if (!this.gotten) {
+
+        // then you have it
+        this.gotten = true;
+
+        // the smoothness starting
+        achievements.push(this.name);
+        achievementsEarned++;
+
+        // earn the "hot five"
+        if (!fiveA.gotten) {
+            fiveA.adv();
+        }
+
+        // earn the "flyin' by"
+        if (!tenA.gotten) {
+            tenA.adv();
+        }
+
+        // earn the "halfway"
+        if (!halfA.gotten) {
+            halfA.adv();
+        }
+
+        // earn the "overachiever"
+        if (!overachiever.gotten) {
+            overachiever.adv();
+        }
+    }
+};
+
+// show achievements
+achievement.prototype.show = function() {
+
+    // determines the y of the bar thing
+    if (achievements.length > 1) {
+        for (var i = 0; i < achievements.length; i++) {
+            if (achievements[i] === this.name) {
+                this.y = i * 80 + 4;
+            }
+        }
+    }
+
+    // if it's not at the top, and it can, it goes to it.
+    if (this.y !== 4) {
+        for (var i = 0; i < achievements.length; i++) {
+            if (achievements[i] === this.name) {
+                if (this.y > i * 80 + 4) {
+                    this.y -= this.y / 20;
+                }
+            }
+        }
+    }
+    textAlign(LEFT);
+
+    // shows the bar
+    if (this.gotten && !this.earned) {
+
+        // draws the bar
+        fill(255);
+        strokeWeight(3);
+        stroke(0);
+        rect(this.x + 5, this.y, 590, 75, 10);
+
+        // for advancing the bar
+        this.timer++;
+        this.x += this.xs;
+        this.xs -= 0.02;
+
+        // slows it down
+        if (this.timer > 175 && this.timer < 270) {
+            this.xs = 0.5;
+        }
+
+        // then keeps it moving
+        if (this.timer > 280) {
+            this.xs += 0.05;
+        }
+
+        // makes the achievement earned
+        if (this.x > 600) {
+            this.earned = true;
+            for (var i = 0; i < achievements.length; i++) {
+                if (achievements[i] === this.name) {
+
+                    // lets other achievements move up to the top
+                    achievements.splice(i, 1);
+                }
+            }
+        }
+
+        // title
+        textSize(40);
+        fill(0);
+        textFont(createFont("Montserrat Bold"));
+        text(this.name, this.x + 15, this.y + 38);
+
+        // description
+        textSize(19);
+        textFont(createFont("Montserrat"));
+        text(this.descript, this.x + 15, this.y + 65);
+
+        // shows the little ribbon
+        drawAward(this.x + 500, this.y - 35, 0.3);
+    }
+};
+
+// resets the achievement (in the scenario of being on a winstreak loss)
+achievement.prototype.reset = function() {
+    if (!this.gotten) {
+        this.progress = 0;
+    }
+};
+
+// shows it on the achievements pg.
+achievement.prototype.showPg = function() {
+    noStroke();
+
+    // if it's earned
+    if (this.progress >= this.goal || this.gotten) {
+        fill(60, 255, 0);
+        rect(50, this.sSpot * 120, 500, 100);
+    }
+
+    // if it's not
+    else {
+        fill(255);
+        rect(50, this.sSpot * 120, 500, 100);
+    }
+
+    // says the title
+    fill(0);
+    textAlign(LEFT);
+    textSize(30);
+    text(this.name, 60, this.sSpot * 120 + 40);
+
+    // says the description
+    textSize(20);
+    text(this.descript, 60, this.sSpot * 120 + 80);
+    textAlign(CENTER, CENTER);
+
+    // shows the progress line
+    stroke(200, 50);
+    strokeWeight(10);
+    line(350, this.sSpot * 120 + 50, 520, this.sSpot * 120 + 50);
+    stroke(200, 200);
+    line(350, this.sSpot * 120 + 50, (this.progress / this.goal) * 170 + 350, this.sSpot * 120 + 50);
+
+    // shows the progress
+    fill(0);
+    textSize(13);
+    text(this.progress + "/" + this.goal + " " + this.goalDesc, 435, this.sSpot * 120 + 25);
+};
+
+// achievement list
+
+// no details here; it's tedious
+var iWon = new achievement("Victory!!!", "Win your first Uno match!", 1, "wins", 1, saveCode[4][0], saveCode[4][1]);
+
+var iWonder = new achievement("I wonder...", "Visit the how page.", 1, "how pages visited", 2, saveCode[5][0], saveCode[5][1]);
+
+var credited = new achievement("Kredits", "Visit the credits page.", 1, "credits pages visited", 3, saveCode[6][0], saveCode[6][1]);
+
+var thatsWild = new achievement("That's... Wild!", "Use a Wild card.", 1, "Wild cards used", 4, saveCode[7][0], saveCode[7][1]);
+
+var ko = new achievement("K. O!", "Use a Wild Draw 4 card.", 1, "Wild Draw 4 cards used", 5, saveCode[8][0], saveCode[8][1]);
+
+var perfectGame = new achievement("Perfection!", "Play a perfect Uno game.", 1, "games", 6, saveCode[9][0], saveCode[9][1]);
+
+var fullDec = new achievement("Full Deck", "Play a game that goes through the entire deck!", 1, "games", 7, saveCode[10][0], saveCode[10][1]);
+
+var plaDec = new achievement("Long Game", "Play a full deck's worth of cards in ONE GAME!", 1, "games", 8, saveCode[11][0], saveCode[11][1]);
+
+var fiveWins = new achievement("Big Winner", "Win FIVE Uno games", 5, "wins", 9, saveCode[12][0], saveCode[12][1]);
+
+var tenWins = new achievement("Huge Winner", "Win TEN Uno games", 10, "wins", 10, saveCode[13][0], saveCode[13][1]);
+
+var fiveWilds = new achievement("Kind of Wild", "Use five Wild/WD4 cards", 5, "cards used", 11, saveCode[14][0], saveCode[14][1]);
+
+var tenWilds = new achievement("Pretty Wild", "Use ten Wild/WD4 cards", 10, "cards used", 12, saveCode[15][0], saveCode[15][1]);
+
+var twentyfiveWilds = new achievement("Super Wild", "Use twenty Wild/WD4 cards", 25, "cards used", 13, saveCode[16][0], saveCode[16][1]);
+
+var winstreak = new achievement("Double the Trouble", "Start a winstreak", 2, "games won in a row", 14, saveCode[17][0], saveCode[17][1]);
+
+var hatTrick = new achievement("Hat trick", "Win three games in a ROW", 3, "games won in a row", 15, saveCode[18][0], saveCode[18][1]);
+
+var onFire = new achievement("On fire", "Make a winstreak of FIVE!", 5, "games won in a row", 16, saveCode[19][0], saveCode[19][1]);
+
+var unstoppable = new achievement("UNSTOPPABLE", "Have a TEN WINSTREAK!", 10, "games won in a row", 17, saveCode[20][0], saveCode[20][1]);
+
+var tenCards = new achievement("Double digits", "Use ten cards", 10, "cards used", 18, saveCode[21][0], saveCode[21][1]);
+
+var fiftyCards = new achievement("5*2*5", "Use fifty cards", 50, "cards used", 19, saveCode[22][0], saveCode[22][1]);
+
+var hundredCards = new achievement("Three figures", "Use a hundred cards", 100, "cards used", 20, saveCode[23][0], saveCode[23][1]);
+
+var twofiftyCards = new achievement("5*2*5*5", "Use 250 cards", 250, "cards used", 21, saveCode[24][0], saveCode[24][1]);
+
+var fivehundredCards = new achievement("0.5k", "Use 500 cards", 500, "cards used", 22, saveCode[25][0], saveCode[25][1]);
+
+var oneKcards = new achievement("FOUR NUMBERS!", "Use ONE THOUSAND cards", 1000, "cards used", 23, saveCode[26][0], saveCode[26][1]);
+
+
+var tendrawn = new achievement("Double digit drawn", "Draw ten cards", 10, "cards drawn", 24, saveCode[27][0], saveCode[27][1]);
+
+var fiftydrawn = new achievement("Nifty fifty", "Draw fifty cards", 50, "cards drawn", 25, saveCode[28][0], saveCode[28][1]);
+
+var hundreddrawn = new achievement("Hundred", "Draw a hundred cards", 100, "cards drawn", 26, saveCode[29][0], saveCode[29][1]);
+
+var twofiftydrawn = new achievement("Half a half a millenium", "Draw 250 cards", 250, "cards drawn", 27, saveCode[30][0], saveCode[30][1]);
+
+var fivehundreddrawn = new achievement("Half a millenium", "Draw five hundred cards", 500, "cards drawn", 28, saveCode[31][0], saveCode[31][1]);
+
+var easterEgg = new achievement("Easter Egg", "Find the Easter Egg", 1, "easter eggs found", 33, saveCode[32][0], saveCode[32][1]);
+
+var cardsDrawnTot = saveCode[33];
+var cardsPlayedTot = saveCode[34];
+
+// draw card!
+// by draw card i mean show card
+// parameters: x, y, size, type (like 2 or draw 2), color
+var drawCard = function(x, y, size, num, color) {
+    textAlign(CENTER, CENTER);
+
+    // sets the x and y
+    pushMatrix();
+    translate(x, y);
+    scale(size / 600);
+
+    // for the colors
+    switch (color) {
+
+        // red
+        case "Red":
+            fill(232, 0, 0);
+            break;
+
+            // blue
+        case "Blue":
+            fill(38, 0, 209);
+            break;
+
+            // yellow
+        case "Yellow":
+            fill(255, 255, 51);
+            break;
+
+            // green
+        case "Green":
+            fill(0, 230, 31);
+            break;
+
+            // if there is no color (for wilds and wild draw 4s)
+        default:
+            fill(0);
+            break;
+    }
+
+    // draws the card
+    rect(0, 0, 82, 122, 5);
+
+    // the oval thingy in the center
+    noFill();
+    strokeWeight(4);
+    stroke(255);
+    rotate(27);
+    ellipse(64.5, 36, 61, 125);
+    rotate(-27);
+
+    // the over-line on the card
+    strokeWeight(3);
+    stroke(0);
+    rect(0, 0, 82, 122, 5);
+    strokeWeight(1);
+    popMatrix();
+
+    // for the different types
+    switch (num) {
+
+        // skip
+        case "Skip":
+
+            // sets the x & y
+            pushMatrix();
+            translate(x, y);
+            scale(size / 600);
+
+            // draws the center skip
+            drawSkipSymbol(0, 6, 600);
+
+            // and the top left corner
+            drawSkipSymbol(-4, -6, 250);
+
+            // then the bottom right corner
+            rotate(180);
+            drawSkipSymbol(-86, -129, 250);
+            rotate(-180);
+            popMatrix();
+            break;
+
+            // draw 2
+        case "Draw 2":
+
+            // sets the x and y
+            pushMatrix();
+            translate(x, y);
+            scale(size / 600);
+
+            // makes the shadows
+            fill(0);
+            textAlign(CENTER, CENTER);
+            textFont(createFont("Montserrat Bold"));
+            for (var i = 40; i > 35; i -= 0.5) {
+
+                // the visual representation of the cards to draw
+                rect(i, i - 5, 28, 45, 5);
+                rect(i - 10, i + 3, 28, 45, 5);
+
+                // the "+2"s shown in the corners
+                textSize(20);
+                text("+2", i / 2 - 3, i / 2 - 3);
+                rotate(180);
+                text("+2", i / 2 - 86, i / 2 - 124);
+                rotate(-180);
+            }
+
+            // shows the "cover" cards
+            fill(255);
+            strokeWeight(2);
+            rect(i, i - 5, 28, 45, 5);
+            rect(i - 10, i + 3, 28, 45, 5);
+
+            // and the "cover" text
+            textSize(20);
+            text("+2", 15, 14.5);
+            rotate(180);
+            text("+2", -68, -106);
+            rotate(-180);
+
+            // resets the text
+            textFont(createFont("Montserrat"));
+            popMatrix();
+            break;
+
+
+            /** 
+             * 
+             * WHY NO REVERSE CARD?
+             * Because in a 2-player game, a reverse card has basically the exact same purpose of a skip -- therefore rendering it pointless. If you want, you can hack the code and double the amount of skips :P
+             * 
+             **/
+
+
+            // wild
+        case "Wild":
+
+            // sets the x and y
+            pushMatrix();
+            translate(x, y);
+            scale(size / 600);
+
+            // shows the wild symbol in the middle, replacing the rotated rect()
+            rotate(27);
+            drawWildSymbol(5, 1, 130);
+            strokeWeight(1.8);
+
+            // restrokes the outline
+            stroke(255);
+            noFill();
+            ellipse(19.5, 9, 14, 26);
+
+            // shows the symbol in the top left corner
+            drawWildSymbol(96, 57, 130);
+
+            // and shows the cover ellipse
+            strokeWeight(1.8);
+            stroke(255);
+            noFill();
+            ellipse(110.5, 63, 14, 26);
+
+            // then makes the wild symbol in the bottom left corner
+            drawWildSymbol(0, 0, 600);
+            textFont(createFont("Montserrat Bold"));
+            translate(14, -30);
+            rotate(-38);
+            fill(255);
+            //rect(-32, 56, 80, 30, 5);
+
+            // shows the wild text
+            for (var i = 0; i < 6; i++) {
+
+                // the back white thingy
+                if (i === 0) {
+                    fill(255);
+                }
+
+                // the shadow
+                else {
+                    fill(0);
+                }
+
+                // the text & size
+                textSize(27);
+                text("WILD", -3 + i, 85 - i);
+            }
+
+            // specific letters
+            // w; red
+            fill(232, 0, 0);
+            text("W", -22, 79);
+
+            // i, blue
+            fill(38, 0, 209);
+            text("I", -3, 79);
+
+            // l, yellow
+            fill(255, 255, 51);
+            text("L", 10, 79);
+
+            // d, green
+            fill(0, 230, 31);
+            text("D", 29, 79);
+            popMatrix();
+            break;
+
+            // wild draw 4
+        case "Wild Draw 4":
+
+            textFont(createFont("SP Custom Bold"));
+
+            // sets the x and y
+            pushMatrix();
+            translate(x, y);
+            scale(size / 600);
+
+            // makes the ellipse in the center solid
+            noStroke();
+            rotate(27);
+            fill(255);
+            ellipse(64.5, 36, 61, 126);
+            rotate(-27);
+
+            // draws the little "+4" in both corners
+            drawWildDraw4Symbol(1, -3, 600);
+            rotate(180);
+            drawWildDraw4Symbol(-79, -124, 600);
+            rotate(-180);
+
+            // changes the positions a tad bit
+            translate(-2, -6);
+            for (var i = 40; i > 35; i -= 0.5) {
+
+                // the shadows of the different colors
+                noStroke();
+                fill(0);
+                rect(i - 22, i + 33, 15, 27, 3);
+                rect(i - 9, i + 11, 15, 27, 3);
+                rect(i + 4, i + 26, 15, 27, 3);
+                rect(i + 12, i, 15, 27, 3);
+            }
+
+            // the front colors for the rect thingy
+            strokeWeight(2);
+            stroke(0);
+
+            // green
+            fill(0, 230, 31);
+            rect(13, 68, 15, 27, 3);
+
+            // blue
+            fill(38, 0, 209);
+            rect(26, 46, 15, 27, 3);
+
+            // red
+            fill(232, 0, 0);
+            rect(39, 61, 15, 27, 3);
+
+            // yellow
+            fill(255, 255, 31);
+            rect(47, 35, 15, 27, 3);
+
+            // resets the stuff
+            translate(2, 6);
+            textFont(createFont("Montserrat"));
+            popMatrix();
+
+            break;
+
+            // if else (so if it is a numbered card, from 0-9)
+        default:
+
+            // sets the x and y
+            pushMatrix();
+            translate(x, y);
+            scale(size / 600);
+
+            // gets prepared to show the text
+            fill(0);
+            textAlign(CENTER, CENTER);
+            textFont(createFont("Montserrat Bold"));
+            for (var i = 40; i > 35; i -= 0.2) {
+
+                // for the rects under the 6s and 9s
+                if (num === "6" || num === "9") {
+                    rect(i - 10, i + 50, 33, 5);
+                    rect(i / 2 - 12, i / 2 + 7, 11, 5 / 3);
+                    rotate(180);
+                    rect(i / 2 - 96, i / 2 - 114, 11, 5 / 3);
+                    rotate(-180);
+                }
+
+                // shows the number in the center
+                textSize(60);
+                text(num, i + 5, i + 20);
+
+                // shows the number in the top left
+                textSize(20);
+                text(num, i / 2 - 7, i / 2 - 3);
+
+                // shows the number, upside down, in the bottom right
+                rotate(180);
+                text(num, i / 2 - 90, i / 2 - 124);
+                rotate(-180);
+            }
+
+            // shows the "overlay" color
+            fill(255);
+            textSize(60);
+            text(num, 40, 55);
+            textSize(20);
+            text(num, 11, 14.5);
+            rotate(180);
+            text(num, -72, -106);
+            rotate(-180);
+
+            // shows thew "overlay" underline
+            if (num === "6" || num === "9") {
+                noStroke();
+                fill(255);
+                rect(25, 85, 33, 5);
+                rect(5.5, 24.5, 11, 5 / 3);
+                rotate(180);
+                rect(-78.5, -96.5, 11, 5 / 3);
+                rotate(-180);
+            }
+            textFont(createFont("Montserrat"));
+            popMatrix();
+            break;
+    }
+};
+
+// note -- these will kind of jump around, because they need to be in that specific order
+
+/*** 
+ * PLAYER
+ ***/
+
+// the player card things. parameters: type of card, color of card
+var pCard = function(typ, col) {
+
+    // the color of the card (e.g. red or blue)
+    this.color = col;
+
+    // the type of the card (e.g. skip or 5)
+    this.type = typ;
+
+    // if you can play that card
+    this.canPlay = false;
+};
+
+// checks if the player has any cards to play
+pCard.prototype.check = function() {
+
+    // if any of these statements are met, which mean:
+    // if the card in the middle's number/type is the same (e.g. they both are 2)
+    // if the card in the middle's color is the same
+    // if the card's color is "N/A" (therefore signifying it to be either a wild or a wd4)
+    if (cardInCenter[0] === this.type || cardInCenter[1] === this.color || this.color === "N/A") {
+
+        // makes it so you can play that card!
+        this.canPlay = true;
+    }
+
+    // if NONE of these are met, then
+    else {
+
+        // you can't play this card... :(
+        this.canPlay = false;
+    }
+};
+
+// the player function
+var player = function() {
+
+    // how many cards to draw if necessary
+    this.amt = 0;
+};
+
+// if the player is to draw cards
+player.prototype.drawCards = function() {
+
+    // makes sure that it draws the correct amount of cards
+    for (var i = 0; i < this.amt; i++) {
+
+        // picks a random card
+        cardPick = floor(random(0, cardList.length));
+
+        // adds the card to the list
+        playerCards.push(new pCard(cardList[cardPick][0], cardList[cardPick][1]));
+
+        // removes the card from the list
+        cardList.splice(cardPick, 1);
+    }
+};
+
+
+/***
+ * AI
+ ***/
+
+// the ai card things. parameters: type of card, color of card
+var aCard = function(typ, col) {
+
+    // the color of the card (e.g. yellow or green)
+    this.color = col;
+
+    // the type of the card (e.g. 7 or draw 2)
+    this.type = typ;
+
+    // if the ai can play that card
+    this.canPlay = false;
+};
+
+// the ai function
+var ai = function() {
+
+    // how many cards to draw if necessary
+    this.amt = 0;
+
+    // how long the ai has been playing for (to determine when the ai is to play a card, for realistic delay)
+    this.playTime = 0;
+};
+
+// checks each of the ai cards to see if you can play them
+aCard.prototype.check = function() {
+
+    // if any of these are met:
+    // the number/type of the card in the center is the same as this card (e.g. they are both draw 2s)
+    // if the color of the card in the center is the same as this card
+    // if the color is "N/A" (therefore denoting that it must be a wild or wd4, which is playable at all times)
+    if (cardInCenter[0] === this.type || cardInCenter[1] === this.color || this.color === "N/A") {
+
+        // then it makes it so you can play it!
+        this.canPlay = true;
+    }
+
+    // well if you can't...
+    else {
+
+        // you can't...
+        this.canPlay = false;
+    }
+};
+
+// if the ai is to draw cards
+ai.prototype.drawCards = function() {
+
+    // draws the amount of proper cards
+    for (var i = 0; i < this.amt; i++) {
+
+        // picks a random card
+        cardPick = floor(random(0, cardList.length));
+
+        // adds the new card to their list
+        aiCards.push(new aCard(cardList[cardPick][0], cardList[cardPick][1]));
+
+        // removes the random card from the full list
+        cardList.splice(cardPick, 1);
+    }
+};
+
+/***
+ * BOTH
+ ***/
+
+// creates the ai
+var AI = new ai();
+
+// and creates the player
+var Player = new player();
+
+// if the player plays the specific card
+pCard.prototype.play = function() {
+
+    // advances all the achievements
+    tenCards.adv();
+    fiftyCards.adv();
+    hundredCards.adv();
+    twofiftyCards.adv();
+    fivehundredCards.adv();
+    oneKcards.adv();
+
+    // if you earned
+    if (cardsPlayedTot >= 10) {
+        tenCards.earn();
+    }
+    if (cardsPlayedTot >= 50) {
+        fiftyCards.earn();
+    }
+    if (cardsPlayedTot >= 100) {
+        hundredCards.earn();
+    }
+    if (cardsPlayedTot >= 250) {
+        twofiftyCards.earn();
+
+    }
+    if (cardsPlayedTot >= 500) {
+        fivehundredCards.earn();
+
+    }
+    if (cardsPlayedTot >= 1000) {
+        oneKcards.earn();
+    }
+
+    // sets the card in the center to the proper details
+    cardInCenter[0] = this.type;
+    cardInCenter[1] = this.color;
+
+    // sets the turn to the ai, which will get overridden if the card is a skip
+    turn = 2;
+
+    // resets the ai's play time, so that it will not automatically play a card (this is more of an insurance policy if it doesn't reset before)
+    AI.playTime = 0;
+
+    // check the type of card
+    switch (this.type) {
+
+        // if it's a draw 2
+        case "Draw 2":
+
+            // sets the ai's draw amount to 2
+            AI.amt = 2;
+
+            // and has them draw
+            AI.drawCards();
+            break;
+
+            // if it's a wild
+        case "Wild":
+
+            // takes the background
+            wildImg = get();
+
+            // resets the colors (so you might not immediately pick a color without meaning to do anything)
+            colForCenter = 0;
+            wCol = color(255);
+
+            // turns the page to the wild page, where you then pick the color
+            page = "wild";
+            break;
+
+            // if the card is a wild draw 4
+        case "Wild Draw 4":
+
+            // 'smudges' out the color of the card in center, so it can be replaced with the wild draw 4's color
+            cardInCenter[1] = "";
+
+            // sets the ai's draw amount to 4
+            AI.amt = 4;
+
+            // and commences the drawing
+            AI.drawCards();
+
+            // picks the background image
+            wildImg = get();
+
+            // resets the colors so that you can actually pick them
+            wCol = color(255);
+            colForCenter = 0;
+
+            // turns the page to the one where you pick the color
+            page = "wild";
+            break;
+
+            // if the card is a skip
+        case "Skip":
+
+            // simply refixes the turn to the player's, so they get another go!
+            turn = 1;
+            break;
+    }
+};
+
+
+// if the ai plays a card
+aCard.prototype.play = function() {
+
+    // sets the card in the center to the ai's card of choice
+    cardInCenter[0] = this.type;
+    cardInCenter[1] = this.color;
+
+    // turns the turn back to the player (haha -- get it?)
+    turn = 1;
+
+    // what type of card it is
+    switch (this.type) {
+
+        // if it's a draw 2
+        case "Draw 2":
+
+            // set's the player's draw amount to 2
+            Player.amt = 2;
+
+            // and has them draw
+            Player.drawCards();
+            break;
+
+            // if it's a wild
+        case "Wild":
+
+            // picks a random number
+            ranCol = floor(random(0, colorOptions.length));
+
+            // inserts the random number into a color into the variable
+            aiCol = colorOptions[ranCol];
+
+            // and funnels the variable into the card in the center
+            cardInCenter[1] = aiCol;
+            break;
+
+            // if it's a wild draw 4
+        case "Wild Draw 4":
+
+            // picks a random number
+            ranCol = floor(random(0, colorOptions.length));
+
+            // inserts the random number into a color into the variable
+            aiCol = colorOptions[ranCol];
+
+            // and funnels the variable into the card in the center
+            cardInCenter[1] = aiCol;
+
+            // sets the player's draw amount to 4
+            Player.amt = 4;
+
+            // has the player draw
+            Player.drawCards();
+            break;
+
+            // if it's a skip
+        case "Skip":
+
+            // keeps the turn here
+            turn = 2;
+
+            // resets the time, so they don't play instanteneously and confuse the player
+            AI.playTime = 0;
+            break;
+    }
+};
+
+// button function
+var button = function(x, y, w, h, fC, tC, tS, msg, d) {
+
+    // tedious variables
+    this.x = x;
+    this.y = y;
+    this.w = w;
+    this.h = h;
+    this.fillCol = fC;
+    this.textCol = tC;
+    this.textSize = tS;
+    this.msg = msg;
+    this.destination = d;
+    this.overB = false;
+    this.rectLen = 0;
+    this.rectSpd = 5.2;
+    this.rectF = 40;
+};
+
+// draws the button
+button.prototype.draw = function() {
+
+    // makes the rectangle
+    fill(this.fillCol);
+    rect(this.x, this.y, this.w, this.h);
+
+    // the text
+    fill(this.textCol);
+    textSize(this.textSize);
+    text(this.msg, this.x + this.w / 2, this.y + this.h / 2);
+
+    // the collisions
+    if (mouseX > this.x && mouseX < this.x + this.w && mouseY > this.y && mouseY < this.y + this.h) {
+        this.overB = true;
+    }
+
+    noStroke();
+
+    // does the little mini thingy in the middle of the rect
+    if (this.overB && !mouseOOC) {
+        if (clicked) {
+            this.rectLen = 0;
+            this.rectSpd = 5.2;
+            page = this.destination;
+        }
+
+        // draws the mini rect thingy in the middle
+        this.rectF = 40;
+        overButton = true;
+        fill(255, 40);
+        rect(this.x + this.w / 2 - this.rectLen / 2, this.y, this.rectLen, this.h);
+
+        // helps it increase
+        this.rectLen += this.rectSpd;
+        this.rectSpd -= 0.0225;
+
+        // if it fills up the button, then it stays that way
+        if (this.rectLen > this.w - 1) {
+            this.rectSpd = 0;
+        }
+    }
+
+    // if not, it fades
+    else {
+        fill(255, this.rectF);
+        rect(this.x + this.w / 2 - this.rectLen / 2, this.y, this.rectLen, this.h);
+        this.rectF--;
+    }
+
+    // if it's faded out, then it goes *poof*.
+    if (this.rectF < -5) {
+        this.rectLen = 0;
+        this.rectSpd = 5.2;
+    }
+    this.overB = false;
+};
+
+// the list of butons throughout the game
+var playButton = new button(0, 320, 600, 50, color(132, 109, 72), 0, 30, "PLAY", 'gm');
+
+var howButton = new button(0, 390, 600, 50, color(117, 94, 57), 0, 30, "HOW", 'how1');
+
+var credits = new button(0, 460, 600, 50, color(102, 79, 42), 0, 30, "CREDITS", 'credits');
+
+var achievmnts = new button(0, 530, 600, 50, color(87, 64, 27), 0, 30, "ACHIEVEMENTS", 'achievements');
+
+var back1 = new button(200, 475, 200, 70, color(117, 94, 57), 0, 30, "BACK", 'menu');
+
+var back2 = new button(200, 510, 200, 70, color(117, 94, 57), 0, 30, "BACK", 'menu');
+
+var drawC = new button(30, 300, 120, 50, color(255), 0, 20, "Draw Card", 'draw-ext');
+
+var replayThing = new button(200, 200, 200, 75, color(110, 76, 22), 255, 30, "MENU", "replay");
+
+var actualReplayThing = new button(200, 325, 200, 75, color(110, 76, 22), 255, 30, "PLAY AGAIN", "startagain");
+
+var colorP = new button(200, 450, 200, 80, color(255), color(0), 30, "Select Color", "cent-col");
+
+var backFromA = new button(200, 500, 200, 75, color(110, 76, 22), 255, 30, "BACK", "menu");
+
+var eegg = new button(50, 100, 30, 30, color(255, 255, 255, 0), color(0, 0), 0, "", "easter-egg");
+
+// card list. spare yourself and scroll
+var cards = [
+    /*
+    {
+        name: this is what shows up on the card, and later will get swapped out with graphics
+        
+        num: this is how many of this card there are
+        
+        doesColors: this is just for the wild/wild draw 4 cards, so you don't come out with red wilds and blue wild draw 4s, they are their own separate "color" (which is just shown as "N/A").
+    },
+    */
+
+    {
+        name: "0",
+        num: 1,
+        doesColors: true
+    },
+
+    {
+        name: "1",
+        num: 2,
+        doesColors: true
+    },
+
+    {
+        name: "2",
+        num: 2,
+        doesColors: true
+    },
+
+    {
+        name: "3",
+        num: 2,
+        doesColors: true
+    },
+
+    {
+        name: "4",
+        num: 2,
+        doesColors: true
+    },
+
+    {
+        name: "5",
+        num: 2,
+        doesColors: true
+    },
+
+    {
+        name: "6",
+        num: 2,
+        doesColors: true
+    },
+
+    {
+        name: "7",
+        num: 2,
+        isNumber: true,
+        doesColors: true
+    },
+
+    {
+        name: "8",
+        num: 2,
+        doesColors: true
+    },
+
+    {
+        name: "9",
+        num: 2,
+        isNumber: true,
+        doesColors: true
+    },
+
+    {
+        name: "Skip",
+        num: 2,
+        doesColors: true
+    },
+
+    {
+        name: "Draw 2",
+        num: 2,
+        doesColors: true
+    },
+
+    {
+        name: "Wild",
+        num: 4,
+        doesColors: false
+    },
+
+    {
+        name: "Wild Draw 4",
+        num: 4,
+        doesColors: false,
+    },
+
+];
+
+// restocks the card list, if it is running low (so the game doesn't suddenly crash)
+var restockCardList = function() {
+    for (var i = 0; i < cards.length; i++) {
+        for (var j = 0; j < cards[i].num; j++) {
+            // pulls all of the cards
+            if (cards[i].doesColors) {
+
+                // reputs in all of the cards & colors
+                cardList.push([cards[i].name, "Red"]);
+                cardList.push([cards[i].name, "Yellow"]);
+                cardList.push([cards[i].name, "Green"]);
+                cardList.push([cards[i].name, "Blue"]);
+            }
+            
+            else {
+
+                // and the wilds and wild draw 4s
+                cardList.push([cards[i].name, "N/A"]);
+            }
+        }
+    }
+};
+
+// stocks the card list :D
+restockCardList();
+
+// stock the player and ai cards. not to be confused with above
+var stockCards = function() {
+
+    // sets the card to draw amt
+    Player.amt = 7;
+
+    // and has them draw
+    Player.drawCards();
+
+    // and same
+    AI.amt = 7;
+    AI.drawCards();
+    cardPick = floor(random(0, cardList.length - 25));
+    cardInCenter = cardList[cardPick];
+    for (var i = 0; i < 50; i++) {
+        if (cardInCenter[1] === "N/A") {
+            cardPick = floor(random(0, cardList.length - 25));
+            cardInCenter = cardList[cardPick];
+        }
+    }
+
+};
+
+// stocks the cards
+stockCards();
+
+var candycorn;
+var gradient1;
+
+// for the halloween specific things
+background(0, 0, 0, 0);
+noStroke();
+fill(255, 255, 0);
+quad(100, 400, 300, 400, 280, 350, 120, 350);
+fill(255, 183, 0);
+quad(280, 350, 120, 350, 160, 250, 240, 250); 
+fill(255);
+quad(160, 250, 240, 250, 220, 200, 180, 200);
+ellipse(200, 205, 41, 45);
+candycorn = get(100, 182, 250, 218);
+var candycornZ = [];
+var candycorns = function(x, y, rot, rS, xS, yS) {
+    this.x = x;
+    this.y = y;
+    this.rot = rot;
+    this.rotS = rS;
+    this.xS = xS;
+    this.yS = yS;
+};
+candycorns.prototype.draw = function() {
+    imageMode(CENTER);
+    pushMatrix();
+    translate(this.x, this.y);
+    rotate(this.rot);
+    image(candycorn, 0, 0, 30, 30);
+    popMatrix();
+    this.x += this.xS;
+    this.y += this.yS;
+    this.rot += this.rotS;
+    imageMode(CORNER);
+    if(this.y > 650 || this.x < -20 && this.xS < 0) {
+        this.x = random(-20, 620);
+        this.y = random(-500, -50);
+        this.rot = random(-45, 45);
+        this.rotS = random(-5, 5);
+        this.xS = random(-1.5, 1.5);
+        this.yS = random(2, 5);
+    }
+};
+for(var i = 0; i < 40; i ++) {
+    candycornZ.push(new candycorns(random(-20, 620), random(-800, -50), random(-45, 45), random(-5, 5), random(-1.5, 1.5), random(2, 5)));
+}
+if(month() === 10 && day() === 31 || HALLOWEEN) {
+    background(255, 170, 22);
+}
+else {
+    background(235, 40, 40);
+}
+for (var i = 0; i < 600; i += 8) {
+    fill(0, 0.5);
+    rect(0, i, 600, 600 - i);
+}
+gradient1 = get(0, 0, 600, 600);
+var drawBackground = function() {
+    background(255);
+    image(gradient1, 0, 0);
+    if(month() === 10 && day() === 31 || HALLOWEEN) {
+        for(var i = 0; i < candycornZ.length; i++) {
+            candycornZ[i].draw();
+        }
+    }
+};
+
+/** LOGO VARS **/
+
+var imgs = [];
+var bck;
+var presents = [];
+var pMsg = ["P", "R", "E", "S", "E", "N", "T", "S"];
+var transImg, transImgX = 0.1;
+var logoTimer = 1;
+for(var i = 0; i < 8; i++) {
+    presents.push([i * 50 + 125, 525, 300, 645]);
+}
+background(0, 0, 0, 0);
+fill(0);
+textSize(380);
+textFont(createFont("Montserrat Bold"));
+textAlign(CENTER, CENTER);
+text("SP", 295, 295);
+fill(127.5);
+text("SP", 300, 300);
+fill(255);
+text("SP", 305, 305);
+for(var i = 0; i < 30; i++) {
+    for(var j = 0; j < 30; j++) {
+        imgs.push([get(i*30, j*30, 30, 30), i*30, j*30, 0, 285, false]);
+    }
+}
+
+noStroke();
+background(21, 0, 158);
+for(var i = 0; i < height; i+= 10) {
+    fill(0, 3);
+    rect(0, i, width, height - i);
+}
+for(var i = 0; i < 600; i++) {
+    fill(255);
+    ellipse(random(0, width), random(0, height), random(0.5, 2.5), random(0.5, 2.5));
+}
+
+bck = get(0, 0, 600, 600);
+
+// the draw function
+draw = function() {
+
+    // list of pages
+    switch (page) {
+
+        // if in the game
+        case "gm":
+
+            // sets the background
+            drawBackground();
+
+            // draws the card in the center
+            strokeWeight(3);
+            drawCard(246, 176, 900, cardInCenter[0], cardInCenter[1]);
+
+            // shows the ais cards
+            for (var i = 0.15; i < aiCards.length; i++) {
+                strokeWeight(3);
+                stroke(0);
+                fill(75);
+
+                // gray blob
+                rect(i * (580 / aiCards.length), 10, 82, 122, 5);
+
+            }
+
+            // shows the players cards
+            for (var i = 0; i < playerCards.length; i++) {
+                strokeWeight(1);
+                stroke(0);
+
+                // draws the cards
+                drawCard(i * 90 + 10 + cardLayout, 440, 600, playerCards[i].type, playerCards[i].color);
+            }
+            strokeWeight(3);
+            stroke(0);
+
+            // shows the draw extra button
+            if (turn === 1) {
+                textFont(createFont("Montserrat"));
+                drawC.draw();
+
+                // player card stuff
+                for (var i = 0; i < playerCards.length; i++) {
+
+                    // checks if each individual card can be played
+                    playerCards[i].check();
+
+                    // checks if the mouse is over a card
+                    if (mouseX > i * 90 + 10 + cardLayout && mouseX < i * 90 + 92 + cardLayout && mouseY > 440 && mouseY < 562 && turn === 1) {
+
+                        // if it can be played
+                        if (playerCards[i].canPlay) {
+
+                            // effects
+                            overButton = true;
+                            fill(0, 30);
+                            rect(i * 90 + 10 + cardLayout, 440, 82, 122, 5);
+
+                            // if its clicked
+                            if (clicked) {
+
+                                // adds stats
+                                cardsPlayed++;
+                                cardsPlayedTot++;
+
+                                // plays the card
+                                playerCards[i].play();
+                                playerCards.splice(i, 1);
+                            }
+                        }
+
+                        // if you can't play it, then it shows the little "blocked" cursor
+                        else {
+                            cursorN = true;
+                        }
+                    }
+                }
+            }
+
+            // if the ai has their turn
+            else if (turn === 2) {
+
+                // the ais card list
+                for (var i = 0; i < aiCards.length; i++) {
+
+                    fill(0);
+                    textFont(createFont("Montserrat"));
+
+                    // checks the ais cards
+                    aiCards[i].check();
+
+                    // increases the ais play time
+                    AI.playTime++;
+
+                    // if
+                    // -the ai can play their card
+                    // -the right card has the right 'time' (this just prevents the ai from playing seven million cards at a time)
+                    // -the ai has waited long enough, for a more 'realistic' ai
+                    if (aiCards[i].canPlay && frameCount % aiCards.length + 1 === i + 1 && AI.playTime > 170) {
+
+                        // sets the players turn
+                        turn = 1;
+
+                        // resets the playtime
+                        AI.playTime = 0;
+
+                        // plays the card
+                        aiCards[i].play();
+
+                        // removes the card from the list
+                        aiCards.splice(i, 1);
+                    }
+
+                    // if the ai has sufficiently proved it can not play a single card
+                    if (AI.playTime > 300 && turn === 2) {
+
+                        // sets the play time and turn and stuff
+                        AI.playTime = 0;
+                        turn = 1;
+
+                        // then makes the ai draw its cards
+                        AI.amt = 1;
+                        AI.drawCards();
+                    }
+                }
+            }
+
+            // if it's not the ai's turn, the playtime is set to 0
+            if (turn !== 2) {
+                AI.playTime = 0;
+            }
+
+            // for the moving through cards
+            if (keyIsPressed && keyCode === LEFT) {
+                cardLayout += 5.5;
+            }
+            if (keyIsPressed && keyCode === RIGHT) {
+                cardLayout -= 5.5;
+            }
+
+            // makes sure you can't scroll too far
+            cardLayout = constrain(cardLayout, -(playerCards.length * 90) + 50, 0);
+
+            // if the card list gets low
+            if (cardList.length < 6) {
+
+                fullDec.earn();
+
+                // resets it
+                restockCardList();
+            }
+
+            // if the player wins
+            if (playerCards.length === 0) {
+
+                // adds to the winstreak
+                winStreak++;
+
+                // advances all of the achievements
+                fiveWins.adv();
+                tenWins.adv();
+                winstreak.adv();
+                hatTrick.adv();
+                onFire.adv();
+                unstoppable.adv();
+
+                // turns the page
+                page = "win!!!";
+
+                // resets the turn
+                turn = 1;
+
+                // the wins increase
+                wins++;
+
+            }
+
+            // if the ai wins
+            if (aiCards.length === 0) {
+
+                // winstreak resets itself
+                winStreak = 0;
+
+                // the losses increase
+                losses++;
+
+                // resets the turn
+                turn = 1;
+
+                // turns the page
+                page = "lose :(";
+
+                // resets all of the achievements
+                winstreak.reset();
+                hatTrick.reset();
+                onFire.reset();
+                unstoppable.reset();
+            }
+
+            // win/loss showing
+            fill(0);
+            textFont(createFont("Montserrat Bold"));
+            textSize(25);
+            text("Wins: " + wins + "\nLosses: " + losses + "\nWinstreak: " + winStreak, 500, 360);
+            textFont(createFont("Montserrat"));
+
+            // if you've played so many games, then you get the achievement
+            if (cardsPlayed >= 100) {
+                plaDec.earn();
+            }
+            
+            
+            
+           // if(playerCards.length >= 7) {
+                noStroke();
+                fill(0);
+                rect(150, 580, 300, 5, 10);
+                fill(255);
+                strokeWeight(2);
+                stroke(0);
+                if(dist(mouseX, mouseY, (-cardLayout / playerCards.length) * (3.49) + 150, 582.5) <= 10) {
+                    overButton = true;
+                    fill(225);
+                    if(mouseIsPressed) {
+                        mos = true;
+                    }
+                }
+                if(mos) {
+                    if(!mouseIsPressed || mouseOOC) {
+                        mos = false;
+                    }
+                    cardLayout = -((mouseX - 150) / 3.49) * playerCards.length - 2;
+                    cardLayout = constrain(cardLayout, -(playerCards.length * 90) + 50, 0);
+                }
+                ellipse((-cardLayout / playerCards.length) * (3.49) + 150, 582.5, 20, 20);
+                noStroke();
+           // }
+            break;
+
+            // if you win
+        case "win!!!":
+            noStroke();
+
+            // achievements earning
+            if (wins === 5) {
+                fiveWins.earn();
+            }
+
+            if (wins === 10) {
+                tenWins.earn();
+            }
+
+            if (winStreak === 2) {
+                winstreak.earn();
+            }
+            if (winStreak === 3) {
+                hatTrick.earn();
+            }
+            if (winStreak === 5) {
+                onFire.earn();
+            }
+            if (winStreak === 10) {
+                unstoppable.earn();
+            }
+
+            // resets the align and font
+            textAlign(CENTER, CENTER);
+            textFont(createFont("Montserrat"));
+
+            // formatting
+            drawBackground();
+
+            // you won
+            textAlign(CENTER, CENTER);
+            fill(0);
+            textSize(70);
+            text("You WON!!!", 300, 80);
+
+            // replay button
+            replayThing.draw();
+
+            actualReplayThing.draw();
+
+            // shows the game stats
+            fill(0);
+            textSize(25);
+            text("Cards Played: " + cardsPlayed + "\nCards Drawn: " + cardsDrawn + "\nTotal turns: " + (cardsPlayed + cardsDrawn), 300, 500);
+
+            // earn the achievement
+            if ((cardsPlayed + cardsDrawn) === 7) {
+                perfectGame.earn();
+            }
+
+            // show the confetti
+            for (var i = 0; i < confettiS.length; i++) {
+                confettiS[i].show();
+            }
+
+            // earn the achievement
+            iWon.earn();
+            break;
+
+            // if you lose
+        case "lose :(":
+            noStroke();
+
+            textAlign(CENTER, CENTER);
+            textFont(createFont("Montserrat"));
+
+            // formatting
+            drawBackground();
+
+            // you won
+            textAlign(CENTER, CENTER);
+            fill(0);
+            textSize(70);
+            text("You LOST!", 300, 80);
+
+            // replay button
+            replayThing.draw();
+
+            actualReplayThing.draw();
+
+            // shows the game stats
+            fill(0);
+            textSize(25);
+            text("Cards Played: " + cardsPlayed + "\nCards Drawn: " + cardsDrawn + "\nTotal turns: " + (cardsPlayed + cardsDrawn), 300, 500);
+            break;
+
+            // how page
+        case "how1":
+
+            // font, background, formatting, etc
+            textFont(createFont("Montserrat"));
+            drawBackground();
+            textSize(50);
+            fill(0);
+            textAlign(CENTER, CENTER);
+
+            // title
+            text("HOW?", 300, 50);
+
+            // body text
+            textSize(15);
+            text("Okay, so if you know how to play normal Uno then you can simply skip this entire explanation. If not, then have fun (fun?) learning how to play Uno.\n\n1. You start with 7 cards. Each card has its own color and value. You can only play a card with a matching number OR a matching color to the card in the center, with the exception of something I'll mention below.\n2. There are some cards that do not come with a number, but instead a picture. The draw 2, which makes the other player draw two cards (if that's not totally obvious), and then there's the skip... you can probably guess what that one does as well.\n3. There are also two kinds of wild cards: normal wild cards and Draw 4s. Normal Wild cards just allow you to change the color -- there will be no number value attached. Wild Draw 4s do what the Wilds do... but you make the opponent draw FOUR cards! It's arguably the best card in the game.\n4. The object of the game is to use up all of your cards before the other player does!\n\nInfo about this version:\n-Click on cards to play them\n-It's only your turn if you see the \"draw card\" button\n-To go through your cards use the arrow keys (Scrollbar coming soon).", 20, -7, 560, 600);
+
+            // back button
+            noStroke();
+            back2.draw();
+
+            // shshshshshshhhhhh nothing to see here ;)
+            eegg.draw();
+
+            // earn the achievement
+            iWonder.earn();
+            break;
+
+            // credits page
+        case "credits":
+
+            // formatting
+            textFont(createFont("Montserrat"));
+            drawBackground();
+            textSize(50);
+            fill(0);
+            textAlign(CENTER, CENTER);
+
+            // title
+            text("= CREDITS =", 300, 50);
+
+            // description
+            textSize(25);
+            text("All code by SP\n\nCredit to Mattel for creating the awesome game of Uno\n\nDISCLAIMER: SP is not associated with Mattel in any way, shape, or form. Uno and all byproducts of Uno are a copyright of Mattel, Inc. ©2015, All Rights Reserved.", 20, 10, 560, 600);
+
+            // 'fine print'
+            textSize(10);
+            text("PLEASE tell me if there is something I missed here. The last thing I am looking for is legal ramifications.", 300, 580);
+
+            // back button
+            noStroke();
+            back1.draw();
+
+            // achievement
+            credited.earn();
+            break;
+
+            // when you click the "menu" button on the win/lose screen
+        case "replay":
+
+            // resets the cards
+            playerCards = [];
+            aiCards = [];
+
+            // resets the list
+            restockCardList();
+
+            // restocks the cards for the ai and the player and the card in the center
+            stockCards();
+
+            confettiReset();
+
+            // makes the page the menu
+            page = "menu";
+            break;
+
+            // "play again" button after a game
+        case "startagain":
+
+            // resets the game stats
+            cardsDrawn = 0;
+            cardsPlayed = 0;
+
+            // resets the cards
+            playerCards = [];
+            aiCards = [];
+
+            // resets the list
+            restockCardList();
+
+            confettiReset();
+
+            // restocks the cards for the ai and the player and the card in the center
+            stockCards();
+
+            // makes the page the menu
+            page = "gm";
+            break;
+
+            // if the page is the wild page. very messy i beg you please skip (no pun intended)
+        case "wild":
+
+            textAlign(CENTER, CENTER);
+
+            // shows the background
+            background(255);
+            image(wildImg, 0, 0);
+
+            // makes the background transparent
+            noStroke();
+            fill(0, 175);
+            rect(0, 0, 600, 600);
+            strokeWeight(3);
+
+            // different color thingies
+            stroke(0);
+            if (wCol === color(232, 0, 0)) {
+                stroke(255);
+            }
+            fill(232, 0, 0);
+            rect(160, 50, 107, 157, 5);
+            stroke(0);
+            if (wCol === color(0, 230, 31)) {
+                stroke(255);
+            }
+            fill(0, 230, 31);
+            rect(333, 50, 107, 157, 5);
+            stroke(0);
+            if (wCol === color(38, 0, 209)) {
+                stroke(255);
+            }
+            fill(38, 0, 209);
+            rect(160, 273, 107, 157, 5);
+            stroke(0);
+            if (wCol === color(255, 255, 51)) {
+                stroke(255);
+            }
+            fill(255, 255, 51);
+            rect(333, 273, 107, 157, 5);
+            stroke(0);
+            noStroke();
+
+            // if the mouse is over any of the buttons
+
+            // -_- i said please skip
+            if (mouseX > 160 && mouseX < 267 && mouseY > 273 && mouseY < 430) {
+                overButton = true;
+                fill(0, 30);
+                rect(160, 273, 107, 157, 5);
+                if (clicked) {
+                    wCol = color(38, 0, 209);
+                    colForCenter = "Blue";
+                }
+            }
+            if (mouseX > 333 && mouseX < 440 && mouseY > 273 && mouseY < 430) {
+                overButton = true;
+                fill(0, 30);
+                rect(333, 273, 107, 157, 5);
+                if (clicked) {
+                    wCol = color(255, 255, 51);
+                    colForCenter = "Yellow";
+                }
+            }
+
+            if (mouseX > 160 && mouseX < 267 && mouseY > 50 && mouseY < 207) {
+                overButton = true;
+                fill(0, 30);
+                rect(160, 50, 107, 157, 5);
+                if (clicked) {
+                    wCol = color(232, 0, 0);
+                    colForCenter = "Red";
+                }
+            }
+            if (mouseX > 333 && mouseX < 440 && mouseY > 50 && mouseY < 207) {
+                overButton = true;
+                fill(0, 30);
+                rect(333, 50, 107, 157, 5);
+                if (clicked) {
+                    wCol = color(0, 230, 31);
+                    colForCenter = "Green";
+                }
+            }
+
+            // selects the color
+            if (wCol !== color(255)) {
+                colorP.draw();
+            }
+            strokeWeight(3);
+            stroke(0);
+
+            if (cardInCenter[0] === "Wild") {
+                thatsWild.earn();
+            }
+            if (cardInCenter[0] === "Wild Draw 4") {
+                ko.earn();
+            }
+            break;
+
+            // if the color has been selected
+        case "cent-col":
+
+            // stats advance
+            wwd4cp++;
+
+            // achievements advance
+            fiveWilds.adv();
+            tenWilds.adv();
+            twentyfiveWilds.adv();
+
+            // earn achievements
+            if (wwd4cp >= 5) {
+                fiveWilds.earn();
+            }
+            if (wwd4cp >= 10) {
+                tenWilds.earn();
+            }
+            if (wwd4cp >= 25) {
+                twentyfiveWilds.earn();
+            }
+
+            // sets the color in the center
+            cardInCenter[1] = colForCenter;
+            colForCenter = null;
+
+            // turns the page back to the game
+            page = "gm";
+            break;
+
+        case "achievements":
+
+            // background
+            drawBackground();
+
+            // scroll
+            pushMatrix();
+            translate(0, aScroll);
+
+            // title
+            fill(0);
+            textSize(60);
+            textFont(createFont("Montserrat Bold"));
+            textAlign(CENTER, CENTER);
+            text("ACHIEVEMENTS", 300, 60);
+
+            textFont(createFont("Montserrat"));
+
+            // show the achievement stuff
+
+            // its kind of a mess
+
+            // you can skip
+            iWon.showPg();
+            iWonder.showPg();
+            credited.showPg();
+            ko.showPg();
+            perfectGame.showPg();
+            thatsWild.showPg();
+            fullDec.showPg();
+            plaDec.showPg();
+            fiveWins.showPg();
+            tenWins.showPg();
+            fiveWilds.showPg();
+            tenWilds.showPg();
+            twentyfiveWilds.showPg();
+            winstreak.showPg();
+            hatTrick.showPg();
+            onFire.showPg();
+            unstoppable.showPg();
+            tenCards.showPg();
+            fiftyCards.showPg();
+            hundredCards.showPg();
+            twofiftyCards.showPg();
+            fivehundredCards.showPg();
+            oneKcards.showPg();
+            tendrawn.showPg();
+            fiftydrawn.showPg();
+            hundreddrawn.showPg();
+            twofiftydrawn.showPg();
+            fivehundreddrawn.showPg();
+            fiveA.showPg();
+            tenA.showPg();
+            halfA.showPg();
+            overachiever.showPg();
+            easterEgg.showPg();
+            popMatrix();
+
+            // for the key scrolling
+            if (keyIsPressed && keyCode === DOWN) {
+                aScroll -= 10;
+            }
+            if (keyIsPressed && keyCode === UP) {
+                aScroll += 10;
+            }
+            popMatrix();
+            noStroke();
+
+            // button
+            backFromA.draw();
+
+            // constrain the scroll
+            aScroll = constrain(aScroll, -3580, 0);
+            break;
+            
+            case "logo":
+                image(bck, 0, 0);
+    imageMode(CENTER);
+    for(var i in imgs) {
+        pushMatrix();
+        translate(imgs[i][3] + 15, imgs[i][4]);
+        image(imgs[i][0], 0, 0);
+        popMatrix();
+        if(imgs[i][5]) {
+            imgs[i][3] += (imgs[i][1] - imgs[i][3]) / 10;
+            imgs[i][4] += (imgs[i][2] - imgs[i][4]) / 10;
+        }
+    }
+    if(logoTimer < 180) {
+        imgs[logoTimer * 5][5] = true;
+        imgs[logoTimer * 5 - 1][5] = true;
+        imgs[logoTimer * 5 - 2][5] = true;
+        imgs[logoTimer * 5 - 3][5] = true;
+        imgs[logoTimer * 5 - 4][5] = true;
+    }
+    imageMode(CORNER);
+    if(logoTimer > 60) {
+        for(var i in presents) {
+            textSize(40);
+            textFont(createFont("Montserrat Bold"));
+            fill(255);
+            text(pMsg[i], presents[i][2], presents[i][3]);
+            if(logoTimer > 135) {
+                presents[i][2] += (presents[i][0] - presents[i][2]) / 15;
+                presents[i][3] += (presents[i][1] - presents[i][3]) / 15;
+            }
+        }
+    }
+    if(logoTimer > 280) {
+        transImg = get(0, 0, 600, 600);
+        page = "menu";
+    }
+    logoTimer ++;
+            break;
+
+            // if the menu is on
+        case "menu":
+
+            // resets the stats
+            cardsDrawn = 0;
+            cardsPlayed = 0;
+
+            // background
+            drawBackground();
+
+            // uno logo
+            unoLogo(-193, 0, 1000);
+
+            // the button to go to the game
+            playButton.draw();
+
+            // how page button
+            howButton.draw();
+
+            credits.draw();
+
+            achievmnts.draw();
+            image(transImg, transImgX, 0);
+        transImgX += (600 - transImgX) / 10;
+            break;
+
+            // if you draw a card
+        case "draw-ext":
+
+            // stats
+            cardsDrawn++;
+            cardsDrawnTot++;
+
+            // advance achievements
+            tendrawn.adv();
+            fiftydrawn.adv();
+            hundreddrawn.adv();
+            twofiftydrawn.adv();
+            fivehundreddrawn.adv();
+
+            // earn achievements
+            if (cardsDrawnTot >= 10) {
+                tendrawn.earn();
+            }
+            if (cardsDrawnTot >= 50) {
+                fiftydrawn.earn();
+            }
+            if (cardsDrawnTot >= 100) {
+                hundreddrawn.earn();
+            }
+            if (cardsDrawnTot >= 250) {
+                twofiftydrawn.earn();
+            }
+            if (cardsDrawnTot >= 500) {
+                fivehundreddrawn.earn();
+            }
+
+            // makes the player draw their card
+            Player.amt = 1;
+            Player.drawCards();
+
+            // sets the turn to the ais and makes the ais playtime nothing
+            turn = 2;
+            AI.playTime = 0;
+
+            // turns the page back to the game
+            page = "gm";
+            break;
+        case "easter-egg":
+            easterEgg.earn();
+            page = "how1";
+            break;
+    }
+
+    // resets the click variable so it isn't endlessly on and you don't just hover over buttons to use them
+    clicked = false;
+
+    // if the cursor is over a button
+    if (overButton) {
+        cursor(HAND);
+    }
+
+    // if the cursor is over something you are not able to click
+    else if (cursorN) {
+
+        // credit to cheesy monster (@theobjectninja) for list of cursors (used just this one)
+        cursor('no-drop');
+    }
+
+    // if the cursor is neither
+    else {
+        cursor(ARROW);
+    }
+
+
+    // achievements earned if you have enough for them
+    if (achievementsEarned >= 5) {
+        fiveA.earn();
+    }
+
+    if (achievementsEarned >= 10) {
+        tenA.earn();
+    }
+
+    if (achievementsEarned >= 16) {
+        halfA.earn();
+    }
+
+    if (achievementsEarned >= 32) {
+        overachiever.earn();
+    }
+
+    // resets the variables, so they aren't endlessly showing
+    overButton = false;
+    cursorN = false;
+
+    // shows the achievements (so if you earn them)
+    iWon.show();
+    iWonder.show();
+    credited.show();
+    ko.show();
+    thatsWild.show();
+    fullDec.show();
+    plaDec.show();
+    perfectGame.show();
+    fiveWins.show();
+    tenWins.show();
+    fiveWilds.show();
+    tenWilds.show();
+    twentyfiveWilds.show();
+    winstreak.show();
+    hatTrick.show();
+    onFire.show();
+    unstoppable.show();
+    tenCards.show();
+    fiftyCards.show();
+    hundredCards.show();
+    twofiftyCards.show();
+    fivehundredCards.show();
+    oneKcards.show();
+    tendrawn.show();
+    fiftydrawn.show();
+    hundreddrawn.show();
+    twofiftydrawn.show();
+    fivehundreddrawn.show();
+    fiveA.show();
+    tenA.show();
+    halfA.show();
+    overachiever.show();
+
+    // if you earned it (because this achievement bugs out with the save)
+    if (!easterEgg.earned) {
+        easterEgg.show();
+    }
+
+
+    // for the save code
+    if (keyIsPressed && keyCode === 83) {
+        _clearLogs();
+
+        // kind of a mess ._.
+        println("var saveCode = [[" + fiveA.progress + ", " + fiveA.gotten + "], [" + tenA.progress + ", " + tenA.gotten + "], [" + halfA.progress + ", " + halfA.gotten + "], [" + overachiever.progress + ", " + overachiever.gotten + "], [" + iWon.progress + ", " + iWon.gotten + "], [" + iWonder.progress + ", " + iWonder.gotten + "], [" + credited.progress + ", " + credited.gotten + "], [" + thatsWild.progress + ", " + thatsWild.gotten + "], [" + ko.progress + ", " + ko.gotten + "], [" + perfectGame.progress + ", " + perfectGame.gotten + "], [" + fullDec.progress + ", " + fullDec.gotten + "], [" + plaDec.progress + ", " + plaDec.gotten + "], [" + fiveWins.progress + ", " + fiveWins.gotten + "], [" + tenWins.progress + ", " + tenWins.gotten + "], [" + fiveWilds.progress + ", " + fiveWilds.gotten + "], [" + tenWilds.progress + ", " + tenWilds.gotten + "], [" + twentyfiveWilds.progress + ", " + twentyfiveWilds.gotten + "], [" + winstreak.progress + ", " + winstreak.gotten + "], [" + hatTrick.progress + ", " + hatTrick.gotten + "], [" + onFire.progress + ", " + onFire.gotten + "], [" + unstoppable.progress + ", " + unstoppable.gotten + "], [" + tenCards.progress + ", " + tenCards.gotten + "], [" + fiftyCards.progress + ", " + fiftyCards.gotten + "], [" + hundredCards.progress + ", " + hundredCards.gotten + "], [" + twofiftyCards.progress + ", " + twofiftyCards.gotten + "], [" + fivehundredCards.progress + ", " + fivehundredCards.gotten + "], [" + oneKcards.progress + ", " + oneKcards.gotten + "], [" + tendrawn.progress + ", " + tendrawn.gotten + "], [" + fiftydrawn.progress + ", " + fiftydrawn.gotten + "], [" + hundreddrawn.progress + ", " + hundreddrawn.gotten + "], [" + twofiftydrawn.progress + ", " + twofiftydrawn.gotten + "], [" + fivehundreddrawn.progress + ", " + fivehundreddrawn.gotten + "], [" + easterEgg.progress + ", " + easterEgg.gotten + "], " + cardsDrawnTot + ", " + cardsPlayedTot + ", " + winStreak + ", " + achievementsEarned + ", " + wwd4cp + ", " + wins + ", " + losses + "];");
+        
+        // don't forget -- cardLayout = -((mouseX - 150) / 3.49) * playerCards.length - 2;
+    }
+};
+
+// if the mouse was clicked
+mouseClicked = function() {
+
+    // sets the variable
+    clicked = true;
+};
+
+// if out
+mouseOut = function() {
+    mouseOOC = true;
+};
+
+// if over
+mouseOver = function() {
+    mouseOOC = false;
+};
