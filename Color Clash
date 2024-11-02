@@ -1,0 +1,3023 @@
+/**
+ * 
+ * PIRATEZ
+ * SP, SMV, (promise was there) - 2023 for CoC [team ski]
+ * The theme was "cycles of science"... idk we didn't really follow it
+ * 
+ * + [Actually fun] Battle Royale Game
+ *  + 16 Achievements
+ *  + 6 skins
+ *  + 4 hats
+ *  + 9 funny death messages
+ * 
+ * The game may lag, but I tried my best to delag it
+ * 
+ * CREDITS {
+ *  Everything (except noted) made by SP and SMV.
+ *  Credit to OOPS! Studio @Cristianop1 for the loading algorithm
+ *  And daniel @dkareh for the loop protector (which helps this program run)
+ *  And finally credit to Squishy @squishypill for the small mouseScrolled fix so you can still scroll without scrolling down in the window [try using a trackpad on the shop page]
+ * }
+ * 
+ * controls:
+ * arrow keys to turn & move
+ * shift to shoot
+ * 
+ * Collect coins to spend in the shop, xp to level up and gain more health, and powerups to get special boosts.
+ *
+ * @STORY {
+ * You and your crew have spent years of trying to decipher an old treasure map, sailing through forgotten waters at the edge of the world. You have finally found the island where a famous pirate once stored his loot. After stepping foot on the island, you find another group of pirates has also just arrived. A shootout commences, and all members of your crew are promptly killed.
+ * Don't let their deaths go to waste. Defend yourself and figure out if there really is treasure on this island.
+ * (spoiler alert: there isn't)
+ * }
+ *  
+**/
+
+/** SETUP **/
+// {
+
+// credit to @dkareh
+//set timeout
+(function() {return this;})().LoopProtector.prototype.leave = function() {};
+
+//colour variables
+var colours = [color(0, 1, 31), color(245), color(161, 23, 23), color(0, 201, 114), color(255, 230, 0), color(56, 120, 173), ];
+
+//font
+var c = createFont("Custom Bold");
+var m = createFont("verdana");
+
+//canvas
+smooth();
+size(600, 600, P2D);
+
+// cursor
+var cursorT = 0;
+var clicked = false;
+
+var page = "load";
+
+//general
+var players = [];
+
+var bullets = [];
+
+var orbs = [];
+var coins = [];
+var powerups = [];
+
+//keys
+var keys = [];
+
+//outline text
+function outlineText (msg, x, y) {
+    fill(0);
+    for(var i = -1.5; i < 2.5; i++) {
+        for(var j = -1.5; j < 2.5; j++) {
+            fill(0);
+            text(msg, x + i, y + j);
+        }
+    }
+    
+    fill(255);
+    text(msg, x, y);
+}
+
+//button
+function cursorCollide(x, y, w, h) {
+    return mouseX > x && mouseY > y && mouseX < x + w && mouseY < y + h;
+}
+
+function Button(config) {
+    
+    this.x = config.x;
+    this.y = config.y;
+    this.w = config.w;
+    this.h = config.h;
+    
+    this.colour = config.colour;
+    
+    this.show = config.show;
+    this.clicky = config.clicky;
+    this.w2 = 0;
+    
+}
+
+Button.prototype.draw = function() {
+    
+    // collide with the mouse
+    if(cursorCollide(this.x, this.y, this.w, this.h)) {
+        this.w2 = lerp(this.w2, this.w - 2 || this.sw, 0.08);
+        cursorT = 0;
+        if(clicked) {
+            this.clicky();
+        }
+    }
+    
+    else {
+        this.w2 = lerp(this.w2, 0, 0.08);
+    }
+    
+    fill (this.colour || lerpColor(colours[5], colours[0], 0.3));
+    
+    strokeWeight (3);
+    stroke (colours[1]);
+    rect (this.x, this.y, this.w, this.h, 5);
+    
+    noStroke();
+    fill (colours[3]);
+    rect (this.x + 1.5, this.y + 1.5, this.w2, this.h - 1.5, 5);
+    
+    this.show();
+    
+};
+
+// }
+
+/** GRAPHICS **/
+// {
+
+/** player graphics **/
+// not named after me unfortunately
+var sp = function(c1, c2) {
+    
+    strokeWeight(1);
+    stroke (0);
+    fill (c1);
+    ellipse (100, 100, 60, 60);
+    ellipse (70, 136, 15, 15);
+    ellipse (130, 136, 15, 15);
+    
+    fill (c2);
+    rect (85, 91, 8, 21, 6);
+    rect (105, 91, 8, 21, 6);
+    
+    noStroke();
+    fill (255, 220);
+    rect (86, 93, 3, 13, 6);
+    rect (106, 93, 3, 13, 6);
+    
+};
+
+// all the characters
+// default bob
+// brown hair, guy
+var charA = function() {
+
+    strokeWeight(1);
+    sp (color(255, 168, 168), color(lerpColor(colours[0], colours[1], 0.4)));
+    
+    fill(94, 51, 51);
+    stroke (0);
+    beginShape();
+    vertex (71, 98);
+    bezierVertex (99, 67, 105, 88, 120, 100);
+    vertex (121, 91);
+    vertex (133, 100);
+    bezierVertex (132, 76, 123, 74, 111, 66);
+    bezierVertex (99, 62, 88, 72, 82, 69);
+    bezierVertex (74, 70, 66, 77, 66, 91);
+    vertex (71, 87);
+    endShape(CLOSE);
+    
+};
+
+// landlubber louie
+//blond hair, guy
+var charB = function() {
+    
+    strokeWeight(1);
+    sp (color(255, 165, 127), color(lerpColor(colours[3], colours[0], 0.3)));
+    
+    fill(colours[4]);
+    stroke (0);
+    beginShape();
+    vertex (69, 95);
+    bezierVertex (87, 70, 126, 81, 117, 101);
+    bezierVertex (118, 102, 122, 99, 123, 92);
+    vertex (133, 98);
+    bezierVertex (137, 86, 122, 82, 134, 79);
+    vertex (126, 73);
+    bezierVertex (107, 51, 103, 70, 84, 65);
+    bezierVertex (85, 70, 73, 77, 68, 76);
+    vertex (71, 81);
+    endShape(CLOSE);
+
+};
+
+// scalawag sally
+// black hair, girl
+var charC = function() {
+    
+    strokeWeight(1);
+    sp (color(227, 153, 136), color(colours[5]));
+    
+    stroke (0);
+    fill (36, 20, 12);
+    beginShape();
+    vertex (73, 95);
+    bezierVertex (103, 73, 97, 81, 124, 97);
+    vertex (125, 91);
+    bezierVertex (128, 93, 131, 114, 124, 118);
+    bezierVertex (133, 122, 131, 108, 139, 112);
+    bezierVertex (129, 97, 139, 95, 139, 93);
+    bezierVertex (133, 72, 124, 82, 111, 66);
+    bezierVertex (106, 63, 98, 70, 81, 70);
+    bezierVertex (65, 67, 71, 85, 62, 89);
+    bezierVertex (58, 105, 71, 98, 64, 119);
+    bezierVertex (70, 120, 75, 116, 74, 109);
+    vertex (71, 100);
+    endShape(CLOSE);
+
+};
+
+// hardtack harry
+// this is the (2nd) best named one
+//light brown hair, guy
+var charD = function() {
+    
+    sp(color(242, 164, 164), lerpColor(colours[2], colours[0], 0.3));
+    
+    strokeWeight (1);
+    stroke (0);
+    fill (153, 108, 31);
+    
+    beginShape();
+    vertex (71, 95);
+    bezierVertex (89, 87, 78, 73, 112, 82);
+    bezierVertex (108, 101, 124, 73, 130, 105);
+    bezierVertex (138, 89, 120, 82, 130, 75);
+    bezierVertex (105, 70, 128, 61, 100, 68);
+    bezierVertex (92, 74, 91, 62, 75, 74);
+    vertex (69, 76);
+    vertex (75, 83);
+    endShape(CLOSE);
+    
+};
+
+// buccaneer brittany
+//redhead, girl
+var charE = function() {
+    
+    sp (color(255, 193, 181), lerpColor(colours[3], colours[5], 0.3));
+    
+    strokeWeight (1);
+    fill (186, 44, 44);
+    stroke (0);
+    
+    beginShape();
+    vertex (71, 95);
+    bezierVertex (82, 99, 89, 70, 92, 90);
+    vertex (110, 87);
+    bezierVertex (138, 95, 112, 103, 131, 120);
+    bezierVertex (146, 91, 126, 94, 132, 72);
+    bezierVertex (116, 72, 103, 67, 97, 64);
+    bezierVertex (82, 64, 96, 67, 72, 76);
+    bezierVertex (64, 94, 64, 78, 65, 106);
+    vertex (75, 118);
+    bezierVertex (70, 103, 74, 111, 71, 95);
+    endShape(CLOSE);
+
+};
+
+// zombie / braiiiins
+// intended for something different but i thought it was too cool not to add
+// s tier name
+var charF = function() {
+    
+    sp(lerpColor(lerpColor(colours[3], colours[2], 0.3), colours[1], 0.3), color(colours[2]));
+    
+    stroke (0);
+    fill (lerpColor(colours[2], colours[0], 0.3));
+    
+    beginShape();
+    vertex (71, 95);
+    bezierVertex (89, 87, 78, 73, 112, 82);
+    bezierVertex (108, 101, 124, 73, 130, 105);
+    bezierVertex (138, 89, 120, 82, 130, 75);
+    bezierVertex (105, 70, 128, 61, 100, 68);
+    bezierVertex (92, 74, 91, 62, 75, 74);
+    vertex (69, 76);
+    vertex (75, 83);
+    endShape(CLOSE);
+    
+};
+
+/** hats **/
+
+// skull hat
+var hatA = function() {
+    
+    strokeWeight(1);
+    stroke (0);
+    fill (colours[0]);
+    
+    beginShape();
+    vertex (62, 70);
+    bezierVertex (65, 84, 122, 87, 134, 71);
+    vertex (140, 65);
+    bezierVertex (133, 49, 123, 64, 115, 51);
+    bezierVertex (111, 38, 79, 42, 80, 58);
+    bezierVertex (77, 65, 73, 66, 62, 65);
+    endShape(CLOSE);
+    
+    fill (colours[1]);
+    stroke (0);
+    
+    beginShape();
+    vertex (91, 60);
+    bezierVertex (85, 51, 112, 47, 107, 62);
+    bezierVertex (110, 62, 110, 69, 105, 66);
+    vertex (106, 71);
+    vertex (102, 70);
+    vertex (102, 67);
+    vertex (101, 70);
+    vertex (99, 71);
+    vertex (98, 67);
+    vertex (96, 72);
+    vertex (94, 72);
+    vertex (94, 66);
+    bezierVertex (87, 67, 89, 59, 91, 60);
+    endShape(CLOSE);
+    
+    fill (colours[0]);
+    arc (96, 59, 4, 4, 13, 234);
+    arc (102, 59, 4, 4, 13, 234);
+    
+    triangle (99, 62, 97, 65, 101, 65); 
+    
+    strokeWeight (1.5);
+    stroke (colours[1]);
+    line (87, 72, 111, 76);
+    line (111, 72, 87, 76);
+    
+    noStroke();
+    fill (colours[1]);
+    ellipse (86, 71, 3, 3);
+    ellipse (84, 72, 3, 3);
+    ellipse (86, 77, 3, 3);
+    ellipse (88, 77, 3, 3);
+    ellipse (113, 77, 3, 3);
+    ellipse (114, 75, 3, 3);
+    ellipse (112, 71, 3, 3);
+    ellipse (110, 70, 3, 3);
+    
+};
+
+// bandana
+var hatB = function() {
+    
+    strokeWeight(1);
+    fill (colours[2]);
+    stroke (0);
+    
+    beginShape();
+    vertex (72, 95);
+    bezierVertex (89, 82, 122, 90, 130, 92);
+    vertex (130, 83);
+    bezierVertex (131, 88, 139, 92, 150, 86);
+    bezierVertex (143, 83, 147, 78, 134, 81);
+    vertex (134, 80);
+    bezierVertex (155, 78, 147, 70, 152, 70);
+    bezierVertex (136, 74, 140, 61, 127, 77);
+    bezierVertex (119, 76, 113, 50, 72, 72);
+    vertex (68, 80);
+    endShape(CLOSE);
+    
+    stroke(0, 0);
+    fill (lerpColor(colours[0], colours[2], 0.7), 150);
+    bezier(77, 88, 89, 75, 114, 82, 126, 87);
+    bezier(77, 84, 115, 46, 115, 82, 132, 84);
+
+};
+
+// eye patch
+var eyePatch = function() {
+
+    noFill();
+    strokeWeight (2.5);
+    stroke (colours[0]);
+       
+    bezier(88, 70, 100, 100, 114, 109, 128, 111);
+    
+    strokeWeight (1);
+    fill (colours[0]);
+    ellipse (110, 101, 18, 28);
+
+};
+
+/** gun **/
+// smv named this function so i cant take credit but its a fantastic name
+var boomBoomThing = function() {
+    
+    stroke (0);
+    strokeWeight (1);
+    fill (colours[0]);
+    rect (64, 137, 10, 30, 3);
+    
+    fill (lerpColor(colours[0], colours[1], 0.4));
+    rect (63, 136, 12, 12, 3);
+    rect (67, 143, 4, 12, 3);
+    ellipse (69.5, 168, 5, 5);
+    
+};
+
+/** icons **/
+
+// locked
+var lockedIcon = function () {
+    
+    strokeWeight (5);
+    noFill();
+    
+    stroke (colours[0]);
+    arc (50, 47, 35, 35, -180, 0);
+    rect (25, 47, 50, 40, 5);
+    
+    fill(0);
+    rect(25, 47, 17, 40, 5);
+    rect(59, 47, 16, 40, 5);
+    rect(39, 47, 20, 5);
+    rect(39, 77, 20, 5);
+    
+    noFill();
+    arc (50, 63, 15, 15, -225, 45);
+    arc (50, 72, 10, 15, -26, 207);
+    
+};
+
+//shop
+var shopIcon = function() {
+    
+    strokeWeight (3);
+    stroke (colours[1]);
+    noFill();
+    
+    beginShape();
+    vertex (262, 453);
+    vertex (270, 457);
+    vertex (280, 488);
+    vertex (328, 488);
+    endShape();
+    
+    beginShape();
+    vertex (271, 461);
+    vertex (336, 461);
+    vertex (330, 480);
+    vertex (278, 480);
+    endShape();
+    
+    ellipse (293, 499, 10, 10);
+    ellipse (312, 499, 10, 10);
+    
+    line (292, 468, 315, 468);
+    line (296, 473, 311, 473);
+
+};
+
+// achievement icon
+var achievementIcon = function() {
+    
+    strokeWeight (3);
+    stroke (colours[1]);
+    noFill();
+    
+    beginShape();
+    vertex (400, 454);
+    bezierVertex (396, 488, 411, 483, 411, 494);
+    vertex (401, 498);
+    vertex (401, 506);
+    vertex (436, 506);
+    vertex (436, 498);
+    vertex (425, 494);
+    bezierVertex (421, 484, 441, 488, 434, 454);
+    endShape(CLOSE);
+    
+    bezier(398, 461, 377, 449, 399, 491, 401, 474);
+    bezier(436, 461, 455, 449, 438, 491, 435, 474);
+
+};
+
+// how icon
+var howIcon = function() {
+    
+    strokeWeight (3);
+    stroke (colours[1]);
+    noFill();
+    
+    beginShape();
+    vertex (163, 461);
+    bezierVertex (180, 424, 221, 468, 187, 483);
+    vertex (187, 493);
+    vertex (178, 487);
+    endShape();
+    
+    noStroke();
+    fill (colours[1]);
+    ellipse (179, 500, 10, 10);
+    popMatrix();
+    
+};
+
+//back to menu
+// by far the most complex
+var menuIcon = function() {
+    
+    strokeWeight (5);
+    stroke(245);
+    line (20, 20, 80, 20);
+    line (20, 40, 80, 40);
+    line (20, 60, 80, 60);
+
+};
+
+/** loading **/
+//loading variables
+var curLoad = 0;
+var loaded = false;
+
+// the whole loading thang
+var imgs = {
+    
+    // the background
+    "genBack": function() {
+        
+        background (lerpColor(colours[5], colours[1], 0.5));
+        noStroke();
+        for (var i = 0; i < 300; i+= 2) {
+            fill (colours[5], i * 0.2);
+            rect (0, 300 + i, 600, 13);
+            rect (0, -i + 300, 600, 13);
+        }
+        
+        filter (POSTERIZE, 7);
+        return get (0, 0, 600, 600);
+        
+    },
+    
+    "arrow": function() {
+        
+        background(0, 0);
+        noStroke();
+        fill(230);
+        beginShape();
+        vertex(10, 40);
+        vertex(10, 80);
+        vertex(75, 79);
+        vertex(75, 105);
+        vertex(110, 60);
+        vertex(75, 15);
+        vertex(75, 41);
+        endShape(CLOSE);
+
+        return get(0, 0, 120, 120);
+        
+    },
+    
+    // the red outline you see when you're low on health
+    "critical": function() {
+        
+        background(0, 0);
+        noStroke();
+        for(var i = 0; i < 75; i++) {
+            fill(255, 0, 0, -i + 75);
+            rect(i, 0, 1, 600);
+        }
+        for(var i = 525; i < 600; i++) {
+            fill(255, 0, 0, i - 525);
+            rect(i, 0, 1, 600);
+        }
+        for(var i = 0; i < 75; i++) {
+            fill(255, 0, 0, -i + 75);
+            rect(0, i, 600, 1);
+        }
+        for(var i = 525; i < 600; i++) {
+            fill(255, 0, 0, i - 525);
+            rect(0, i, 600, 1);
+        }
+        
+        return get(0, 0, 600, 600);
+        
+    },
+    
+    // all the icons
+    "lock": function() {
+        lockedIcon();
+        return get(15, 22.5, 70, 70);
+    },
+    
+    "award": function() {
+        achievementIcon();
+        return get(380, 440, 75, 75);
+    },
+    
+    "shop": function() {
+        shopIcon();
+        return get(255, 430, 90, 90);
+    },
+    
+    "how": function() {
+        howIcon();
+        return get(145, 440, 70, 70);
+    },
+    
+    "menuIc": function() {
+        menuIcon();
+        return get (0, 0, 100, 100);
+    },
+    
+    // i actually made this one :D
+    "coin": function() {
+        
+        fill(colours[4]);
+        strokeWeight(10);
+        stroke(lerpColor(colours[4], colours[0], 0.3));
+        ellipse(300, 300, 100, 100);
+        
+        textFont(createFont("Custom Bold"));
+        textAlign(CENTER, CENTER);
+        textSize(80);
+        fill(120, 120, 0);
+        text("S", 302, 302);
+        
+        noStroke();
+        fill(120, 120, 0);
+        rect(297, 265, 10, 10);
+        rect(297, 329, 10, 10);
+        
+        fill(150, 150, 0);
+        rect(295, 263, 10, 10);
+        rect(295, 327, 10, 10);
+        text("S", 300, 300);
+        
+        fill(0, 15);
+        arc(300, 300, 110, 110, -55, 125);
+        
+        return get(240, 240, 120, 120);
+        
+    },
+    
+    // the characters
+    "char1": function() {
+        charA();
+        return get(55, 58, 88, 88);
+    },
+    
+    "char2": function() {
+        charB();
+        return get(55, 58, 88, 88);
+    },
+    
+    "char3": function() {
+        charC();
+        return get(55, 58, 88, 88);
+    },
+    
+    "char4": function() {
+        charD();
+        return get(55, 58, 88, 88);
+    },
+    
+    "char5": function() {
+        charE();
+        return get (55, 58, 88, 88);
+    },
+    
+    "char6": function() {
+        charF();
+        return get (55, 58, 88, 88);
+    },
+    
+    // hats
+    "hat1": function() {
+        hatA();
+        return get (50, 20, 100, 80);
+    },
+    
+    "hat2": function() {
+        hatB();
+        return get (50, 20, 100, 80);
+    },
+    
+    "eyepatch": function() {
+        eyePatch();
+        return get (50, 20, 100, 120);
+    },
+    
+    // still well named
+    "boom": function() {
+        boomBoomThing();
+        return get (38, 124, 50, 50);
+    },
+    
+};
+
+// load function
+// cedit to oops studio
+var load = function() {
+    
+    background(0, 0);
+    
+    var obj = Object.keys(imgs);
+    
+    imgs[obj[curLoad]] = imgs[obj[curLoad]]();
+    curLoad++;
+    
+    if (curLoad < obj.length) {
+        loaded = false;
+    } 
+    
+    // finish loading
+    else {
+        loaded = true;
+        page = "maine";
+    }
+    
+};
+
+/** backgrjound **/
+// this looks awesome
+var generalBackground = function() {
+    
+    imageMode(CORNER);
+    image(imgs.genBack, 0, 0);
+    noStroke();
+    for (var i = 0; i < width; i += 60) {
+        for (var j = 0; j < height; j += 60) {    
+            fill (colours[1], 25 * sin (frameCount + i + j));
+            rect (3 + i, 5 + j, 50, 50, 5);
+        }
+    } 
+    
+    imageMode (CENTER);
+};
+
+
+// }
+
+/** GENERAL FUNCTIONS **/
+// {
+
+/** transition **/
+var transitions = [];
+function transition() {
+    this.img = get();
+    this.siz = 600;
+}
+transition.prototype.draw = function() {
+    image(this.img, 300, 300, this.siz, this.siz);
+    this.siz += (0 - this.siz) / 7;
+};
+
+/** minor functions **/
+// for the finish
+// it says "you finished in xxth place" or whatever
+// just so that it has the right ending
+function addEnding(num) {
+    if(num.toString().endsWith("1")) {
+        return "st";
+    }
+    else if(num.toString().endsWith("2")) {
+        return "nd";
+    }
+    else if(num.toString().endsWith("3")) {
+        return "rd";
+    }
+    else {
+        return "th";
+    }
+}
+
+// a neat little function
+// if there are ppl with long names (yes i am looking at you Captain Longtreader... your name is 19 chars and mine is 2 so your name is 9.5x longer than mine)
+function fitText(msg, w, max) {
+    
+    var wid = max;
+    while(wid > 0) {
+        textSize(wid);
+        if(textWidth(msg) <= w) {
+            return wid;
+        }
+        wid --;
+        
+    }
+}
+
+// convert the elapsed time to m:s
+function convert(elapsed) {
+    var give = "";
+    if((elapsed / 3600) < 10) {
+        give += "0";
+    }
+    give += floor((elapsed / 3600)) + ":";
+    if((floor(elapsed / 60) % 60) < 10) {
+        give += "0";
+    }
+    give += floor(elapsed / 60) % 60;
+    return give;
+}
+
+/** achievements **/
+var achList = [];
+function achievement(config) {
+    
+    this.name = config.name;
+    this.desc = config.desc;
+    
+    this.amt = 0;
+    this.toGet = config.toGet;
+    
+    this.completed = false;
+    this.timer = 0;
+    
+    this.x = -600;
+    this.y = 20;
+    
+}
+
+// list of achievements
+var achievements = {
+    
+    kill1: new achievement({
+        name: "First kill",
+        desc: "Destroy your first pirate",
+        toGet: 1
+    }),
+    
+    kill15: new achievement({
+        name: "Talented",
+        desc: "Defeat 15 pirates",
+        toGet: 15
+    }),
+    
+    kill50: new achievement({
+        name: "Serial",
+        desc: "Triumph over 50 pirates",
+        toGet: 50
+    }),
+    
+    kill100: new achievement({
+        name: "Wow",
+        desc: "Crush a hundred pirates",
+        toGet: 100
+    }),
+    
+    killGm2: new achievement({
+        name: "Try to stop me",
+        desc: "Topple two pirates in a game",
+        toGet: 2
+    }),
+    
+    killGm5: new achievement({
+        name: "CAN'T STOP ME",
+        desc: "Decimate five pirates in a game",
+        toGet: 5
+    }),
+    
+    long: new achievement({
+        name: "Very long game...",
+        desc: "Play a game that goes all the way to sudden death!",
+        toGet: 1
+    }),
+    
+    powerup1: new achievement({
+        name: "What might this do?",
+        desc: "Collect a powerup",
+        toGet: 1
+    }),
+    
+    powerup10: new achievement({
+        name: "Plenty o' powerups",
+        desc: "Collect ten powerups",
+        toGet: 10
+    }),
+    
+    powerup25: new achievement({
+        name: "Serial powerupper",
+        desc: "Collect 50 powerups",
+        toGet: 50
+    }),
+    
+    coin1: new achievement({
+        name: "Shiny!",
+        desc: "Collect your first coin",
+        toGet: 1
+    }),
+    
+    coin25: new achievement({
+        name: "Getting richer",
+        desc: "Collect 25 coins",
+        toGet: 25
+    }),
+    
+    coin100: new achievement({
+        name: "Treasure chest",
+        desc: "Collect 100 coins",
+        toGet: 100
+    }),
+    
+    coin250: new achievement({
+        name: "Very wealthy",
+        desc: "Collect 250 coins",
+        toGet: 250
+    }),
+    
+    coin1000: new achievement({
+        name: "Jeffrey Musk",
+        desc: "Collect 1000 coins",
+        toGet: 1000
+    }),
+    
+    win: new achievement({
+        name: "Victory royal!",
+        desc: "Win your first game",
+        toGet: 1
+    }),
+    
+};
+
+// puts the whole list in
+achList = [achievements.win, achievements.kill1, achievements.kill15, achievements.kill50, achievements.kill100, achievements.killGm2, achievements.killGm5, achievements.powerup1, achievements.powerup10, achievements.powerup25,  achievements.coin1, achievements.coin25, achievements.coin100, achievements.coin250, achievements.coin1000, achievements.long];
+
+// some nice achievementing functions
+achievement.prototype.adv = function() {
+    
+    this.amt ++;
+    if(this.amt >= this.toGet) {
+        this.completed = true;
+    }
+    
+};
+
+achievement.prototype.draw = function() {
+    
+    if(this.completed && this.x < 700) {
+        
+        fill(220);
+        strokeWeight(7.5);
+        stroke(190);
+        rect(this.x, this.y, 400, 100, 10);
+        
+        textFont(c);
+        textAlign(CENTER, CENTER);
+        textSize(40);
+        outlineText(this.name, this.x + 200, this.y + 25);
+        
+        textFont(m);
+        textSize(22.5);
+        outlineText(this.desc, this.x + 200, this.y + 70);
+        
+        this.timer ++;
+        if(this.timer < 270) {
+            this.x += (100 - this.x) / 18;
+        }
+        else {
+            this.x += 8;
+        }
+        
+    }
+    
+};
+
+/** shop **/
+// items in shop
+// if you couldn't read the variable name right below it
+var shopItems = [
+    
+    [
+        
+        [0, "Default", "bill killed bob", true],
+        [5, "Treasure", "bill stole bob's treasure", false],
+        [10, "Raided Ship", "bill raided bob's ship", false],
+        [15, "Walk the Plank", "bill made bob walk the plank", false],
+        [25, "Toxic Breath", "bill's breath was too toxic for bob", false],
+        [25, "NFTs", "bill tried to sell bob an nft", false], // yes i did it
+        [50, "Bad Plumbing", "bill flushed bob down the toilet", false],
+        [50, "Netflix", "bill stole bob's netflix password", false],
+        [100, "Rickroll", "bill rickrolled bob", false]
+        
+    ],
+    
+    [
+        
+        [0, "Default Bob", "", true],
+        [25, "Landlubber Louie", "", false],
+        [25, "Scalawag Sally", "", false],
+        [45, "Hardtack Harry", "", false],
+        [50, "Buccaneer Brittany", "", false],
+        [100, "Braiiiins", "", false],
+        
+    ],
+    
+    [
+        
+        [0, "No Hat", "", true],
+        [75, "Skull Hat", "", false],
+        [75, "Bandana", "", false],
+        [75, "Eye Patch", "", false],
+        
+    ],
+    
+];
+
+// idk vvvvvv
+function computeKillMsg(k1, k2, idx) {
+    
+    var toReturn = "";
+    
+    switch(idx) {
+        
+        case 0:
+            toReturn = k1 + " killed " + k2;
+        break;
+        
+        case 1:
+            toReturn = k1 + " stole " + k2 + "'s treasure";
+            
+            // grammer is important
+            // instead of saying "bill stole you's treasure" it says "bill stole your treasure"
+            if(k2 === "you") {
+                toReturn = k1 + " stole " + k2 + "r treasure";
+            }
+        break;
+        
+        case 2:
+            toReturn = k1 + " raided " + k2 + "'s ship";
+            if(k2 === "you") {
+                toReturn = k1 + " raided " + k2 + "r ship";
+            }
+        break;
+        
+        case 3:
+            toReturn = k1 + " made " + k2 + " walk the plank";
+        break;
+        
+        case 4:
+            toReturn = k1 + "'s breath was too toxic for " + k2;
+            if(k1 === "you") {
+                toReturn = k1 + "r breath was too toxic for " + k2;
+            }
+        break;
+        
+        case 5:
+            toReturn = k1 + " tried to sell " + k2 + " an NFT";
+        break;
+        
+        case 6:
+            toReturn = k1 + " flushed " + k2 + " down the toilet";
+        break;
+        
+        case 7:
+            toReturn = k1 + " stole " + k2 + "'s Netflix password";
+            if(k2 === "you") {
+                toReturn = k1 + " stole " + k2 + "r Netflix password";
+            }
+        break;
+        
+        case 8:
+            toReturn = k1 + " rickrolled " + k2;
+        break;
+        
+    }
+    
+    // because for some reason you can't just put a return inbetween the cases and breaks. "unreachable"
+    return toReturn;
+    
+}
+
+// shop scroll
+var shopScroll = 0;
+
+// which shop items are selected
+var selShop = [0, 0, 0];
+
+// which page in the shop you're on
+var shopPage = 0;
+
+/** slider **/
+function slider(config) {
+    
+    this.x = config.x;
+    this.y = config.y;
+    this.len = config.len;
+    this.selX = config.def || config.x;
+    this.hovering = false;
+    
+}
+
+slider.prototype.draw = function() {
+    
+    strokeWeight(2);
+    stroke(colours[0]);
+    fill(colours[1]);
+    rect(this.x, this.y, this.len, 7.5, 5);
+    ellipse(this.selX, this.y + 3.75, 25, 25);
+    
+    if(dist(mouseX, mouseY, this.selX, this.y + 3.75) < 12.5 || this.hovering) {
+        fill(lerpColor(colours[1], colours[5], 0.3));
+        ellipse(this.selX, this.y + 3.75, 25, 25);
+        cursorT = 1;
+        if(mouseIsPressed) {
+            cursorT = 2;
+            this.hovering = true;
+        }
+    }
+    
+    if(!mouseIsPressed) {
+        this.hovering = false;
+    }
+    if(this.hovering) {
+        this.selX = mouseX;
+    }
+    
+    this.selX = constrain(this.selX, this.x, this.x + this.len);
+    fill(colours[0]);
+    
+    return this.selX - this.x;
+    
+};
+
+// the 2 sliders
+// this one is for the dimensions of the game
+var sizSlider = new slider({
+    x: 50,
+    y: 200,
+    len: 225,
+    def: 225,
+});
+
+// this one is for how many players are in the game
+var playSlider = new slider({
+    x: 325,
+    y: 200,
+    len: 225,
+    def: 470,
+});
+
+
+// }
+
+/** GENERAL GAME LOGIC/FUNCTIONS **/
+// {
+
+// coin count
+var coinAmt = 0;
+
+// when you pick up a coin
+var tinyCoins = [];
+
+// the tiny box in the top right
+var notifications = [];
+
+// the powerupwheel
+var powerupSpin = {
+    names: "Heal,Level Up,Nothing :D,25 XP,10 coins,Heal,Nothing :D,Spin again,Bullet Blast,10 XP".split(","),
+    spinVel: 0,
+    spin: 0,
+    spinTimer: 0,
+    trans: 0,
+    started: false,
+    img: "",
+};
+
+// lots of game variables
+var game = {
+    
+    dimensions: 5000,
+    movingIn: 0,
+    
+    origAmt: 20,
+    
+    elapsed: 0,
+    
+    // who you're spectating
+    focus: 0,
+    
+    topKilNam: "nobody",
+    topKilAmt: 0,
+    topKillDead: false,
+    
+    topLevNam: "nobody",
+    topLevAmt: 1,
+    topLevDead: false,
+    
+    dead: false,
+    cause: "[error please report]",
+    place: "[error please report]",
+    
+    // for game end
+    bckImg: "",
+    
+    // naming type
+    name: 0, // 0 = bot x, 1 = random word, 2 = coc members
+};
+
+// expereince orbs
+function Orb(config) {
+    this.x = config.x;
+    this.y = config.y;
+}
+
+Orb.prototype.draw = function() {
+    
+    if(dist(this.x, this.y, players[game.focus].x, players[game.focus].y) < 1200) {
+        fill(132, 200, 202);
+        ellipse(this.x, this.y, 10, 10);
+    }
+    
+    // if out of box
+    if(this.x < -game.dimensions || this.x > game.dimensions || this.y < -game.dimensions || this.y > game.dimensions) {
+        this.die = true;
+    }
+    
+};
+
+// coin
+function Coin(config) {
+    this.x = config.x;
+    this.y = config.y;
+}
+
+Coin.prototype.draw = function() {
+    
+    if(dist(this.x, this.y, players[game.focus].x, players[game.focus].y) < 1200) {
+        image(imgs.coin, this.x, this.y, 40, 40);
+    }
+    
+    if(this.x < -game.dimensions || this.x > game.dimensions || this.y < -game.dimensions || this.y > game.dimensions) {
+        this.die = true;
+    }
+    
+};
+
+// powerup
+function Powerup(config) {
+    this.x = config.x;
+    this.y = config.y;
+    this.type = ~~random(10);
+}
+
+Powerup.prototype.draw = function() {
+    
+    fill(237, 142, 182);
+    if(dist(this.x, this.y, players[game.focus].x, players[game.focus].y) < 1200) {
+        rect(this.x - 5, this.y - 5, 10, 10, 2);
+    }
+    
+    if(this.x < -game.dimensions || this.x > game.dimensions || this.y < -game.dimensions || this.y > game.dimensions) {
+        this.die = true;
+    }
+    
+};
+
+// bullet
+function Bullet(config) {
+    
+    this.x = config.x;
+    this.y = config.y;
+    this.rot = config.rot;
+    this.from = config.from;
+    this.die = false;
+    
+}
+
+Bullet.prototype.draw = function() {
+    fill(0);
+    ellipse(this.x, this.y, 4, 4);
+};
+
+Bullet.prototype.func = function() {
+    
+    this.x += cos(this.rot) * 6;
+    this.y += sin(this.rot) * 6;
+    
+    if(this.x < -game.dimensions || this.x > game.dimensions || this.y < -game.dimensions || this.y > game.dimensions) {
+        this.die = true;
+    }
+    
+};
+
+Bullet.prototype.full = function() {
+    this.draw();
+    this.func();
+};
+
+
+
+
+// }
+
+/** PLAYER **/
+// {
+
+function Player(config) {
+    
+    this.x = config.x;
+    this.y = config.y;
+    
+    this.rot = 0;
+    
+    this.bulletTimer = 0;
+    
+    this.ranGen = random(100);
+    
+    this.health = 100;
+    this.healthCap = 100;
+    
+    this.name = "you";
+    
+    this.orbs = 0;
+    
+    this.level = 1;
+    this.xp = 0;
+    this.kills = 0;
+    
+    this.die = false;
+    this.msg = selShop[0];
+
+}
+
+Player.prototype.draw = function() {
+
+    imageMode(CENTER);
+    
+    pushMatrix();
+        translate(this.x, this.y);
+        rotate(this.rot - 90);
+        image([imgs.char1, imgs.char2, imgs.char3, imgs.char4, imgs.char5, imgs.char6][selShop[1]], 0, 0, 75, 75);
+        
+        // eye patch (because you don't wear it in your hair)
+        if(selShop[2] === 3) {
+            image(imgs.eyepatch, 0, -18, 84, 98);
+        }
+        else {
+            image(["", imgs.hat1, imgs.hat2, imgs.eyepatch][selShop[2]], 0, -38, 85, 85);
+        }
+        
+        // guess what this is
+        image(imgs.boom, -29, 40, 40, 40);
+    popMatrix();
+    
+    // health bar
+    fill(colours[2]);
+    rect(this.x - 45, this.y - 60, 90, 10);
+    fill(colours[3]);
+    rect(this.x - 45, this.y - 60, this.health / this.healthCap * 90, 10);
+    
+    // xperience
+    fill(colours[5]);
+    rect(this.x - 45, this.y - 50, 90, 10);
+    fill(lerpColor(colours[0], colours[5], 0.5));
+    rect(this.x - 45, this.y - 50, this.xp / (this.level * 2.75) * 90, 10);
+    
+    textAlign(CENTER, CENTER);
+    textFont(c);
+    textSize(14);
+    outlineText("Level " + this.level, this.x, this.y - 47.5);
+    
+    textSize(21);
+    textAlign(CENTER, CENTER);
+    fill(colours[0]);
+    outlineText(this.name, this.x, this.y - 30);
+    
+};
+
+Player.prototype.func = function() {
+    
+    // move
+    if(keys[LEFT]) {
+        this.rot -= 5;
+    }
+    if(keys[RIGHT]) {
+        this.rot += 5;
+    }
+    if(keys[UP]) {
+        this.x += cos(this.rot) * 5;
+        this.y += sin(this.rot) * 5;
+    }
+    if(keys[DOWN]) {
+        this.x += cos(this.rot) * -3.25;
+        this.y += sin(this.rot) * -3.25;
+    }
+    
+    // shoot
+    if(keys[16] && this.bulletTimer >= 26) {//rect(-29, 30, 8, 25);
+        bullets.push(new Bullet({
+            x: this.x + cos(this.rot + 23.5) * 62.5,
+            y: this.y + sin(this.rot + 23.5) * 62.5,
+            rot: this.rot,
+            from: [this.ranGen, this.name],
+        }));
+        this.bulletTimer = 0;
+    }
+    
+    this.bulletTimer ++;
+    
+    // show hitbox
+    // noFill();
+    // strokeWeight(3);
+    // stroke(255, 0, 0);
+    // ellipse(this.x, this.y, 50, 50);
+    
+    // orbs
+    for(var i = 0; i < orbs.length; i++) {
+        if(dist(this.x, this.y, orbs[i].x, orbs[i].y) < 35) {
+            
+            this.xp += 1.05;
+            orbs.splice(i, 1);
+        }
+    }
+    
+    // coins
+    for(var i = 0; i < coins.length; i++) {
+        
+       if(dist(this.x, this.y, coins[i].x, coins[i].y) < 50) {
+           
+            tinyCoins.push([300 - (players[game.focus].x - coins[i].x), 300 - (players[game.focus].y - coins[i].y), 35]);
+            
+            achievements.coin1.adv();
+            achievements.coin25.adv();
+            achievements.coin100.adv();
+            achievements.coin250.adv();
+            achievements.coin1000.adv();
+            
+            coins.splice(i, 1);
+
+        }
+        
+    }
+    
+    // poewrups
+    for(var i = 0; i < powerups.length; i++) {
+        
+        if(dist(this.x, this.y, powerups[i].x, powerups[i].y) < 35) {
+            
+            achievements.powerup1.adv();
+            achievements.powerup10.adv();
+            achievements.powerup25.adv();
+            
+            powerups.splice(i, 1);
+            
+            powerupSpin.started = true;
+            powerupSpin.spin += random(1, 150);
+            powerupSpin.spinVel = random(50, 75);
+            
+        }
+        
+    }
+    
+    // if youre cool at the game
+    if(this.kills > game.topKilAmt) {
+        game.topKilNam = this.name;
+        game.topKilAmt = this.kills;
+        game.topKilDead = false;
+    }
+    if(this.level > game.topLevAmt) {
+        game.topLevNam = this.name;
+        game.topLevAmt = this.level;
+        game.topLevDead = false;
+    }
+    
+    // keep you... trapped inside...
+    this.x = constrain(this.x, -game.dimensions, game.dimensions);
+    this.y = constrain(this.y, -game.dimensions, game.dimensions);
+    
+    // collide with bullets
+    for(var i = 0; i < bullets.length; i++) {
+        
+        if(dist(this.x, this.y, bullets[i].x, bullets[i].y) < 25 && bullets[i].from[0] !== this.ranGen) {
+            this.health -= 14.5;
+            
+            for(var j = 0; j < players.length; j++) {
+                if(bullets[i].from[0] === players[j].ranGen) {
+                    players[j].xp += 0.25;
+                }
+            }
+            
+            if(this.health <= 0 && bullets[i].from[0] !== this.ranGen) {
+                game.dead = true;
+                game.place = players.length;
+                for(var j = 0; j < players.length; j++) {
+                    game.cause = bullets[i].from[1];
+                }
+                this.die = bullets[i].from[0];
+            }
+            bullets.splice(i, 1);
+        }
+        
+    }
+    
+    // xp improvements
+    if(this.xp > this.level * 2.75) {
+        
+        this.xp = this.xp - (this.level * 2.75);
+        this.level ++;
+        this.healthCap *= 1.05;
+        this.health += 50;
+    
+        notifications.push(this.name + " leveled up to level " + this.level);
+        
+    }
+    
+    this.health += 0.025;
+    this.health = constrain(this.health, 0, this.healthCap);
+    
+};
+
+// combine the functions
+Player.prototype.full = function() {
+    this.draw();
+    this.func();
+};
+
+// }
+
+/** OPPONENT **/
+// {
+
+// to generate opponent names
+
+// the whole list
+// thank you smv for correcting "Team Ninjas Fan" to "team ninjaz fan"
+// all the 'fans' are just to get the count to >50 just in case someone decides to play with max players
+var clashOfCode = "ski,S. M. V.,Liftoff Studios,Promise,Doglover,SP,Liam K,Lemon Games,GalaxyRanger,Virtuosa,Cpt. Lngtreader,Caige,Samwise,Henry,Fer Fer,Fifth,Mojo1000,21262,Electric Dolphin,Astro,Dominic R,Akbaba,YokieBob,Chase L,Alyanna,Polar,xacer,JSCoder,Jake K,Eragon Blaze,Bearkib314,Paperwad,WalkWorthy,Aragorn,NL,TheDark,TheLegoMango,Agent X,IA,JLE,LJE,Multiverse,PK,Synapse,Timothy,Team Leviathan Fan,team ninjaz fan,Team Papernukes Fan,Team Astronomers Fan,Melting Ice Caps Fan,Team Henry Fan".split(",");
+var cOcNum = 0;
+
+// "word" generator
+var vowel = "a,e,i,o,u,ee,oo,y,au,ou".split(",");
+var consonant = "w,r,t,y,p,s,d,f,g,h,j,k,l,z,x,c,v,b,n,m,ch,wr,qu".split(",");
+var beginning = "w,r,t,y,p,s,d,f,g,h,j,k,l,z,c,v,b,n,m,ch,wr,qu,sm,cl,bl,pl,sh,wh,sw,ac,ad,ed,oc,od,on,or,it,ir,in,un,kh,gh,st".split(",");
+var ending = "w,r,t,y,p,s,d,f,g,h,k,l,z,x,c,b,n,m,ch,ck,wr,il,in,wn,mp,nk,rt,,,,,,,,,,,,,".split(",");
+
+function generateWord() {
+    return beginning[~~random(0, beginning.length)] + vowel[~~random(0, vowel.length)] + consonant[~~random(0, consonant.length)] + vowel[~~random(0, vowel.length)] + ending[~~random(0, ending.length)];
+}
+
+// for the 'demo' on the "begin" page
+// it says 'error please report' just because if the word doesn't set in some random instance
+// its not an actual error
+var ranWord = "[error please report]";
+
+// actual opponent
+function Enemy(config) {
+    
+    this.x = config.x;
+    this.y = config.y;
+    
+    this.rot = random(360);
+    
+    this.bulletTimer = 0;
+    
+    this.ranGen = random(100);
+    
+    this.kills = 0;
+    
+    this.targ = null;
+    
+    this.health = 100;
+    this.healthCap = 100;
+    
+    this.level = 1;
+    this.xp = 0;
+    
+    this.name = config.name;
+
+    this.die = false;
+
+    this.rotTimer = 0;
+    
+    // cosmetic/customization
+    // all randomized
+    this.msg = ~~random(0, shopItems[0].length);
+    this.custom = [~~random(0, shopItems[1].length), ~~random(0, shopItems[2].length)];
+
+}
+
+Enemy.prototype.draw = function() {
+    
+    imageMode(CENTER);
+    
+    pushMatrix();
+        translate(this.x, this.y);
+        rotate(this.rot - 90);
+        image([imgs.char1, imgs.char2, imgs.char3, imgs.char4, imgs.char5, imgs.char6][this.custom[0]], 0, 0, 75, 75);
+        
+        // so its not on your hair
+        if(this.custom[1] === 3) {
+            image(imgs.eyepatch, 0, -18, 84, 98);
+        }
+        else {
+            image(["", imgs.hat1, imgs.hat2, imgs.eyepatch][this.custom[1]], 0, -38, 85, 85);
+        }
+        
+        // well named
+        image(imgs.boom, -29, 40, 40, 40);
+    popMatrix();
+    
+    fill(colours[2]);
+    rect(this.x - 45, this.y - 60, 90, 10);
+    fill(colours[3]);
+    rect(this.x - 45, this.y - 60, this.health / this.healthCap * 90, 10);
+    
+    fill(colours[5]);
+    rect(this.x - 45, this.y - 50, 90, 10);
+    fill(35, 79, 122);
+    rect(this.x - 45, this.y - 50, this.xp / (this.level * 2.75) * 90, 10);
+    
+    textFont(c);
+    textAlign(CENTER, CENTER);
+    if(dist(this.x, this.y, players[game.focus].x, players[game.focus].y) < 700) {
+        textSize(22);
+        outlineText(this.name, this.x, this.y - 30);
+        textSize(13);
+        outlineText("Level " + this.level, this.x, this.y - 47.5);
+    }
+    textAlign(LEFT, LEFT);
+    
+};
+
+Enemy.prototype.detect = function() {
+    
+    this.targ = null;
+    if(this.rotTimer > 300) {
+        this.rot = random(360);
+        this.rotTimer = 0;
+    }
+
+    if(frameCount % 15 === 0) {
+        for(var i = 0; i < players.length; i++) {
+            if(dist(this.x, this.y, players[i].x, players[i].y) < 625 && dist(this.x, this.y, players[i].x, players[i].y) > 200 && players[i].ranGen !== this.ranGen) {
+                this.targ = i;
+            }
+        }
+    }
+    
+    this.rotTimer ++;
+    
+};
+
+Enemy.prototype.func = function() {
+    
+    // this makes sure the tip of the gun tracks instead of jusst from the center of the opponent
+    if(this.targ !== null) {
+        this.rot = atan2(players[this.targ].y - this.y + sin(this.rot + 23.5) * 62.5, players[this.targ].x - this.x + cos(this.rot + 23.5) * 62.5);
+    }
+    
+    this.x += cos(this.rot) * 4.35;
+    this.y += sin(this.rot) * 4.35;
+    
+    // these are on delays of 1/6 because... lag
+    // orbs + coins in here
+    if(frameCount % 6 === 0) {
+        
+        for(var i = 0; i < orbs.length; i++) {
+            if(dist(this.x, this.y, orbs[i].x, orbs[i].y) < 35) {
+                
+                this.xp += 1.05;
+                orbs.splice(i, 1);
+            }
+        }
+        
+        for(var i = 0; i < coins.length; i++) {
+          if(dist(this.x, this.y, coins[i].x, coins[i].y) < 50) {
+                coins.splice(i, 1);
+            }
+        }
+        
+    }
+    
+    // special treatment
+    for(var i = 0; i < powerups.length; i++) {
+        
+        if(dist(this.x, this.y, powerups[i].x, powerups[i].y) < 35) {
+            powerups.splice(i, 1);
+            
+            switch(~~random(9)) {
+                
+                case 2:
+                case 6:
+                    this.health = this.healthCap;
+                break;
+                case 3:
+                    this.level ++;
+                break;
+                case 4:
+                    this.xp += 25;
+                break;
+                case 5:
+                    this.xp += 10;
+                break;
+                case 7:
+                    for(var i = 0; i < 100; i++) {
+                        bullets.push(new Bullet({
+                            x: this.x + sin(360 / 100 * i) * 50 + 50,
+                            y: this.y + cos(360 / 100 * i) * 50 + 50,
+                            rot: 360 / 100 * i,
+                            from: [this.ranGen, this.name]
+                        }));
+                    }
+                break;
+                
+            }
+            
+        }
+        
+    }
+    
+    // keep... inside... the game......
+    this.x = constrain(this.x, -game.dimensions, game.dimensions);
+    this.y = constrain(this.y, -game.dimensions, game.dimensions);
+    
+    // shoot
+    if(frameCount % 28 === 0) {
+        bullets.push(new Bullet({
+            x: this.x + cos(this.rot + 23.5) * 62.5,
+            y: this.y + sin(this.rot + 23.5) * 62.5,
+            rot: this.rot,
+            from: [this.ranGen, this.name],
+        }));
+    }
+    
+    // bullets
+    if(frameCount % 7 === 0) {
+        
+        for(var i = 0; i < bullets.length; i++) {
+            
+            if(dist(this.x, this.y, bullets[i].x, bullets[i].y) < 30 && bullets[i].from[0] !== this.ranGen) {
+                this.health -= 14.5;
+                
+                for(var j = 0; j < players.length; j++) {
+                    if(bullets[i].from[0] === players[j].ranGen) {
+                        players[j].xp += 0.25;
+                    }
+                }
+                
+                if(this.health <= 0) {
+                    this.die = bullets[i].from[0];
+                }
+                bullets.splice(i, 1);
+            }
+            
+        }
+        
+    }
+    
+    // just a bit nicer
+    if(frameCount % 90 === 0) {
+        
+        if(this.kills > game.topKilAmt) {
+            game.topKilNam = this.name;
+            game.topKilAmt = this.kills;
+            game.topKilDead = false;
+            notifications.push(this.name + " is the new top killer!");
+        }
+        
+        if(this.level > game.topLevAmt) {
+            game.topLevNam = this.name;
+            game.topLevAmt = this.level;
+            game.topLevDead = false;
+            notifications.push(this.name + " is the new top level!");
+        }
+        
+    }
+    
+    // because we all cared
+    if(this.xp > this.level * 2.75 && frameCount % 10 === 0) {
+        this.xp = this.xp - (this.level * 2.75);
+        this.level ++;
+        this.healthCap *= 1.05;
+        this.health += 50;
+    
+        notifications.push(this.name + " leveled up to level " + this.level);
+    }
+    
+    this.health += 0.025;
+    this.health = constrain(this.health, 0, this.healthCap);
+    
+};
+
+// combine it all
+Enemy.prototype.full = function() {
+    this.draw();
+    this.detect();
+    this.func();
+};
+
+
+// }
+
+/** FINAL SETUP STUFF 
+(due to code order this has to go below the player & opponent)
+**/
+// {
+
+// big function
+function setup(dimen, amt) {
+    
+    // resets like 500 things
+    notifications = [];
+    
+    clashOfCode = "ski,S. M. V.,Liftoff Studios,Promise,Doglover,SP,Liam K,Lemon Games,GalaxyRanger,Virtuosa,Cpt. Lngtreader,Caige,Samwise,Henry,Fer Fer,Fifth,Mojo1000,21262,Electric Dolphin,Astro,Dominic R,Akbaba,YokieBob,Chase L,Alyanna,Polar,xacer,JSCoder,Jake K,Eragon Blaze,Bearkib314,Paperwad,WalkWorthy,Aragorn,NL,TheDark,TheLegoMango,Agent X,IA,JLE,LJE,Multiverse,PK,Synapse,Timothy,Team Leviathan Fan,team ninjaz fan,Team Papernukes Fan,Team Astronomers Fan,Melting Ice Caps Fan,Team Henry Fan".split(",");
+    
+    if(!achievements.killGm2.completed) {
+        achievements.killGm2.amt = 0;
+    }
+    if(!achievements.killGm5.completed) {
+        achievements.killGm5.amt = 0;
+    }
+    game.dead = false;
+    game.elapsed = 0;
+    game.movingIn = 0;
+    game.focus = 0;
+    game.topKilNam = "nobody";
+    game.topKilAmt = 0;
+    game.topKillDead = false;
+    game.topLevNam = "nobody";
+    game.topLevAmt = 1;
+    game.topLevDead = false;
+    game.cause = "[error please report]";
+    game.place = "[error please report]";
+    players = [];
+    orbs = [];
+    coins = [];
+    powerups = [];
+    
+    // sets up some more stuff
+    game.dimensions = dimen;
+    players.push(new Player({
+        x: random(-dimen, dimen),
+        y: random(-dimen, dimen),
+    }));
+    
+    // places your beloved enemies
+    for(var i = 0; i < amt - 1; i++) {
+        
+        switch(game.name) {
+            
+            case 0:
+                players.push(new Enemy({
+                    x: random(-dimen, dimen),
+                    y: random(-dimen, dimen),
+                    name: "Bot " + (i + 1),
+                }));
+            break;
+            
+            case 1:
+                players.push(new Enemy({
+                    x: random(-dimen, dimen),
+                    y: random(-dimen, dimen),
+                    name: generateWord(),
+                }));
+            break;
+            
+            case 2:
+                cOcNum = ~~random(0, clashOfCode.length);
+                players.push(new Enemy({
+                    x: random(-dimen, dimen),
+                    y: random(-dimen, dimen),
+                    name: clashOfCode[cOcNum],
+                }));
+                clashOfCode.splice(cOcNum, 1);
+        }
+        
+    }
+    
+    // puts orbs
+    for(var i = 0; i < (dimen / 16); i++) {
+        orbs.push(new Orb({
+            x: random(-dimen, dimen),
+            y: random(-dimen, dimen)
+        }));
+    }
+    
+    // coins too
+    for(var i = 0; i < (dimen / 25); i++) {
+        coins.push(new Coin({
+            x: random(-dimen, dimen),
+            y: random(-dimen, dimen)
+        }));
+    }
+    
+    // and even powerups
+    for(var i = 0; i < (dimen / 150); i++) {
+        powerups.push(new Powerup({
+            x: random(-dimen, dimen),
+            y: random(-dimen, dimen)
+        }));
+    }
+}
+
+/** buttons **/
+// long list time :D
+var buttons = {
+    
+    play: new Button({
+        x: 225,
+        y: 250,
+        w: 150,
+        h: 150,
+        show: function() {
+            noStroke();
+            fill(colours[1]);
+            triangle (260, 280, 260, 380, 350, 330);
+        },
+        clicky: function() {
+            transitions.push(new transition());
+            ranWord = generateWord();
+            page = "setup";
+        },
+    }),
+    
+    how: new Button({
+        x: 130,
+        y: 425,
+        w: 100,
+        h: 100,
+        show: function() {
+            image(imgs.how, 180, 475);
+        },
+        clicky: function() {
+            transitions.push(new transition());
+            page = "how";
+        },
+    }),
+    
+    shop: new Button({
+        x: 250,
+        y: 425,
+        w: 100,
+        h: 100,
+        show: function() {
+            image(imgs.shop, 300, 475);
+        },
+        clicky: function() {
+            transitions.push(new transition());
+            ranWord = generateWord();
+            page = "shop";
+        },
+    }),
+    
+    awards: new Button({
+        x: 370,
+        y: 425,
+        w: 100,
+        h: 100,
+        show: function() {
+            imageMode(CENTER);
+            image(imgs.award, 420, 475);
+        },
+        clicky: function() {
+            transitions.push(new transition());
+            ranWord = generateWord();
+            page = "awards";
+        },
+    }),
+
+    rghSpec: new Button({
+        x: 572.5,
+        y: 220,
+        w: 22.5,
+        h: 22.5,
+        colour: color(0, 50),
+        show: function() {
+            image(imgs.arrow, 584.5, 230.5, 22.5, 22.5);
+        },
+        clicky: function() {
+            game.focus ++;
+            if(game.focus > players.length - 1) {
+                game.focus = 0;
+            }
+        },
+    }),
+    
+    playOn: new Button({
+        x: 175,
+        y: 300,
+        w: 250,
+        h: 75,
+        sw: 2.5,
+        colour: color(0, 50),
+        show: function() {
+            textSize(35);
+            outlineText("Spectate", 300, 337.5);
+        },
+        clicky: function() {
+            game.dead = false;
+        },
+    }),
+    
+    menu: new Button({
+        x: 175,
+        y: 400,
+        w: 250,
+        h: 75,
+        sw: 2.5,
+        colour: color(0, 50),
+        show: function() {
+            textSize(35);
+            outlineText("Main Menu", 300, 437.5);
+        },
+        clicky: function() {
+            page = "maine";
+            transitions.push(new transition());
+        },
+    }),
+    
+    mFromSpec: new Button({
+        x: 200,
+        y: 25,
+        w: 125,
+        h: 65,
+        sw: 2,
+        colour: color(0, 45),
+        show: function() {
+            textSize(25);
+            outlineText("Menu", 262.5, 57.5);
+        },
+        clicky: function() {
+            page = "maine";
+            transitions.push(new transition());
+        },
+    }),
+    
+    bck: new Button({
+        x: -5,
+        y: -5,
+        w: 100,
+        h: 100,
+        colour: color(255, 50),
+        show: function() {
+            imageMode(CORNER);
+            image(imgs.menuIc, -5, 5);
+        },
+        clicky: function() {
+            page = "maine";
+            transitions.push(new transition());
+        },
+    }),
+    
+    nBot: new Button({
+        x: 75,
+        y: 350,
+        w: 150,
+        h: 65,
+        show: function() {
+            
+            fill(255, 50);
+            if(game.name === 0) {
+                fill(0, 25);
+            }
+            strokeWeight(10);
+            stroke(colours[1]);
+            rect(75, 350, 150, 65);
+            
+            fill(colours[1]);
+            textSize(25);
+            text("Bot X", 150, 375);
+            
+            textSize(15);
+            text("Ex: Bot 37", 150, 395);
+        },
+        clicky: function() {
+            game.name = 0;
+        },
+    }),
+    
+    nRan: new Button({
+        x: 225,
+        y: 350,
+        w: 150,
+        h: 65,
+        show: function() {
+            
+            fill(255, 50);
+            if(game.name === 1) {
+                fill(0, 25);
+            }
+            strokeWeight(10);
+            stroke(colours[1]);
+            rect(225, 350, 150, 65);
+            
+            fill(colours[1]);
+            textSize(18);
+            text("Random Word", 300, 370);
+            
+            textSize(15);
+            text("Ex: " + ranWord, 300, 388);
+            
+            // warnings are important
+            textSize(9);
+            text("**may be inappropriate**", 300, 402);
+            
+        },
+        clicky: function() {
+            game.name = 1;
+        },
+    }),
+    
+    nCoC: new Button({
+        x: 375,
+        y: 350,
+        w: 150,
+        h: 65,
+        show: function() {
+            
+            fill(255, 50);
+            if(game.name === 2) {
+                fill(0, 25);
+            }
+            strokeWeight(10);
+            stroke(colours[1]);
+            rect(375, 350, 150, 65);
+            
+            fill(colours[1]);
+            textSize(19);
+            text("CoC Members", 450, 370);
+            
+            textSize(11);
+            textLeading(11);
+            text("All CoC participants & judges", 375, 360, 150, 65);
+            
+        },
+        clicky: function() {
+            game.name = 2;
+        },
+    }),
+    
+    begin: new Button({
+        x: 200,
+        y: 450,
+        w: 200,
+        h: 125,
+        show: function() {
+            fill(255, 50);
+            strokeWeight(12);
+            stroke(colours[1]);
+            rect(200, 450, 200, 125);
+            fill(colours[0]);
+            textSize(50);
+            text("Begin", 300, 512.5);
+        },
+        clicky: function() {
+            setup((floor(floor(sizSlider.selX - sizSlider.x) / 225 * 9000) + 1000), (floor(floor(playSlider.selX - playSlider.x) / 225 * 40) + 10));
+            page = "gm";
+            transitions.push(new transition());
+        },
+    }),
+    
+    shopLast: new Button({
+        x: 25,
+        y: 150,
+        w: 65,
+        h: 65,
+        show: function() {
+            fill(255, 50);
+            strokeWeight(3);
+            stroke(colours[1]);
+            rect(25, 150, 65, 65, 2);
+            imageMode(CENTER);
+            pushMatrix();
+            translate(59, 182.5);
+            scale(-1, 1);
+            image(imgs.arrow, 0, 0, 55, 55);
+            popMatrix();
+        },
+        clicky: function() {
+            shopPage --;
+            shopScroll = 0;
+            if(shopPage < 0) {
+                shopPage = 2;
+            }
+        },
+    }),
+    
+    shopNext: new Button({
+        x: 510,
+        y: 150,
+        w: 65,
+        h: 65,
+        show: function() {
+            fill(255, 50);
+            strokeWeight(3);
+            stroke(colours[1]);
+            rect(510, 150, 65, 65, 2);
+            imageMode(CENTER);
+            image(imgs.arrow, 544, 182.5, 55, 55);
+        },
+        clicky: function() {
+            shopPage ++;
+            shopScroll = 0;
+            if(shopPage > 2) {
+                shopPage = 0;
+            }
+        },
+    }),
+    
+};
+
+
+// }
+
+/** DRAW IT ALL **/
+// {
+
+function draw() {
+    
+    try {
+        
+        switch(page) {
+            
+            case "load":
+                load();
+                generalBackground();
+                textFont(c, 80);
+                textAlign(CENTER, CENTER);
+                outlineText("Loading", 300, 275);
+                textSize(55);
+                outlineText(curLoad + " / " + Object.keys(imgs).length, 300, 335);
+            break;
+            
+            // maine menu
+            case "maine":
+                generalBackground();
+                
+                textAlign(CENTER, CENTER);
+                textFont(c);
+                textSize(115);
+                outlineText("PIRATEZ", 300, 100);
+                
+                strokeWeight (20);
+                stroke (colours[1]);
+                line(100, 200, 500, 200);  
+                
+                imageMode(CENTER);
+                
+                buttons.play.draw();
+                buttons.how.draw();
+                buttons.shop.draw();
+                buttons.awards.draw();
+                
+                image(imgs.char1, 150, 330 + 10*sin(frameCount));
+                image(imgs.hat1, 150, 290 + 10*sin(frameCount));
+                image(imgs.char3, 450, 330 + 10*sin(frameCount*1.2));
+                image(imgs.hat2, 450, 290 + 10*sin(frameCount * 1.2));
+                image(imgs.boom, 415, 378 + 10*sin(frameCount*1.2));
+            break;
+            case "setup":
+                generalBackground();
+                
+                textAlign(CENTER, CENTER);
+                textFont(c);
+                textSize(72.5);
+                outlineText("SETUP GAME", 300, 145);
+                
+                textFont(m);
+                textSize(22);
+                fill(colours[0]);
+                text("Game size: " + (floor(floor(sizSlider.draw()) / 225 * 9000) + 1000), 160, 240);
+                text("Player count: " + (floor(floor(playSlider.draw()) / 225 * 40) + 10), 450, 240);
+                
+                textSize(35);
+                text("Select your opponents", 300, 310);
+                
+                textSize(15);
+                fill(colours[2]);
+                text("*warning: higher settings may be laggy", 300, 270);
+                
+                buttons.nBot.draw();
+                buttons.nRan.draw();
+                buttons.nCoC.draw();
+                
+                buttons.begin.draw();
+                
+                buttons.bck.draw();
+            break;
+            
+            case "how":
+                generalBackground();
+                
+                textAlign(CENTER, CENTER);
+                textFont(c, 100);
+                outlineText("HOW", 300, 145);
+                
+                textFont(m);
+                textSize(32);
+                text("Arrow keys to move.\nShift to shoot.\nCollect coins, xp, and powerups.\n\nBe the final pirate standing.", 300, 350);
+                
+                buttons.bck.draw();
+                
+            break;
+            
+            case "shop":
+                shopScroll = constrain(shopScroll, -shopItems[shopPage].length * 85 + 320, 0);
+
+                generalBackground();
+                textAlign(CENTER, CENTER);
+                textSize(110);
+                textFont(createFont("Custom Bold"));
+                pushMatrix();
+                    translate(0, shopScroll);
+                    
+                    outlineText("Shop", 300, 100);
+                    for(var i = 0; i < shopItems[shopPage].length; i++) {
+                        strokeWeight(6);
+                        stroke(255);
+                        if(shopItems[shopPage][i][3]) {
+                            stroke(colours[5]);
+                        }
+                        if(selShop[0] === i) {
+                            stroke(colours[3]);
+                        }
+                        
+                        fill(lerpColor(colours[0], colours[5], 0.5), 80);
+                        rect(120, i * 85 + 200, 260, 70, 10);
+                        
+                        textAlign(LEFT, CENTER);
+                        fill(colours[1]);
+                        textFont(c);
+                        textSize(fitText(shopItems[shopPage][i][1], 180, 25));
+                        outlineText(shopItems[shopPage][i][1], 130, i * 85 + 220);
+                        
+                        // display different things based on what page you're on
+                        switch(shopPage) {
+                            case 0:
+                                textFont(m);
+                                textSize(fitText(shopItems[shopPage][i][2], 247, 16));
+                                text(shopItems[shopPage][i][2], 130, i * 85 + 140, 240, 200);
+                            break;
+                            
+                            case 1:
+                                image([imgs.char1, imgs.char2, imgs.char3, imgs.char4, imgs.char5, imgs.char6][i], 335, i * 85 + 232, 60, 60);
+                            break;
+                            
+                            case 2:
+                                image([imgs.char1, imgs.char2, imgs.char3, imgs.char4, imgs.char5, imgs.char6][selShop[1]], 335, i * 85 + 240, 60, 60);
+                                if(i === 3) {
+                                    image(["", imgs.hat1, imgs.hat2, imgs.eyepatch][i], 335, i * 85 + 225, 67, 77);
+                                }
+                                else {
+                                    image(["", imgs.hat1, imgs.hat2, imgs.eyepatch][i], 335, i * 85 + 208, 75, 65);
+                                }
+                        }
+                        
+                        // display price
+                        if(shopItems[shopPage][i][0] !== 0) {
+                            image(imgs.coin, 425, i * 85 + 225, 32, 32);
+                            textFont(c, 25);
+                            text(shopItems[shopPage][i][0], 445, i * 85 + 225);
+                        }
+                        
+                        // if it is unpurchased
+                        if(!shopItems[shopPage][i][3]) {
+                            textAlign(CENTER, CENTER);
+                            noStroke();
+                            fill(colours[1], 100);
+                            textSize(32.5);
+                            pushMatrix();
+                                translate(250, i * 85 + 235);
+                                rotate(8);
+                                text("LOCKED", 0, 0);
+                            popMatrix();
+                        }
+                        
+                        strokeWeight(6);
+                        stroke(colours[1]);
+                        if(shopItems[shopPage][i][3]) {
+                            stroke(colours[5]);
+                        }
+                        if(selShop[shopPage] === i) {
+                            stroke(colours[3]);
+                        }
+                        
+                        noFill();
+                        
+                        // if your cursor is over it
+                        if(cursorCollide(120, i * 85 + 200 + shopScroll, 260, 70)) {
+                            
+                            fill(colours[1], 25);
+                            cursorT = 0;
+                            
+                            if(clicked) {
+                                if(!shopItems[shopPage][i][3] && coinAmt >= shopItems[shopPage][i][0]) {
+                                    shopItems[shopPage][i][3] = true;
+                                    coinAmt -= shopItems[shopPage][i][0];
+                                }
+                                
+                                if(shopItems[shopPage][i][3]) {
+                                    selShop[shopPage] = i;
+                                }
+                            }
+                            if (!shopItems[shopPage][i][3] && coinAmt < shopItems[shopPage][i][0]) {
+                                cursorT = 3;
+                            }
+                            
+                        }
+                        
+                        rect(120, i * 85 + 200, 260, 70, 10);
+                    }
+                popMatrix();
+                
+                // scrollling method 1
+                if(mouseIsPressed) {
+                    shopScroll += mouseY - pmouseY;
+                }
+                
+                // scrolling method 2
+                else {
+                    if(keys[UP]) {
+                        shopScroll += 7.5;
+                    }
+                    if(keys[DOWN]) {
+                        shopScroll -= 7.5;
+                    }
+                }
+                
+                buttons.bck.draw();
+                buttons.shopLast.draw();
+                buttons.shopNext.draw();
+            break;
+            
+            // achievements/awards page
+            case "awards":
+                generalBackground();
+                
+                textAlign(CENTER, CENTER);
+                textSize(85);
+                textFont(createFont("Custom Bold"));
+                outlineText("Awards", 300, 95);
+                
+                // display general award
+                for(var i = 0; i < 4; i++) {
+                    for(var j = 0; j < 4; j++) {
+                        fill(0, 30);
+                        strokeWeight(6);
+                        stroke(255, 150);
+                        rect(80 + i * 110, j * 110 + 150, 95, 95, 10);
+                        image(imgs.award, 127.5 + i * 110, j * 110 + 195, 95, 95);
+                        
+                        // shows lock, if not yet earned
+                        if(achList[j * 4 + i].amt < achList[j * 4 + i].toGet) {
+                            fill(0, 30);
+                            noStroke();
+                            rect(80 + i * 110, j * 110 + 150, 95, 95, 10);
+                            image(imgs.lock, 127.5 + i * 110, j * 110 + 195, 85, 85);
+                        }
+                    }
+                }
+                
+                // then if you hover over it
+                // yes, I KNOW this is more inefficient
+                // BUT in order to not layer other achievements over this popup box
+                // so you can actually read it
+                // it put it below
+                for(var i = 0; i < 4; i++) {
+                    for(var j = 0; j < 4; j++) {
+                        
+                        if(cursorCollide(80 + i * 110, j * 110 + 150, 95, 95)) {
+                            
+                            fill(255, 30);
+                            rect(80 + i * 110, j * 110 + 150, 95, 95, 10);
+                            
+                            fill(255, 220);
+                            rect(mouseX > 470 ? mouseX - 125 : mouseX, mouseY > 470 ? mouseY - 125 : mouseY, 125, 125, 1);
+                            
+                            textSize(fitText(achList[j * 4 + i].name, 123, 18));
+                            outlineText(achList[j * 4 + i].name, mouseX > 470 ? mouseX - 62.5 : mouseX + 62.5, mouseY > 470 ? mouseY - 110 : mouseY + 15);
+                            
+                            fill(0);
+                            textSize(15);
+                            text(achList[j * 4 + i].desc, mouseX > 470 ? mouseX - 125 : mouseX, mouseY > 470 ? mouseY - 125 : mouseY, 125, 125);
+                            
+                            // progress bar
+                            fill(67, 145, 149, 175);
+                            noStroke();
+                            rect(mouseX > 470 ? mouseX - 120 : mouseX + 5, mouseY > 470 ? mouseY - 20 : mouseY + 105, 115, 10, 5);
+                            fill(147, 225, 229, 200);
+                            rect(mouseX > 470 ? mouseX - 120 : mouseX + 5, mouseY > 470 ? mouseY - 20 : mouseY + 105, constrain(achList[j * 4 + i].amt / achList[j * 4 + i].toGet * 115, 0, 115), 10, 5);
+                            
+                            // % indicator
+                            textSize(14);
+                            outlineText(constrain(achList[j * 4 + i].amt, 0, achList[j * 4 + i].toGet) + " / " + achList[j * 4 + i].toGet + " - " + floor(constrain(achList[j * 4 + i].amt, 0, achList[j * 4 + i].toGet) / achList[j * 4 + i].toGet * 100) + "%", mouseX > 470 ? mouseX - 62.5 : mouseX + 62.5, mouseY > 470 ? mouseY - 20 : mouseY + 105);
+                        }
+                        
+                    }
+                }
+                
+                buttons.bck.draw();
+            break;
+            
+            case "gm":
+                
+                // powerup stuff
+                if(powerupSpin.started && players[game.focus].name === "you") {
+                    
+                    background(0, 0);
+                    textSize(19);
+                    fill(0);
+                    textAlign(LEFT, LEFT);
+                    for(var i = 0; i < powerupSpin.names.length; i++) {
+                        textFont(createFont("Custom Italics"));
+                        
+                        // if it is arrowed
+                        if(((i * 30) + powerupSpin.spin + 40) % (powerupSpin.names.length * 30) > 62.5 && ((i * 30) + powerupSpin.spin + 40) % (powerupSpin.names.length * 30) <= 92.5) {
+                            textFont(createFont("Custom Bold Italics"));
+                            
+                            // which one it lands on
+                            if(powerupSpin.spinVel === 0) {
+                                switch(powerupSpin.names[i]) {
+                                    case "Heal":
+                                        players[game.focus].health = players[game.focus].healthCap;
+                                        notifications.push("Healed to full.");
+                                    break;
+                                    
+                                    case "Level Up":
+                                        players[game.focus].level ++;
+                                        notifications.push("Leveled up!");
+                                    break;
+                                    
+                                    case "Nothing :D":
+                                        notifications.push("Congrats!!! You got nothing!");
+                                    break;
+                                    
+                                    case "25 XP":
+                                        players[game.focus].xp += 25;
+                                        notifications.push("Gained 25 xp");
+                                    break;
+                                    
+                                    case "10 XP":
+                                        players[game.focus].xp += 10;
+                                        notifications.push("Gained 10 xp");
+                                    break;
+                                    
+                                    case "10 coins":
+                                        coinAmt += 10;
+                                        notifications.push("Gained 10 coins!");
+                                    break;
+                                    
+                                    case "Spin again":
+                                        powerupSpin.spinVel = random(50, 75);
+                                        powerupSpin.started = true;
+                                        notifications.push("Spinning the wheel again");
+                                    break;
+                                    
+                                    // my favoritely named one
+                                    case "Bullet Blast":
+                                        for(var i = 0; i < 100; i++) {
+                                            bullets.push(new Bullet({
+                                                x: players[game.focus].x + sin(360 / 100 * i) * 50 + 50,
+                                                y: players[game.focus].y + cos(360 / 100 * i) * 50 + 50,
+                                                rot: 360 / 100 * i,
+                                                from: [players[game.focus].ranGen, players[game.focus].name]
+                                            }));
+                                        }
+                                        notifications.push("You shot lots of bullets.");
+                                    break;
+                                    
+                                }
+                                
+                                if(powerupSpin.names[i] !== "Spin again") {
+                                    powerupSpin.started = false;
+                                }
+                            }
+                        }
+                        
+                        // actually say
+                        text(powerupSpin.names[i], 127.5, ((i * 30) + powerupSpin.spin + 40) % (powerupSpin.names.length * 30));
+                    }
+                    textAlign(CENTER, CENTER);
+                    powerupSpin.spin += powerupSpin.spinVel;
+                    powerupSpin.spinVel *= 0.9825;
+                    
+                    noStroke();
+                    fill(0);
+                    triangle(110, 65, 110, 90, 120, 77.5);
+                    if(frameCount % 1.5 > 0) {
+                     powerupSpin.img = get(110, 0, 210, 155);
+                    }
+                    
+                    if(powerupSpin.spinVel < 0.5) {
+                        powerupSpin.spinVel = 0;
+                    }
+                    
+                }
+                
+                background(220);
+                if(game.focus >= players.length) {
+                    game.focus--;
+                }
+                
+                // the lines/grid on the background
+                noFill();
+                strokeWeight(2.5);
+                stroke(0, 15);
+                for(var i = -1; i < 7; i++) {
+                    for(var j = -1; j < 7; j++) {
+                        rect(-players[game.focus].x % 100 + (i * 100), -players[game.focus].y % 100 + (j * 100), 100, 100);
+                    }
+                }
+                
+                // game time
+                pushMatrix();
+                    translate(-players[game.focus].x + 300, -players[game.focus].y + 300);
+                    fill(0, 5);
+                    strokeWeight(5);
+                    stroke(200, 0, 0);
+                    rect(-game.dimensions, -game.dimensions, game.dimensions * 2, game.dimensions * 2);
+                    
+                    noStroke();
+                    
+                    // draw all bullets
+                    for(var i in bullets) {
+                        bullets[i].full();
+                        if(bullets[i].die) {
+                            bullets.splice(i, 1);
+                        }
+                    }
+                    
+                    // draw all players
+                    for(var i = 0; i < players.length; i++) {
+                        players[i].full();
+                        
+                        // if one of them dies D:
+                        if(players[i].die !== false) {
+                            
+                            for(var j = 0; j < players.length; j++) {
+                                if(players[i].die === players[j].ranGen) {
+                                    
+                                    notifications.push(computeKillMsg(players[j].name, players[i].name, players[j].msg));
+                                    
+                                    // advance achievements
+                                    if(players[j].name === "you") {
+                                        achievements.kill1.adv();
+                                        achievements.kill15.adv();
+                                        achievements.kill50.adv();
+                                        achievements.kill100.adv();
+                                        achievements.killGm2.adv();
+                                        achievements.killGm5.adv();
+                                    }
+                                    
+                                    players[j].kills ++;
+                                    players[j].xp += players[i].level * 2.5;
+                                    
+                                    if(game.topKilNam === players[i].name) {
+                                        notifications.push("The top killer has died!");
+                                        game.topKilDead = true;
+                                    }
+                                    
+                                    if(game.topLevNam === players[i].name) {
+                                        notifications.push("The top level has died!");
+                                        game.topLevDead = true;
+                                    }
+                                    
+                                }
+                                
+                            }
+                            players.splice(i, 1);
+                            
+                        }
+                        
+                    }
+                    
+                    // draw orbs
+                    for(var i = 0; i < orbs.length; i++) {
+                        orbs[i].draw();
+                        if(orbs[i].die) {
+                            orbs.splice(i, 1);
+                        }
+                    }
+                    
+                    // draw coins
+                    for(var i = 0; i < coins.length; i++) {
+                        coins[i].draw();
+                        if(coins[i].die) {
+                            coins.splice(i, 1);
+                        }
+                    }
+                    
+                    // draw powerups
+                    for(var i = 0; i < powerups.length; i++) {
+                        powerups[i].draw();
+                        if(powerups[i].die) {
+                            powerups.splice(i, 1);
+                        }
+                    }
+                popMatrix();
+                // that's the whole game
+                
+                // minimap
+                fill(50, 50);
+                rect(0, 0, 155, 155);
+                for(var i = 0; i < players.length; i++) {
+                    fill(220, 20, 20);
+                    if(i === game.focus) {
+                        fill(10, 200, 10);
+                    }
+                    ellipse((players[i].x + game.dimensions) / game.dimensions / 2 * 150 + 2.5, (players[i].y + game.dimensions) / game.dimensions / 2 * 150 + 2.5, 5, 5);
+                }
+                for(var i = 0; i < powerups.length; i++) {
+                    fill(218, 129, 230);
+                    ellipse((powerups[i].x + game.dimensions) / game.dimensions / 2 * 150 + 1.75, (powerups[i].y + game.dimensions) / game.dimensions / 2 * 150 + 1.75, 3.5, 3.5);
+                }
+                
+                // display powerup
+                fill(50, 50);
+                rect(155, 0, 220, 155);
+                if(powerupSpin.started) {
+                    image(powerupSpin.img, 155 + 110, 155 / 2, 210, 155);
+                }
+                
+                // if you are dead
+                fill(50, 50);
+                textAlign(CENTER, CENTER);
+                if(players[game.focus].name !== "you") {
+                    rect(375, 0, 225, 250);
+                    textSize(fitText("SPECTATING " + players[game.focus].name.toUpperCase(), 200, 17));
+                    fill(20);
+                    text("SPECTATING " + players[game.focus].name.toUpperCase(), 480, 232.5);
+                    buttons.rghSpec.draw();
+                    buttons.mFromSpec.draw();
+                }
+                
+                // display critical if health is low
+                else {
+                    rect(375, 0, 225, 225);
+                    if(players[game.focus].health < players[game.focus].healthCap / 2.75) {
+                        image(imgs.critical, 300, 300, 600, 600);
+                    }
+                }
+                
+                // display statistics
+                textSize(15);
+                fill(20);
+                text("KILLS", 412.5, 135);
+                text("REMAINING", 487.5, 135);
+                text("TIME", 562.5, 135);
+                
+                if(game.topKilDead) {
+                    fill(colours[2]);
+                }
+                else {
+                    fill(colours[0]);
+                }
+                textSize(fitText("TOP KILLER: " + game.topKilNam.toUpperCase() + " (" + game.topKilAmt + " kills)", 225, 16));
+                text("TOP KILLER: " + game.topKilNam.toUpperCase() + " (" + game.topKilAmt + " kills)", 487.5, 190);
+                
+                if(game.topLevDead) {
+                    fill(colours[2]);
+                }
+                else {
+                    fill(colours[0]);
+                }
+                textSize(fitText("TOP LEVEL: " + game.topLevNam.toUpperCase() + " (level " + game.topLevAmt + ")", 225, 16));
+                text("TOP LEVEL: " + game.topLevNam.toUpperCase() + " (level " + game.topLevAmt + ")", 487.5, 210);
+                
+                fill(colours[0]);
+                textSize(30);
+                text(players[game.focus].kills, 412.5, 165);
+                
+                text((players.length), 487.5, 165);
+                
+                textSize(25);
+                text(convert(game.elapsed), 562.5, 165);
+                
+                textAlign(LEFT, CENTER);
+                textSize(12);
+                fill(colours[2]);
+                textFont(createFont("SP Custom Bold"));
+                
+                // quick fix
+                if(players[game.focus].name !== "you" && game.focus > players.length - 1) {
+                    game.focus = 0;
+                }
+                
+                game.elapsed ++;
+                
+                // notifications
+                if(game.elapsed % 3600 === 0 && game.elapsed > 1 && game.dimensions > 750) {
+                    notifications.push("The border will begin to close faster...");
+                    game.movingIn += 0.25;
+                }
+                
+                // sudden death messages
+                switch(game.elapsed) {
+                    case 10800:
+                        notifications.push("Sudden Death begins in 2 minutes");
+                    break;
+                    case 14400:
+                        notifications.push("Sudden Death begins in 1 minute");
+                    break;
+                    case 16200:
+                        notifications.push("Sudden Death begins in 30 seconds");
+                    break;
+                    case 17400:
+                        notifications.push("Sudden Death begins in 10 seconds");
+                    break;
+                    case 17700:
+                        notifications.push("Sudden Death begins in 5 seconds");
+                    break;
+                    
+                    // begin sudden death
+                    case 18000:
+                        notifications.push("Sudden Death has begun!");
+                        if(players[game.focus].name === "you") {
+                            achievements.long.adv();
+                        }
+                        for(var i = 0; i < players.length; i++) {
+                            players[i].healthCap = 50;
+                        }
+                    break;
+                    
+                }
+                
+                // stops it from getting too small
+                if(game.dimensions < 745) {
+                    game.movingIn = 0;
+                }
+                
+                game.dimensions -= game.movingIn;
+                
+                // display notifications
+                if(notifications.length > 7) {
+                    notifications.splice(0, 1);
+                }
+                for(var i = notifications.length - 1; i >= 0; i --) {
+                    textSize(fitText(notifications[i], 225, 14));
+                    text(notifications[i], 375, i * 17 + 17);
+                }
+                
+                // replace them if there aren't enough
+                if(orbs.length < (game.dimensions / 17)) {
+                    orbs.push(new Orb({
+                        x: random(-game.dimensions, game.dimensions),
+                        y: random(-game.dimensions, game.dimensions),
+                    }));
+                }
+                if(coins.length < (game.dimensions / 45)) {
+                    coins.push(new Coin({
+                        x: random(-game.dimensions, game.dimensions),
+                        y: random(-game.dimensions, game.dimensions),
+                    }));
+                }
+                
+                // tiny coins
+                for(var i = 0; i < tinyCoins.length; i++) {
+                    tinyCoins[i][0] += (35 - tinyCoins[i][0]) / 15;
+                    tinyCoins[i][1] += (565 - tinyCoins[i][1]) / 15;
+                    tinyCoins[i][2] += (49 - tinyCoins[i][2]) / 15;
+                    
+                    image(imgs.coin, tinyCoins[i][0], tinyCoins[i][1], tinyCoins[i][2], tinyCoins[i][2]);
+                    
+                    // gain coin
+                    if(tinyCoins[i][0] < 40 && tinyCoins[i][1] > 560) {
+                        tinyCoins.splice(i, 1);
+                        coinAmt ++;
+                    }
+                }
+                
+                // finalize game
+                if(players.length <= 1) {
+                    page = "end";
+                    filter(BLUR, 2);
+                    game.bckImg = get();
+                }
+                
+                // if you die
+                if(game.dead) {
+                    
+                    noStroke();
+                    fill(0, 45);
+                    rect(0, 0, 600, 600);
+                    
+                    textAlign(CENTER, CENTER);
+                    textSize(125);
+                    outlineText("DEAD", 300, 125);
+                    
+                    textSize(27);
+                    outlineText("You were annihilated by " + game.cause + "\nYou finished in " + game.place + addEnding(game.place) + " place", 300, 225);
+                    
+                    buttons.playOn.draw();
+                    buttons.menu.draw();
+                }
+                
+            break;
+            
+            // if the game finishes
+            case "end":
+                image(game.bckImg, 300, 300, 600, 600);
+                noStroke();
+                fill(0, 75);
+                rect(0, 0, 600, 600);
+                
+                textSize(100);
+                textAlign(CENTER, CENTER);
+                
+                // if you won
+                if(players[0].name === "you") {
+                    outlineText("Victory!", 300, 250);
+                    textSize(45);
+                    outlineText(players[game.focus].kills + " kills", 300, 330);
+                    achievements.win.adv();
+                }
+                
+                // if you didn't won
+                else {
+                    outlineText("Game over!", 300, 250);
+                    textSize(40);
+                    outlineText(players[0].name + " was victorious", 300, 350);
+                }
+                
+                textSize(25);
+                text("click to return to the menu", 300, 550);
+                
+                if(clicked) {
+                    transitions.push(new transition());
+                    page = "maine";
+                }
+            break;
+        }
+    }
+    catch(e) {
+        debug("Program error message: " + e);
+        // _clearLogs();
+        // println("Tell SP what you were doing when this occurred: " + e);
+    }
+    
+    // display cursor
+    switch(cursorT) {
+        case 0:
+            cursor(HAND);
+        break;
+        
+        case 1:
+            cursor('grab');
+        break;
+        
+        case 2:
+            cursor('grabbing');
+        break;
+        
+        case 3:
+            cursor('no-drop');
+        break;
+        
+        default:
+            cursor(ARROW);
+    }
+    cursorT = -1;
+    clicked = false;
+    
+    // display coin amount
+    imageMode(CENTER);
+    if(page !== "load") {
+        image(imgs.coin, 40, 560, 55, 55);
+        textSize(45);
+        textAlign(LEFT, CENTER);
+        outlineText(coinAmt, 52, 560);
+    }
+    
+    // display achievements when you earn one
+    for(var i = 0; i < achList.length; i++) {
+        achList[i].draw();
+    }
+    
+    // display transitions
+    for(var i = 0; i < transitions.length; i++) {
+        transitions[i].draw();
+    }
+
+
+// that's it! hope you enjoyed :)
+}
+
+// }
+
+/** USER INTERACTION **/
+// {
+
+function mouseClicked() {
+    clicked = true;
+}
+
+function mouseScrolled() {
+    // prevents pan & zoom
+    if(round(mouseScroll) !== mouseScroll && page === "shop") {
+        shopScroll += mouseScroll * 85;
+    }
+}
+
+// credit to squishy
+// fixes scrolling
+(function(w) {return this[w];})("window").Processing.instances[0].externals.canvas.onwheel = function(e) {e.preventDefault();};
+
+function keyPressed() {
+    keys[keyCode] = true;
+}
+
+function keyReleased() {
+    keys[keyCode] = false;
+}
+
+// }
+
+
+// barely over 3000 lines
