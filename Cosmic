@@ -1,0 +1,2494 @@
+/**
+ *  ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄ ▄▄▄▄▄▄▄
+ * █       █       █       █  █▄█  █   █       █
+ * █       █   ▄   █  ▄▄▄▄▄█       █   █       █
+ * █     ▄▄█  █ █  █ █▄▄▄▄▄█       █   █     ▄▄█
+ * █    █  █  █▄█  █▄▄▄▄▄  █       █   █    █
+ * █    █▄▄█       █▄▄▄▄▄█ █ ██▄██ █   █    █▄▄
+ * █▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄█   █▄█▄▄▄█▄▄▄▄▄▄▄█
+ * 
+ * SP @Prodigy6 - 10/31/24
+ * 
+ * A decently fun tower defense game!
+ * 
+ * It has a lot of similarities to Geometry Defense, I will agree, but no code is shared and they are indisputably different games.
+ * 
+ * As always, constructive criticism is appreciated
+ * And also, essays from Timothy are very much appreciated but I understand if he can't do them due to his massive college workload
+ * 
+ * Updates made:
+ *  -Put price of Stream tower from 50 to 75 (too OP)
+ *  -Made upgrade price from 70% to 75% (slight nerf)
+ *  -Added section of tutorial for how to start the wave because multiple people have complained that they can't find the button
+ *  -Changed starting gems to from 100 to 75
+ * More updates:
+ *  -Significantly nerfed upgrades bc frankly they are too OP (1.5x > 1.25x)
+ *  -Made multiple upgrades more expensive (1.75 > 1.8)
+ *  -Increased health of all enemies by a small margin
+ * 
+ * VOTE LOG {
+ *  Day 1: +3, 4 votes -- I released at 11:30 pm so surprised to even get this much
+ *  Day 2: +38, 42 votes -- 2nd on hl, locked at just 3pm again
+ * }
+ * 
+ * wow okay...
+ * 
+ * shocked to get this one done on time.
+ * (for the future readers of this statement, this was made for khantober, and khantober ends in <30 minutes. so glad to get this done now)
+ * i just kinda started it late. basically this game was made in 4.5 days 😱
+ * so i guess thats a good thing?
+ * 
+ * idk what else to say i want to go to sleep now
+ * 
+ * @CREDITS {
+ *  Per usual, credit to:
+ *  KWC @mkaelin368
+ *  daniel @dkareh
+ *  OOPS! Studio @Cristianop1
+ *  All other code was manufactured by me
+ * }
+ * 
+ * @TOWER_STATS {
+ * 
+ * Laser:
+ *  Range: 160
+ *  Damage: 9
+ *  Reload: 10
+ *  Price: 25
+ * 
+ * Stream:
+ *  Range: 220
+ *  Damage: 7
+ *  Reload: 3
+ *  Price: 75
+ * 
+ * Spark:
+ *  Range: 145
+ *  Damage: 75
+ *  Reload: 18
+ *  Price: 150
+ * 
+ * Beam:
+ *  Range: 265
+ *  Damage: 55
+ *  Reload: 14
+ *  Price: 175
+ * 
+ * Beacon:
+ *  Range: 425
+ *  Damage: 40
+ *  Reload: 4
+ *  Price: 300
+ * 
+ * Lodestar:
+ *  Range: 500
+ *  Damage: 1100
+ *  Reload: 180
+ *  Price: 450
+ * 
+ * Conduit:
+ *  Range: 425
+ *  Damage: 400
+ *  Reload: 10
+ *  Price: 1000
+ * 
+ * Generator:
+ *  Range: 150
+ *  Damage: 10
+ *  Reload: 45
+ *  Price: 150
+ *  + 1 gem per hit
+ * 
+ * }
+ * 
+ * @WHAT_TOWERS_SHOULD_I_BUY {
+ * 
+ * Per usual, I've crunched the numbers, using a formula of range * damage / reload. I've normalized the numbers in a scale from 0-100, so you may examine them:
+ *  Conduit: 100
+ *  Beacon: 25
+ *  Lodestar: 18
+ *  Beam: 6.1
+ *  Spark: 3.56
+ *  Stream: 3
+ *  Laser: 0.85
+ *  Generator: 0.19
+ *  
+ * As you can see, the conduit tower is by far the best.
+ * Of course, this does not take into account price, so if we adjust for that then it is a bit different:
+ *  Conduit: 100
+ *  Beacon: 83.3
+ *  Stream: 40.3
+ *  Lodestar: 39.9
+ *  Beam: 34.9
+ *  Laser: 33.9
+ *  Spark: 23.69
+ *  Generator: 1.31
+ * 
+ * So of course, on its own, the generator tower is terrible. But with its gem-giving abilities, it will more than pay itself off.
+ * 
+ * TLDR tower priority list:
+ *  1. Conduit
+ *  2. Beacon
+ *  3. Generator
+ *  4. Lodestar
+ *  5. Beam
+ *  6. Stream
+ *  7. Spark
+ *  8. Laser
+ * 
+ * }
+ * 
+ **/
+
+
+// uncomment this for a "fast-forward"
+// it will depend on the strength of your computer though
+// also IMPORTANT: you must restart the game due to some weird bug with the .new fix. so don't do it in the middle of your game.
+// frameRate(250);
+
+// {
+
+size(600, 600, P2D);
+
+
+// @mkaelin368
+Object.constructor.prototype.new = (function() {
+    var obj = Object.create(this.prototype);
+    this.apply(obj, arguments);
+    return obj;
+});
+
+// @dkareh
+(function() {
+    return this;
+})().LoopProtector.prototype.leave = function() {};
+
+var enemies = [];
+
+var dead = false;
+var deadTimer = 480;
+
+function Particle(x, y, col, size, xVel, yVel, trans, transVel, sizeVel) {
+    this.x = x;
+    this.y = y;
+    this.xVel = xVel;
+    this.yVel = yVel;
+    this.col = col;
+    this.size = size;
+    this.sizeVel = sizeVel;
+    this.shape = 0;
+    this.trans = trans;
+    this.transVel = transVel;
+    this.rot = 0;
+    this.rotVel = random(-15, 15);
+    this.die = false;
+}
+Particle.prototype.draw = function() {
+
+    // do stuff idk im tired
+    noStroke();
+    fill(red(this.col), green(this.col), blue(this.col), this.trans);
+    rectMode(CENTER);
+    pushMatrix();
+    translate(this.x, this.y);
+    rotate(this.rot);
+    rect(0, 0, this.size, this.size);
+    popMatrix();
+    rectMode(CORNER);
+    this.x += this.xVel;
+    this.y += this.yVel;
+    this.trans += this.transVel;
+    this.xVel *= 0.98;
+    this.yVel *= 0.98;
+    this.sizeVel *= 0.99;
+    this.size += this.sizeVel;
+    this.rot += this.rotVel;
+    this.rotVel *= 0.99;
+    if(this.size < 0 || this.x < 0 || this.x > 600 || this.y < 0 || this.y > 600 || this.trans < 0) {
+        this.die = true;
+    }
+};
+
+// nice arrays
+var particles = [];
+
+var fade = 0;
+var fadeVel = 0;
+
+var colorsList = [
+    ["g", color(150)],
+    ["G", color(180)],
+    ["r", color(200)],
+    ["R", color(175)],
+    ["q", color(82, 184, 235)],
+    ["Q", color(112, 214, 255)],
+    ["w", color(132, 234, 255)],
+    ["W", color(107, 209, 255)],
+    ["e", color(224, 159, 54)],
+    ["E", color(244, 179, 74)],
+    ["t", color(255, 199, 94)],
+    ["T", color(239, 174, 69)],
+    ["y", color(173, 132, 255)],
+    ["Y", color(203, 162, 255)],
+    ["u", color(223, 182, 255)],
+    ["U", color(198, 157, 255)],
+    ["i", color(255, 230, 51)],
+    ["I", color(255, 255, 81)],
+    ["o", color(255, 255, 101)],
+    ["O", color(255, 250, 76)],
+    ["p", color(60, 60, 184)],
+    ["P", color(90, 90, 214)],
+    ["f", color(75, 75, 199)],
+    ["F", color(130, 130, 255)],
+    ["a", color(110, 110, 234)],
+    ["A", color(85, 85, 209)],
+    ["s", color(0, 136, 204)],
+    ["S", color(30, 166, 234)],
+    ["d", color(45, 181, 249)],
+    ["D", color(25, 161, 229)],
+    ["j", color(194, 74, 74)],
+    ["J", color(224, 104, 104)],
+    ["h", color(244, 124, 124)],
+    ["H", color(219, 99, 99)],
+    ["l", color(214, 94, 94)],
+    ["L", color(102, 204, 255)],
+    ["z", color(61, 197, 56)],
+    ["Z", color(91, 227, 86)],
+    ["x", color(124, 230, 128)],
+    ["X", color(61 + 15, 197 + 15, 71)],
+    ["c", color(58, 193, 255)],
+    ["C", color(200, 200)],
+    ["v", color(255, 50)],
+    ["V", color(161)],
+    ["n", color(255, 166, 0)],
+    ["N", color(140)],
+    ["b", color(0)],
+    ["B", color(60)],
+];
+
+var pageToGoTo = "";
+
+var pixelList = {
+    enemy0: [
+        "     jjjjjj      ",
+        "   jjJJJJJJjj",
+        "  jJJllllJJJJj",
+        " jJJlllllllJJJj",
+        " jJJllllHHHJJJj",
+        "jJJJHllHJJJJJJJj",
+        "jJJlJHHJJJllllJj",
+        "jJlllJJJlllllJJj",
+        "jJllHJlllllllJJj",
+        "jJHHJJHHllllllJj",
+        "jJJlllJJHlllHHJj",
+        " jJllllJJHlHJJj",
+        " jJHllllJJHJJJj",
+        "  jJHHlllJJJJj",
+        "   jjJHHHJJjj",
+        "     jjjjjj ",
+    ],
+    enemy1: [
+        "     qqqqqq      ",
+        "   qqQQQQQQqq",
+        "  qQQLLLLQQQQq",
+        " qQQLLLLLLLQQQq",
+        " qQQLLLLWWWQQQq",
+        "qQQQWLLWQQQQQQQq",
+        "qQQLQWWQQQLLLLQq",
+        "qQLLLQQQLLLLLQQq",
+        "qQLLWQLLLLLLLQQq",
+        "qQWWQQWWLLLLLLQq",
+        "qQQLLLQQWLLLWWQq",
+        " qQLLLLQQWLWQQq",
+        " qQWLLLLQQWQQQq",
+        "  qQWWLLLQQQQq",
+        "   qqQWWWQQqq",
+        "     qqqqqq ",
+    ],
+    enemy2: [
+        "P    P    P f  ",
+        " PP  P     f    P",
+        "   a  fffff    P ",
+        "    ffPaaaPPP P  ",
+        "P  fPPPPaaaPPP   ",
+        " P fPPPPPPPPPP PP",
+        "  fPPPPPPaPPPPP  ",
+        "  fPPPPaaaaPPPPP  ",
+        "  PPPPaaaaaaPPP",
+        "PPPPPaaaaaaaaPP  ",
+        "  PPPPPaaaaaPPP  ",
+        " P PPPPPPaaPPP P ",
+        "P  PPPPPPPaPPP  P",
+        "    PPPPPPPPP    ",
+        "   P  aaaPP  P   ",
+        "  P  a     P      ",
+        "   Pa    PP P    ",
+    ],
+    enemy3: [
+        "Z    Z    Z X  ",
+        " ZZ  Z     X    Z",
+        "   x  XXXXX    Z ",
+        "    XXZxxxZZZ Z  ",
+        "Z  XZZZZxxxZZZ   ",
+        " Z XZZZZZZZZZZ ZZ",
+        "  XZZZZZZxZZZZZ  ",
+        "  XZZZZxxxxZZZZZ  ",
+        "  ZZZZxxxxxxZZZ",
+        "ZZZZZxxxxxxxxZZ  ",
+        "  ZZZZZxxxxxZZZ  ",
+        " Z ZZZZZZxxZZZ Z ",
+        "Z  ZZZZZZZxZZZ  Z",
+        "    ZZZZZZZZZ    ",
+        "   Z  xxxZZ  Z   ",
+        "  Z  x     Z      ",
+        "   Zx    ZZ Z    ",
+    ],
+    //e > t
+    enemy4: [
+        "     eeeeee      ",
+        "   ttttttteee",
+        "  eeeeeeetttee",
+        " eettttteeettee",
+        " etteeettteette",
+        "eeteeeeeetteetee",
+        "ettetttteettette",
+        "eteeteetteeteete",
+        "eteeteeeteeteete",
+        "ettetteeeettette",
+        "eeteetteetteetee",
+        " etteetttteette",
+        " eetteeeeeettee",
+        "  eettteetttee",
+        "   eeetttteee",
+        "     eeeeee ",
+    ],
+
+    enemy5: [
+        "     yyyyyy      ",
+        "   uuuuuuuyyy",
+        "  yyyyyyyuuuyy",
+        " yyuuuuuyyyuuyy",
+        " yuuyyyuuuyyuuy",
+        "yyuyyyyyyuuyyuyy",
+        "yuuyuuuuyyuuyuuy",
+        "yuyyuyyuuyyuyyuy",
+        "yuyyuyyyuyyuyyuy",
+        "yuuyuuyyyyuuyuuy",
+        "yyuyyuuyyuuyyuyy",
+        " yuuyyuuuuyyuuy",
+        " yyuuyyyyyyuuyy",
+        "  yyuuuyyuuuyy",
+        "   yyyuuuuyyy",
+        "     yyyyyy ",
+    ],
+
+    enemy6: [
+        "    sssssssss",
+        "   sSSSSSSSSSs",
+        "   sSSDDDDDSSs",
+        "  sSSDDDDDDDSSs",
+        "  sSSDDdddDDSSs",
+        " sSSDDdddddDDSSs",
+        " sSSDDddcddDDSSs",
+        "sSSDDddcccddDDSSs",
+        "sSSDDddcccddDDSSs",
+        " sSSDDddcddDDSSs",
+        " sSSDDdddddDDSSs",
+        "  sSSDDdddDDSSs",
+        "  sSSDDDDDDDSSs",
+        "   sSSDDDDDDSs",
+        "   sSSSSSSSSSs",
+        "    sssssssss     ",
+    ],
+    enemy7: [
+        "        i",
+        "       iIi",
+        "       iIi",
+        "      iIIIi",
+        "      iIIIi",
+        "iiiiiiiIooiiiiiii",
+        " iIIIIoooooIIIIi",
+        "  iIIIIIoooIIIi",
+        "   iOOIIIIIIIi",
+        "    iOOIIIIIi",
+        "    iOOOOOOIi",
+        "    iOOiiiOOi",
+        "    iOi   iOi",
+        "   iOi     iOi",
+        "   ii       ii",
+        "   i         i",
+    ],
+
+    // y > u
+    gem: [
+        "    ffAAAPPP",
+        "   ffAAPPPPPP",
+        "   ffAPPPaaaPP",
+        "  fffAPPaaFaaP",
+        "  fffAPPaFFFaPP",
+        "  fffAPPaaFaaaP",
+        "  fffAPPPaaaaPP",
+        "  fffAAPPPPPPPP",
+        "  fffffAAAPPPPA",
+        "   ffffffAAAAAA",
+        "   pppfffffffff",
+        "   ppppfffffff",
+        "    ppppppppp",
+        "     ppppppp",
+    ],
+    gen: [
+        "     gggggg      ",
+        "   ggGGGGGGgg",
+        "  gGGGGGGrrrGg",
+        " gGGGGRRRRGGrGg",
+        " gGGGRRRRRRGrGg",
+        "gGGGRRRRRRRRrGGg",
+        "gGGRRRggggRRRGGg",
+        "gGGRRRggggRRRGGg",
+        "gGGRRRggggRRRGGg",
+        "gGGRRRggggRRRGGg",
+        "gGGGRRRRRRRRGGGg",
+        " gGGGRRRRRRGGGg",
+        " gGGGGRRRRGGGGg",
+        "  gGGGGGGGGGGg",
+        "   ggGGGGGGgg",
+        "     gggggg ",
+    ],
+    laser: [
+        "     jjjjjj      ",
+        "   jjJJJJJJjj",
+        "  jJJJJJJhhhJj",
+        " jJJJJHHHHJJhJj",
+        " jJJJHHHHHHJhJj",
+        "jJJJHHHHHHHHhJJj",
+        "jJJHHHjjjjHHHJJj",
+        "jJJHHHjjjjHHHJJj",
+        "jJJHHHjjjjHHHJJj",
+        "jJJHHHjjjjHHHJJj",
+        "jJJJHHHHHHHHJJJj",
+        " jJJJHHHHHHJJJj",
+        " jJJJJHHHHJJJJj",
+        "  jJJJJJJJJJJj",
+        "   jjJJJJJJjj",
+        "     jjjjjj ",
+    ],
+    stream: [
+        "     qqqqqq      ",
+        "   qqQQQQQQqq",
+        "  qQQQQQQwwwQq",
+        " qQQQQWWWWQQwQq",
+        " qQQQWWWWWWQwQq",
+        "qQQQWWWWWWWWwQQq",
+        "qQQWWWqqqqWWWQQq",
+        "qQQWWWqqqqWWWQQq",
+        "qQQWWWqqqqWWWQQq",
+        "qQQWWWqqqqWWWQQq",
+        "qQQQWWWWWWWWQQQq",
+        " qQQQWWWWWWQQQq",
+        " qQQQQWWWWQQQQq",
+        "  qQQQQQQQQQQq",
+        "   qqQQQQQQqq",
+        "     qqqqqq ",
+    ],
+    spark: [
+        "     eeeeee      ",
+        "   eeEEEEEEee",
+        "  eEEEEEEtttEe",
+        " eEEEETTTTEEtEe",
+        " eEEETTTTTTEtEe",
+        "eEEETTTTTTTTtEEe",
+        "eEETTTeeeeTTTEEe",
+        "eEETTTeeeeTTTEEe",
+        "eEETTTeeeeTTTEEe",
+        "eEETTTeeeeTTTEEe",
+        "eEEETTTTTTTTEEEe",
+        " eEEETTTTTTEEEe",
+        " eEEEETTTTEEEEe",
+        "  eEEEEEEEEEEe",
+        "   eeEEEEEEee",
+        "     eeeeee ",
+    ],
+    /*
+        "    ggggggggg    ",
+        "  ggGGGGGGGGGg",
+        " gGGGGGGrrrrGGg",
+        " gGGGGRRRRGGrGg",
+        "gGGGRRRRRRRRrGGg",
+        "gGGGRRRRRRRRrGGg",
+        "gGGRRRggggRRRGGg",
+        "gGGRRRggggRRRGGg",
+        "gGGRRRggggRRRGGg",
+        "gGGRRRggggRRRGGg",
+        "gGGGRRRRRRRRGGGg",
+        "gGGGRRRRRRRRGGGg",
+        " gGGGGRRRRGGGGg",
+        " gGGGGGGGGGGGGg",
+        "  ggGGGGGGGGgg",
+        "    gggggggg    ",
+    */
+    beam: [
+        "    yyyyyyyyy    ",
+        "  yyYYYYYYYYYy",
+        " yYYYYYYuuuuYYy",
+        " yYYYYUUUUYYuYy",
+        "yYYYUUUUUUUUuYYy",
+        "yYYYUUUUUUUUuYYy",
+        "yYYUUUyyyyUUUYYy",
+        "yYYUUUyyyyUUUYYy",
+        "yYYUUUyyyyUUUYYy",
+        "yYYUUUyyyyUUUYYy",
+        "yYYYUUUUUUUUYYYy",
+        "yYYYUUUUUUUUYYYy",
+        " yYYYYUUUUYYYYy",
+        " yYYYYYYYYYYYYy",
+        "  yyYYYYYYYYyy",
+        "    yyyyyyyy    ",
+    ],
+    beacon: [
+        "    iiiiiiiii    ",
+        "  iiIIIIIIIIIi",
+        " iIIIIIIooooIIi",
+        " iIIIIOOOOIIoIi",
+        "iIIIOOOOOOOOoIIi",
+        "iIIIOOOOOOOOoIIi",
+        "iIIOOOiiiiOOOIIi",
+        "iIIOOOiiiiOOOIIi",
+        "iIIOOOiiiiOOOIIi",
+        "iIIOOOiiiiOOOIIi",
+        "iIIIOOOOOOOOIIIi",
+        "iIIIOOOOOOOOIIIi",
+        " iIIIIOOOOIIIIi",
+        " iIIIIIIIIIIIIi",
+        "  iiIIIIIIIIii",
+        "    iiiiiiii    ",
+    ],
+    /*
+    "    ggggggggg",
+        "   gGGGGGGGGGg",
+        "   gGGGGrrrrGGg",
+        "  gGGGGRRRGGrGg",
+        "  gGGGRRRRRGrGg",
+        " gGGGRRRRRRRGGGg",
+        " gGGRRRgggRRRGGg",
+        "gGGGRRRgggRRRGGGg",
+        "gGGGRRRgggRRRGGGg",
+        " gGGRRRgggRRRGGg",
+        " gGGGRRRRRRRGGGg",
+        "  gGGGRRRRRGGGg",
+        "  gGGGGRRRGGGGg",
+        "   gGGGGGGGGGg",
+        "   gGGGGGGGGGg",
+        "    ggggggggg     ",
+    */
+    lodestar: [
+        "    ppppppppp",
+        "   pPPPPPPPPPp",
+        "   pPPPPaaaaPp",
+        "  pPPPPAAAPPaPp",
+        "  pPPPAAAAAPaPp",
+        " pPPPAAAAAAAPPPp",
+        " pPPAAApppAAAPPp",
+        "pPPPAAApppAAAPPPp",
+        "pPPPAAApppAAAPPPp",
+        " pPPAAApppAAAPPp",
+        " pPPPAAAAAAAPPPp",
+        "  pPPPAAAAAPPPp",
+        "  pPPPPAAAPPPPp",
+        "   pPPPPPPPPPp",
+        "   pPPPPPPPPPp",
+        "    ppppppppp     ",
+    ],
+    conduit: [
+        "    sssssssss",
+        "   sSSSSSSSSSs",
+        "   sSSSSddddSs",
+        "  sSSSSDDDSSdSs",
+        "  sSSSDDDDDSdSs",
+        " sSSSDDDDDDDSSSs",
+        " sSSDDDsssDDDSSs",
+        "sSSSDDDsssDDDSSSs",
+        "sSSSDDDsssDDDSSSs",
+        " sSSDDDsssDDDSSs",
+        " sSSSDDDDDDDSSSs",
+        "  sSSSDDDDDSSSs",
+        "  sSSSSDDDSSSSs",
+        "   sSSSSSSSSSs",
+        "   sSSSSSSSSSs",
+        "    sssssssss     ",
+    ],
+
+    boomPart: [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "              bbbb",
+        "         bbbbbbbBBb",
+        "       bbbbbbbbbbBb",
+        "       bbbbbbbbbbbb",
+        "         bbbbbbbbbb",
+        "              bbbb",
+        "",
+        "",
+        "",
+        "",
+        "",
+    ],
+    boomPartGem: [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "              pppp",
+        "         pppppppFFp",
+        "       ppppppppppFp",
+        "       pppppppppppp",
+        "         pppppppppp",
+        "              pppp",
+        "",
+        "",
+        "",
+        "",
+        "",
+    ],
+    core1: [
+        "      VVRR",
+        "    VVVVVVVR",
+        "  VVVVVVVVVVVR",
+        "VVVVVVVVVVVVVVVR",
+        "gggVVVVVVVVVVVVV",
+        "ggggggnnnnVVVVVV",
+        "gggggnnnnnngVVVV",
+        "ggggnnnnnnnnggVV",
+        "ggggnnnnnnnngggV",
+        "Ngggneennnengggg",
+        "Ngggeeeeneeegggg",
+        "Ngggeeeeeeeegggg",
+        "NNggeeeeeeeegggg",
+        "NNgggggggggggggg",
+        "NNNNgggggggggggg",
+        "NNNNNNNNNggggggg",
+        "NNNNNNNNNNNNNNNN",
+        "NNNNN      NNNNN",
+        "NN            NN",
+        "N              N",
+    ],
+    core2: [
+        "      VVRR",
+        "    VVVVVVVR",
+        "  VVVVVVVVVVVR",
+        "VVVVVVVVVVVVVVVR",
+        "gggVVVVVVVVVVVVV",
+        "ggggggnnnnVVVVVV",
+        "gggggnnnnnngVVVV",
+        "ggggnnnnnnnnggVV",
+        "ggggnnnnnneegggV",
+        "Ngggennnneeegggg",
+        "Ngggeenneeeegggg",
+        "Ngggeeeeeeeegggg",
+        "NNggeeeeeeeegggg",
+        "NNgggggggggggggg",
+        "NNNNgggggggggggg",
+        "NNNNNNNNNggggggg",
+        "NNNNNNNNNNNNNNNN",
+        "NNNNN      NNNNN",
+        "NN            NN",
+        "N              N",
+    ],
+    core3: [
+        "      VVRR",
+        "    VVVVVVVR",
+        "  VVVVVVVVVVVR",
+        "VVVVVVVVVVVVVVVR",
+        "gggVVVVVVVVVVVVV",
+        "ggggggnnnnVVVVVV",
+        "gggggnnnnnngVVVV",
+        "ggggnnnnnnnnggVV",
+        "ggggnnnnnnnngggV",
+        "NgggeneennnngggV",
+        "Ngggeeeeeneegggg",
+        "Ngggeeeeeeeegggg",
+        "NNggeeeeeeeegggg",
+        "NNgggggggggggggg",
+        "NNNNgggggggggggg",
+        "NNNNNNNNNggggggg",
+        "NNNNNNNNNNNNNNNN",
+        "NNNNN      NNNNN",
+        "NN            NN",
+        "N              N",
+    ],
+};
+
+function drawPixelArt(art, x, y, w, h) {
+    noStroke();
+    for(var i = 0; i < art.length; i++) {
+        for(var j = 0; j < art[i].length; j++) {
+            for(var k = 0; k < colorsList.length; k++) {
+                if(colorsList[k][0] === art[i][j]) {
+                    fill(colorsList[k][1]);
+                }
+                if(art[i][j] === " ") {
+                    noFill();
+                }
+            }
+            rect(j * w + x, i * h + y, w, h);
+        }
+    }
+}
+
+var health = 100;
+var healthDisp = 100;
+
+var shopLeaving = false;
+var moneys = 75;
+
+var moneysDisp = 0;
+
+var shopTrans = 0;
+
+var hoverTower = false;
+
+var wavePath = [
+    " x              ",
+    " x         fxf  ",
+    " x         fxf  ",
+    " x          x   ",
+    " x          x   ",
+    " x    xxxxxxx   ",
+    " x    x         ",
+    " x    x         ",
+    " x    xxxx      ",
+    " x       x      ",
+    " x       x      ",
+    " x       x      ",
+    " xxxxxxxxx      ",
+    "             fff",
+    "             fff",
+    "             fff",
+];
+
+var shopBck;
+
+var waveMove = [
+    [37.5 + 37.5 / 2, 450 + 37.5 / 2, 1, 0],
+    [337.5 + 37.5 / 2, 450 + 37.5 / 2, 0, -1],
+    [337.5 + 37.5 / 2, 300 + 37.5 / 2, -1, 0],
+    [225 + 37.5 / 2, 300 + 37.5 / 2, 0, -1],
+    [225 + 37.5 / 2, 187 + 37.5 / 2, 1, 0],
+    [447.5 + 37.5 / 2, 188 + 37.5 / 2, 0, -1],
+    [450 + 37.5 / 2, 30 + 37.5 / 2, 0, -1],
+];
+
+// logo vars
+var logoImgs = [];
+var bck;
+var presents = [];
+var pMsg = "PRESENTS".split("");
+var transImg, transImgX = 0.1;
+var logoTimer = 1;
+
+function circleCircleCollide(x1, y1, r1, x2, y2, r2) {
+    return dist(x1, y1, x2, y2) <= (r2 / 2 + r1 / 2);
+}
+var wave = 0;
+
+var waveNotes = ["Nice work!", "Good job again...\nThis one might be tougher!", "Good. But what if\nthere were more of them?", "Nice. Another new\none coming.", "They're strong.\nOne more new one.", "Easy (right)?", "These next ones are super\ntough. Good luck!", "Hopefully you succeeded!", "New enemy alert again!", "The conduit tower is\nvery op.", "good job", "Super easy! Try buying\nsome tower upgrades if\nyou haven't yet. They're\nvery nice.", "You're nearing the end.\nThese last waves will\nbe difficult!", "New enemy alert!", "That wasn't tough\nnow, was it?", "3 of them! Surely\nit doesn't get worse...", "That was really tough.\nKudos if you're still in it.\nFinal wave, final boss.\nGood luck!", "Wow, you beat it!\nSuperb job!"];
+
+var waves = [
+    [0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [2],
+    [2, 2, 2, 2, 2, 2],
+    [1, 1, 1, 1, 1, 1],
+    [3],
+    [0, 0, 0, 1, 1, 1, 2, 3, 2, 2, 3],
+    [5, 0, 3, 1, 1, 1, 5, 0, 3, 1, 5, 0, 0, 1, 1, 3, 5, 3, 5, 5],
+    [3, 0, 3, 5, 0, 5, 3, 0, 5, 2, 3, 2, 1, 5, 3],
+    [4],
+    [1, 2, 3, 0, 1, 3, 2, 5, 2, 4, 5, 1, 2, 3, 2, 5, 2, 1, 4],
+    [4, 0, 5, 4, 1, 5, 4, 2, 5, 4, 3, 5, 4],
+    [0, 5, 2, 4, 1, 3, 5, 5, 5, 3, 1, 2, 0, 4],
+    [0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5],
+    [6],
+    [0, 2, 4, 5, 6, 4, 4, 3, 3, 2, 3, 6, 2, 2, 3, 2, 1, 3, 0, 6],
+    [1, 2, 4, 6, 1, 6, 4, 5, 6, 3, 2, 0, 6, 4, 4, 3, 6, 3, 6, 4, 6, 0, 4, 3, 6, 4, 6, 6, 6, 4, 6],
+    [7],
+];
+var towerGrid = [];
+for(var i = 0; i < 16; i++) {
+    towerGrid.push([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+}
+var waveTimer = 0;
+var waveTimerPerWave = [150, 75, 100, 185, 150, 100, 150, 225, 200, 100, 200, 250, 250, 125, 100, 150, 260, 100];
+
+var partOfWave = 0;
+
+var selTower = false;
+
+var upgNum = 0;
+
+var waveInBtwnTimer = 0;
+
+var waveNeedsToStart = true;
+
+var enemiesList = [{ // 0
+        spd: 1,
+        health: 160,
+        value: 3,
+        healthLose: 3,
+        mainColor: color(194, 74, 74),
+    },
+    { // 1
+        spd: 2.25,
+        health: 280,
+        value: 5,
+        healthLose: 5,
+        mainColor: color(82, 184, 235),
+    },
+    { // 2
+        spd: 0.6,
+        health: 1200,
+        value: 8,
+        healthLose: 10,
+        mainColor: color(90, 90, 214)
+    },
+    { // 3
+        spd: 0.85,
+        health: 3000,
+        value: 12,
+        healthLose: 15,
+        mainColor: color(91, 227, 85)
+    },
+    { // 4
+        spd: 0.55,
+        health: 18500,
+        value: 60,
+        healthLose: 30,
+        mainColor: color(224, 159, 54)
+    },
+    { // 5
+        spd: 0.25,
+        health: 12500,
+        value: 40,
+        healthLose: 15,
+        mainColor: color(173, 132, 255)
+    },
+    { // 6
+        spd: 0.2,
+        health: 205000,
+        value: 150,
+        healthLose: 50,
+        mainColor: color(30, 166, 234)
+    },
+    { // 7
+        spd: 0.095,
+        health: 4010000,
+        value: 1000,
+        healthLose: 99,
+        mainColor: color(255, 230, 51),
+    },
+];
+
+var imgs = {
+
+    "logoLoad": function() {
+
+        for(var i = 0; i < 8; i++) {
+            presents.push([i * 50 + 125, 525, 300, 615]);
+        }
+        background(0, 0, 0, 0);
+        fill(0);
+        textSize(380);
+        textFont(createFont("Montserrat Bold"));
+        textAlign(CENTER, CENTER);
+        text("SP", 295, 295);
+        fill(127.5);
+        text("SP", 300, 300);
+        fill(255);
+        text("SP", 305, 305);
+        for(var i = 1; i < 29; i++) {
+            for(var j = 6; j < 23; j++) {
+                logoImgs.push([get(i * 30, j * 30, 30, 30), i * 30, j * 30, 0, 285, false]);
+            }
+        }
+
+        noStroke();
+        background(21, 0, 158);
+        for(var i = 0; i < height; i += 10) {
+            fill(0, 3);
+            rect(0, i, width, height - i);
+        }
+        for(var i = 0; i < 600; i++) {
+            fill(255);
+            ellipse(random(0, width), random(0, height), random(0.5, 2.5), random(0.5, 2.5));
+        }
+
+        bck = get(0, 0, 600, 600);
+
+    },
+
+    "spaceBackground": function() {
+        background(10);
+        noStroke();
+        for(var i = 0; i < 1000; i++) {
+            fill(random(0, 50), random(50, 225));
+            rect(random(0, 600), random(0, 600), random(0, 50), random(0, 50));
+        }
+        filter(BLUR, 15);
+        for(var i = 0; i < 400; i++) {
+            fill(255, random(75, 120 + i / 50));
+            ellipse(random(0, 600), random(0, 600), i / 200 + 2, i / 200 + 2);
+        }
+        return get();
+    },
+
+    "laserTower": function() {
+        drawPixelArt(pixelList.laser, 100, 100, 6, 6);
+        return get(100, 100, 96, 96);
+    },
+    "streamTower": function() {
+        drawPixelArt(pixelList.stream, 100, 100, 6, 6);
+        return get(100, 100, 96, 96);
+    },
+    "sparkTower": function() {
+        drawPixelArt(pixelList.spark, 100, 100, 6, 6);
+        return get(100, 100, 96, 96);
+    },
+    "beamTower": function() {
+        drawPixelArt(pixelList.beam, 100, 100, 6, 6);
+        return get(100, 100, 96, 96);
+    },
+    "beaconTower": function() {
+        drawPixelArt(pixelList.beacon, 100, 100, 6, 6);
+        return get(100, 100, 96, 96);
+    },
+    "lodestarTower": function() {
+        drawPixelArt(pixelList.lodestar, 100, 100, 6, 6);
+        return get(100, 100, 96, 96);
+    },
+    "conduitTower": function() {
+        drawPixelArt(pixelList.conduit, 100, 100, 6, 6);
+        return get(100, 100, 96, 96);
+    },
+    "genTower": function() {
+        drawPixelArt(pixelList.gen, 100, 100, 6, 6);
+        return get(100, 100, 96, 96);
+    },
+    "towerBoom": function() {
+        drawPixelArt(pixelList.boomPart, 100, 100, 6, 6);
+        return get(80, 80, 136, 136);
+    },
+    "towerBoomGen": function() {
+        drawPixelArt(pixelList.boomPartGem, 100, 100, 6, 6);
+        return get(80, 80, 136, 136);
+    },
+    "gem": function() {
+        drawPixelArt(pixelList.gem, 100, 100, 6, 6);
+        return get(112, 100, 78, 84);
+    },
+    "enemy0": function() {
+        drawPixelArt(pixelList.enemy0, 100, 100, 6, 6);
+        return get(100, 100, 96, 96);
+    },
+    "enemy1": function() {
+        drawPixelArt(pixelList.enemy1, 100, 100, 6, 6);
+        return get(100, 100, 96, 96);
+    },
+    "enemy2": function() {
+        drawPixelArt(pixelList.enemy2, 100, 100, 6, 6);
+        return get(100, 100, 102, 102);
+    },
+    "enemy3": function() {
+        drawPixelArt(pixelList.enemy3, 100, 100, 6, 6);
+        return get(100, 100, 102, 102);
+    },
+    "enemy4": function() {
+        drawPixelArt(pixelList.enemy4, 100, 100, 6, 6);
+        return get(100, 100, 96, 96);
+    },
+    "enemy5": function() {
+        drawPixelArt(pixelList.enemy5, 100, 100, 6, 6);
+        return get(100, 100, 96, 96);
+    },
+    "enemy6": function() {
+        drawPixelArt(pixelList.enemy6, 100, 100, 6, 6);
+        return get(100, 100, 102, 96);
+    },
+    "enemy7": function() {
+        drawPixelArt(pixelList.enemy7, 100, 100, 6, 6);
+        return get(100, 100, 102, 96);
+    },
+    "core1": function() {
+        drawPixelArt(pixelList.core1, 100, 100, 6, 6);
+        return get(100, 100, 96, 120);
+    },
+    "core2": function() {
+        drawPixelArt(pixelList.core2, 100, 100, 6, 6);
+        return get(100, 100, 96, 120);
+    },
+    "core3": function() {
+        drawPixelArt(pixelList.core3, 100, 100, 6, 6);
+        return get(100, 100, 96, 120);
+    },
+    "path": function() {
+        noStroke();
+        for(var i = 0; i < 16; i++) {
+            for(var j = 0; j < 16; j++) {
+                fill(random(215, 225));
+                rect(i * 5, j * 5, 5, 5);
+            }
+        }
+        return get(0, 0, 80, 80);
+    },
+    "pathBlur": function() {
+        image(imgs.path, 0, 0, 100, 100);
+        filter(BLUR);
+        return get(10, 10, 80, 80);
+    },
+    "gamePath": function() {
+        for(var i = 0; i < wavePath.length; i++) {
+                    for(var j = 0; j < wavePath[i].length; j++) {
+                        fill(255);
+                        if(wavePath[i][j] === "x") {
+                            image(imgs.path, j * 37.5, i * 37.5, 38, 38);
+                        }
+                    }
+                }
+                return get();
+    },
+    // template
+    /*
+    "": function() {
+        
+    },
+    */
+};
+
+
+function Enemy(type) {
+    this.x = 37.5;
+    this.y = -37.5;
+    this.t = type;
+    this.xVel = 0;
+    this.yVel = 1;
+    this.waveMoveOn = 0;
+    this.spd = enemiesList[this.t].spd;
+    this.health = enemiesList[this.t].health;
+    this.origHealth = this.health;
+    this.die = false;
+    this.healthLose = enemiesList[this.t].healthLose;
+    this.value = enemiesList[this.t].value;
+    this.col = enemiesList[this.t].mainColor;
+    this.rot = 0;
+}
+Enemy.prototype.draw = function() {
+    pushMatrix();
+    imageMode(CENTER);
+    translate(this.x + 37.5 / 2, this.y + 37.5 / 2);
+    rotate(this.rot);
+    image([imgs.enemy0, imgs.enemy1, imgs.enemy2, imgs.enemy3, imgs.enemy4, imgs.enemy5, imgs.enemy6, imgs.enemy7][this.t], 0, 0, 35, 35);
+    imageMode(CORNER);
+    popMatrix();
+    this.rot += abs(this.xVel + this.yVel);
+
+    pushMatrix();
+    imageMode(CENTER);
+    translate(this.x + 37.5 / 2, this.y + 37.5 / 2);
+    fill(255, 0, 0);
+    rect(-15, -15, 30, 5);
+    fill(55, 219, 110);
+    rect(-15, -15, constrain(this.health / this.origHealth * 30, 0, 30), 5);
+    popMatrix();
+};
+Enemy.prototype.move = function() {
+    this.x += this.xVel * this.spd;
+    this.y += this.yVel * this.spd;
+    if(this.waveMoveOn < waveMove.length - 1) {
+        if(abs(this.x + 37.5 / 2 - waveMove[this.waveMoveOn][0]) < this.spd * 2 + 0.5 && abs(this.y + 37.5 / 2 - waveMove[this.waveMoveOn][1]) < this.spd * 2 + 0.5) {
+            this.xVel = waveMove[this.waveMoveOn][2];
+            this.yVel = waveMove[this.waveMoveOn][3];
+            this.x = floor((this.x + 37.5 / 2) / 37.5) * 37.5;
+            this.y = floor((this.y + 37.5 / 2) / 37.5) * 37.5;
+            this.waveMoveOn++;
+        }
+    }
+    if(circleCircleCollide(this.x + 37.5 / 2, this.y + 37.5 / 2, 37.5, 467.5, 50, 10)) {
+        health -= this.healthLose;
+        this.die = true;
+    }
+    if(this.health < 0) {
+        moneys += this.value;
+        this.die = true;
+        for(var k = 0; k < 25; k++) {
+            //x, y, col, size, xVel, yVel, trans, transVel, sizeVel
+            particles.push(Particle.new(this.x + 37.5 / 2 + random(-17, 17), this.y + 37.5 / 2 + random(-17, 17), this.col, random(4, 10), random(-0.4, 0.4), random(-0.4, 0.4), random(160, 250), random(-2.5, -1), random(-0.05, -0.01)));
+        }
+    }
+};
+
+var towersList = [{
+        name: "Laser",
+        range: 160,
+        damage: 9,
+        reload: 9,
+        price: 25,
+        desc: "Low damage, low range, ok reload",
+        img: imgs.laserTower,
+        mainColor: color(224, 104, 104)
+    },
+    {
+        name: "Stream",
+        range: 220,
+        damage: 7,
+        reload: 3,
+        price: 75,
+        desc: "Very high reload, low damage",
+        img: imgs.streamTower,
+        mainColor: color(112, 214, 255)
+    },
+    {
+        name: "Spark",
+        range: 145,
+        damage: 75,
+        reload: 18,
+        price: 150,
+        desc: "Good damage, slow reload, low range",
+        img: imgs.sparkTower,
+        mainColor: color(244, 179, 74),
+    },
+    {
+        name: "Beam",
+        range: 265,
+        damage: 55,
+        reload: 13,
+        price: 175,
+        desc: "Medium range, reload and damage",
+        img: imgs.beamTower,
+        mainColor: color(203, 162, 255)
+    },
+    {
+        name: "Beacon",
+        range: 425,
+        damage: 40,
+        reload: 4,
+        price: 300,
+        desc: "High range, high reload, low damage",
+        img: imgs.beaconTower,
+        mainColor: color(255, 255, 81),
+    },
+    {
+        name: "Lodestar",
+        range: 500,
+        damage: 1100,
+        reload: 180,
+        price: 450,
+        desc: "High range, very high damage, very slow reload",
+        img: imgs.lodestarTower,
+        mainColor: color(90, 90, 214)
+    },
+    {
+        name: "Conduit",
+        range: 425,
+        damage: 400,
+        reload: 10,
+        price: 1000,
+        desc: "Very high of everything. The beast.",
+        img: imgs.conduitTower,
+        mainColor: color(30, 166, 234)
+    },
+    {
+        name: "Generator",
+        range: 150,
+        damage: 10,
+        reload: 45,
+        price: 150,
+        desc: "Pretty bad but gives you 1 gem per hit",
+        img: imgs.genTower,
+        mainColor: color(180),
+    },
+];
+
+var bullets = [];
+var towers = [];
+
+function Bullet(x, y, dir, dmg, gen) {
+    this.x = x;
+    this.y = y;
+    this.dir = dir;
+    this.dmg = dmg;
+    this.die = false;
+    this.gen = gen;
+}
+Bullet.prototype.draw = function() {
+    noStroke();
+    fill(255, 0, 0);
+    pushMatrix();
+    translate(this.x, this.y);
+    rotate(this.dir);
+    ellipse(0, 0, 6, 6);
+    ellipse(-6, 0, 12, 6);
+    popMatrix();
+};
+Bullet.prototype.func = function() {
+    this.x += cos(this.dir) * 7.5;
+    this.y += sin(this.dir) * 7.5;
+    //
+    if(circleCircleCollide(this.x, this.y, 6, 467.5, 50, 100)) {
+        this.die = true;
+    }
+    if(frameCount % 2 === 0) {
+        for(var i = 0; i < enemies.length; i++) {
+            if(circleCircleCollide(this.x, this.y, 6, enemies[i].x + 37.5 / 2, enemies[i].y + 37.5 / 2, 37.5)) {
+                this.die = true;
+                if(this.gen) {
+                    moneys++;
+                }
+                enemies[i].health -= this.dmg;
+            }
+        }
+    }
+    if(this.x > 600 || this.x < 0 || this.y > 600 || this.y < 0) {
+        this.die = true;
+    }
+};
+
+var hoverText = "";
+
+function Tower(x, y, type) {
+    this.x = x;
+    this.y = y;
+    this.type = type;
+    this.reload = towersList[this.type].reload;
+    this.reloadTimer = 0;
+    this.dmg = towersList[this.type].damage;
+    this.range = towersList[this.type].range;
+    this.cost = towersList[this.type].price;
+    this.lockedOn = false;
+    this.lockedOnTo = 0;
+    this.rot = 0;
+    this.col = towersList[this.type].mainColor;
+}
+Tower.prototype.draw = function() {
+    fill(255, 0, 0);
+
+    imageMode(CENTER);
+    image([imgs.laserTower, imgs.streamTower, imgs.sparkTower, imgs.beamTower, imgs.beaconTower, imgs.lodestarTower, imgs.conduitTower, imgs.genTower][this.type], this.x, this.y, 37.5, 37.5);
+    pushMatrix();
+    translate(this.x, this.y);
+    rotate(this.rot);
+    if(this.type === 7) {
+        image(imgs.towerBoomGen, 0, 0, 52, 52);
+    }
+    else {
+        image(imgs.towerBoom, 0, 0, 52, 52);
+    }
+    popMatrix();
+    imageMode(CORNER);
+};
+Tower.prototype.func = function() {
+    if(this.lockedOnTo >= enemies.length) {
+        this.lockedOn = false;
+    }
+    this.reloadTimer++;
+    if(this.lockedOn === false) {
+        for(var i = 0; i < enemies.length; i++) {
+            if(circleCircleCollide(this.x, this.y, this.range, enemies[i].x + 37.5 / 2, enemies[i].y + 37.5 / 2, 37.5, 37.5)) {
+                this.lockedOn = true;
+                this.lockedOnTo = i;
+            }
+        }
+    }
+    else {
+        if(!circleCircleCollide(this.x, this.y, this.range, enemies[this.lockedOnTo].x + 37.5 / 2, enemies[this.lockedOnTo].y + 37.5 / 2, 37.5, 37.5)) {
+            this.lockedOn = false;
+        }
+    }
+    if(this.lockedOn) {
+        this.rot = atan2(enemies[this.lockedOnTo].y + 37.5 / 2 - this.y, enemies[this.lockedOnTo].x + 37.5 / 2 - this.x);
+        if(this.reloadTimer > this.reload) {
+            this.reloadTimer = 0;
+            if(this.type === 7) {
+                bullets.push(new Bullet(this.x, this.y, this.rot, this.dmg, true));
+            }
+            else {
+                bullets.push(new Bullet(this.x, this.y, this.rot, this.dmg, false));
+            }
+        }
+    }
+};
+
+
+
+var goodToPlace = true;
+
+// user interaction
+var page = "load";
+
+var clicked = false;
+var overButton = false;
+var keys = [];
+
+// outlined text function
+var outlineText = function(t, x, y, f, s, w) {
+    fill(s);
+    for(var i = 0; i < 30; i++) {
+        text(t, x + sin(i * 16) * w / 16, y + cos(i * 16) * w / 16);
+    }
+    fill(f);
+    text(t, x, y);
+};
+
+// rect colision fnuction
+function rectCollide(x, y, w, h, x2, y2, w2, h2) {
+    return x2 + w2 > x && x2 < x + w && y2 + h2 > y && y2 < y + h;
+}
+
+
+
+// all of the graphics
+
+// what # of the loading thing it is on
+var curLoad = 0;
+
+// is the loading done
+var loaded = false;
+
+
+var load = function() {
+
+    background(0, 0);
+
+
+    var obj = Object.keys(imgs);
+
+    imgs[obj[curLoad]] = imgs[obj[curLoad]]();
+    curLoad++;
+
+    if(curLoad < obj.length) {
+        loaded = false;
+    }
+
+    // finish loading
+    else {
+        loaded = true;
+        page = "logo";
+    }
+
+};
+
+// main function
+function Button(config) {
+    this.x = config.x;
+    this.y = config.y;
+
+    this.w = config.w;
+    this.h = config.h;
+
+    this.show = config.show;
+
+    this.clicky = config.clicky;
+    this.r = config.r;
+}
+
+Button.prototype.draw = function() {
+
+    // draw button
+    this.show();
+
+    // mouse collisions
+    if(mouseX > this.x && mouseX < this.x + this.w && mouseY > this.y && mouseY < this.y + this.h) {
+
+        overButton = true;
+
+        fill(0, 30);
+        noStroke();
+        rect(this.x, this.y, this.w, this.h, this.r);
+        if(clicked) {
+            this.clicky();
+        }
+
+    }
+
+};
+
+function tButton(config) {
+    this.x = config.x;
+    this.y = config.y;
+
+    this.w = config.w;
+    this.h = config.h;
+
+    this.type = config.type;
+}
+
+tButton.prototype.draw = function() {
+
+    // draw button
+    if(selTower === this.type) {
+        stroke(91, 76, 255, 120);
+    }
+    else {
+        stroke(0, 50);
+    }
+    if(moneys < towersList[this.type].price) {
+        stroke(200, 0, 0, 50);
+    }
+    fill(0, 50);
+    rect(this.x, this.y - 500, 85, 85, 10);
+    imageMode(CENTER);
+    image([imgs.laserTower, imgs.streamTower, imgs.sparkTower, imgs.beamTower, imgs.beaconTower, imgs.lodestarTower, imgs.conduitTower, imgs.genTower][this.type], this.x + 42.5, this.y - 500 + 42.5, 40, 40);
+    if(this.type === 7) {
+        image(imgs.towerBoomGen, this.x + 42.5, this.y - 500 + 42.5, 56, 56);
+    }
+    else {
+        image(imgs.towerBoom, this.x + 42.5, this.y - 500 + 42.5, 56, 56);
+    }
+    imageMode(CORNER);
+    textSize(14);
+    outlineText(towersList[this.type].name, this.x + 42.5, this.y - 487, 255, 0, 16);
+    textSize(19);
+    outlineText(towersList[this.type].price, this.x + 52.5, this.y - 422, 255, 0, 16);
+    imageMode(CENTER);
+    if(towersList[this.type].price >= 100) {
+        image(imgs.gem, this.x + 21, this.y - 421, 18, 19);
+    }
+    else {
+        image(imgs.gem, this.x + 27, this.y - 421, 18, 19);
+    }
+    imageMode(CORNER);
+
+    // mouse collisions
+    if(mouseX > this.x && mouseX < this.x + this.w && mouseY > this.y && mouseY < this.y + this.h) {
+
+        overButton = true;
+
+        if(moneys < towersList[this.type].price) {
+            overButton = "x";
+        }
+        else {
+            fill(0, 30);
+            noStroke();
+            rect(this.x, this.y - 500, this.w, this.h);
+            if(clicked) {
+                if(selTower !== this.type) {
+                    selTower = this.type;
+                }
+                else {
+                    selTower = false;
+                }
+            }
+        }
+        hoverText = towersList[this.type].desc;
+
+    }
+
+};
+
+
+// all of the buttons
+var buttons = {
+    laserTower: new tButton({
+        x: 85,
+        y: 165,
+        w: 85,
+        h: 85,
+        type: 0,
+
+    }),
+    streamTower: new tButton({
+        x: 200,
+        y: 165,
+        w: 85,
+        h: 85,
+        type: 1,
+
+    }),
+    sparkTower: new tButton({
+        x: 310,
+        y: 165,
+        w: 85,
+        h: 85,
+        type: 2,
+
+        show: function() {
+            if(selTower === 2) {
+                stroke(255, 50);
+            }
+            else {
+                stroke(0, 50);
+            }
+            fill(0, 50);
+            rect(310, -375, 85, 85, 10);
+        },
+        clicky: function() {
+            if(selTower !== 2) {
+                selTower = 2;
+            }
+            else {
+                selTower = false;
+            }
+        },
+    }),
+    beamTower: new tButton({
+        x: 425,
+        y: 165,
+        w: 85,
+        h: 85,
+        type: 3,
+
+        show: function() {
+            if(selTower === 3) {
+                stroke(255, 50);
+            }
+            else {
+                stroke(0, 50);
+            }
+            fill(0, 50);
+            rect(425, -375, 85, 85, 10);
+        },
+        clicky: function() {
+            if(selTower !== 3) {
+                selTower = 3;
+            }
+            else {
+                selTower = false;
+            }
+        },
+    }),
+
+    beaconTower: new tButton({
+        x: 85,
+        y: 300,
+        w: 85,
+        h: 85,
+        type: 4,
+
+        show: function() {
+            if(selTower === 4) {
+                stroke(255, 50);
+            }
+            else {
+                stroke(0, 50);
+            }
+            fill(0, 50);
+            rect(85, -255, 85, 85, 10);
+        },
+        clicky: function() {
+            if(selTower !== 4) {
+                selTower = 4;
+            }
+            else {
+                selTower = false;
+            }
+        },
+    }),
+    lodestarTower: new tButton({
+        x: 200,
+        y: 300,
+        w: 85,
+        h: 85,
+        type: 5,
+
+        show: function() {
+            if(selTower === 5) {
+                stroke(255, 50);
+            }
+            else {
+                stroke(0, 50);
+            }
+            fill(0, 50);
+            rect(200, -255, 85, 85, 10);
+        },
+        clicky: function() {
+            if(selTower !== 5) {
+                selTower = 5;
+            }
+            else {
+                selTower = false;
+            }
+        },
+    }),
+    conduitTower: new tButton({
+        x: 310,
+        y: 300,
+        w: 85,
+        h: 85,
+        type: 6,
+
+        show: function() {
+            // if(selTower === 6) {
+            //     stroke(255, 50);
+            // }
+            // else {
+            //     stroke(0, 50);
+            // }
+            // fill(0, 50);
+            // rect(310, -255, 85, 85, 10);
+        },
+        clicky: function() {
+            // if(selTower !== 6) {
+            //     selTower = 6;
+            // }
+            // else {
+            //     selTower = false;
+            // }
+        },
+    }),
+    generatorTower: new tButton({
+        x: 425,
+        y: 300,
+        w: 85,
+        h: 85,
+        type: 7,
+
+        show: function() {
+            if(selTower === 7) {
+                stroke(255, 50);
+            }
+            else {
+                stroke(0, 50);
+            }
+            fill(0, 50);
+            rect(425, -255, 85, 85, 10);
+        },
+        clicky: function() {
+            if(selTower !== 7) {
+                selTower = 7;
+            }
+            else {
+                selTower = false;
+            }
+        },
+    }),
+    closeShop: new Button({
+        x: 200,
+        y: 440,
+        w: 200,
+        h: 50,
+        r: 15,
+
+        show: function() {
+            fill(0, 50);
+            strokeWeight(4);
+            rect(200, 440, 200, 50, 10);
+            textSize(25);
+            outlineText("close", 300, 465, 255, 0, 30);
+        },
+        clicky: function() {
+            waveInBtwnTimer = 0;
+            wave++;
+            page = "game";
+            if(wave >= waves.length) {
+                page = "win";
+            }
+            else {
+                health += round(wave / 7);
+            }
+            waveNeedsToStart = true;
+        },
+    }),
+    closeUpg: new Button({
+        x: 200,
+        y: 440,
+        w: 200,
+        h: 50,
+        r: 15,
+
+        show: function() {
+            fill(0, 50);
+            strokeWeight(4);
+            stroke(100);
+            rect(200, 440, 200, 50, 10);
+            textSize(25);
+            outlineText("No, thanks", 300, 465, 255, 0, 30);
+        },
+        clicky: function() {
+            page = "game";
+        },
+    }),
+    yeUpg: new Button({
+        x: 200,
+        y: 370,
+        w: 200,
+        h: 50,
+        r: 15,
+
+        show: function() {
+            fill(0, 50);
+            strokeWeight(4);
+            stroke(100);
+            if(moneys < floor(towers[upgNum].cost * 0.75)) {
+                stroke(255, 0, 0);
+            }
+            rect(200, 370, 200, 50, 10);
+            textSize(25);
+            outlineText("Yes", 300, 395, 255, 0, 30);
+        },
+        clicky: function() {
+            if(moneys >= floor(towers[upgNum].cost * 0.75)) {
+                page = "game";
+                moneys -= floor(towers[upgNum].cost * 0.75);
+                towers[upgNum].range *= 1.3;
+                towers[upgNum].dmg *= 1.25;
+                towers[upgNum].reload /= 1.2;
+                towers[upgNum].cost = towers[upgNum].cost + towers[upgNum].cost * 0.85;
+            }
+        },
+    }),
+    yeSell: new Button({
+        x: 200,
+        y: 370,
+        w: 200,
+        h: 50,
+        r: 15,
+
+        show: function() {
+            fill(0, 50);
+            strokeWeight(4);
+            stroke(100);
+            rect(200, 370, 200, 50, 10);
+            textSize(25);
+            outlineText("Yes", 300, 395, 255, 0, 30);
+        },
+        clicky: function() {
+            page = "game";
+            for(var i = 0; i < 40; i++) {
+                particles.push(Particle.new(towers[upgNum].x + random(-17, 17), towers[upgNum].y + random(-17, 17), towers[upgNum].col, random(4, 10), random(-0.4, 0.4), random(-0.4, 0.4), random(160, 250), random(-2.5, -1), random(-0.05, -0.01)));
+            }
+            towerGrid[floor(towers[upgNum].x / 37.5)][floor(towers[upgNum].y / 37.5)] = 0;
+            moneys += floor(towers[upgNum].cost * 0.7);
+            towers.splice(upgNum, 1);
+        },
+    }),
+    nextWav: new Button({
+        x: 487.5,
+        y: 525 - 37.5,
+        w: 112.5,
+        h: 36.5,
+        r: 0,
+
+        show: function() {
+            strokeWeight(2);
+            stroke(255, 100);
+            fill(255, 150);
+            rect(487.5, 525 - 37.5, 112.5, 36.5);
+            textSize(18);
+            outlineText("Next Wave", 487.5 + 112.5 / 2, 525 - 37.5 + 36.5 / 2, 255, 0, 20);
+        },
+        clicky: function() {
+            waveNeedsToStart = false;
+            waveInBtwnTimer = 0;
+            partOfWave = 0;
+            waveTimer = 0;
+
+        },
+    }),
+    sellBtn: new Button({
+        x: 200,
+        y: 230,
+        w: 200,
+        h: 80,
+        r: 15,
+
+        show: function() {
+            fill(0, 50);
+            strokeWeight(4);
+            stroke(100);
+            rect(200, 230, 200, 80, 15);
+            textSize(25);
+            outlineText("Sell", 300, 270, 255, 0, 30);
+        },
+        clicky: function() {
+            page = "sell";
+        },
+    }),
+    upgradeBtn: new Button({
+        x: 200,
+        y: 350,
+        w: 200,
+        h: 80,
+        r: 15,
+
+        show: function() {
+            fill(0, 50);
+            strokeWeight(4);
+            stroke(100);
+            rect(200, 350, 200, 80, 15);
+            textSize(25);
+            outlineText("Upgrade", 300, 390, 255, 0, 30);
+        },
+        clicky: function() {
+            page = "upgrade";
+        },
+    }),
+    xButton: new Button({
+        x: 461,
+        y: 110,
+        w: 30,
+        h: 30,
+        r: 10,
+
+        show: function() {
+            fill(0, 50);
+            strokeWeight(2);
+            stroke(100);
+            rect(461, 110, 30, 30, 10);
+            textSize(25);
+            outlineText("x", 477, 123, 255, 0, 20);
+        },
+        clicky: function() {
+            page = "game";
+        },
+    }),
+    playBtn: new Button({
+        x: 75,
+        y: 240,
+        w: 450,
+        h: 120,
+        r: 10,
+
+        show: function() {
+            fill(255, 150);
+            rect(75, 240, 450, 120, 10);
+            textSize(55);
+            outlineText("Play", 300, 300, color(0, 150), color(255, 30), 80);
+        },
+        clicky: function() {
+            pageToGoTo = "game";
+            fade = 0;
+            fadeVel = 25;
+        },
+    }),
+    howBtn: new Button({
+        x: 100,
+        y: 410,
+        w: 400,
+        h: 100,
+        r: 10,
+
+        show: function() {
+            fill(255, 150);
+            rect(100, 410, 400, 100, 10);
+            textSize(50);
+            outlineText("How", 300, 460, color(0, 150), color(255, 29), 65);
+        },
+        clicky: function() {
+            pageToGoTo = "how";
+            fade = 0;
+            fadeVel = 25;
+        },
+    }),
+    bckBtn: new Button({
+        x: 50,
+        y: 515,
+        w: 200,
+        h: 50,
+        r: 10,
+
+        show: function() {
+            fill(255, 150);
+            rect(50, 515, 200, 50, 10);
+            textSize(25);
+            outlineText("ok", 150, 540, color(0, 150), color(255, 25), 50);
+        },
+        clicky: function() {
+            pageToGoTo = "maine";
+            fade = 0;
+            fadeVel = 25;
+        },
+    }),
+
+    /*
+    x: new Button({
+        x: ,
+        y: ,
+        w: ,
+        h: ,
+        
+        show: function() {
+            
+        },
+        clicky: function() {
+            
+        },
+    }),
+    */
+
+};
+
+var gameTutorial = true;
+var gTStage = 0;
+
+draw = function() {
+
+    // i did
+    try {
+        switch(page) {
+
+            // loading screen
+            case "load":
+                load();
+
+                background(155);
+                fill(255);
+                textSize(60);
+                textAlign(CENTER, CENTER);
+                outlineText("Loading...", 300, 120, 255, 0, 20);
+                textSize(65);
+                outlineText((curLoad / (Object.keys(imgs)).length * 100).toFixed(1) + "%", 300, 320, 255, 0, 20);
+                fill(220);
+                rect(0, 525, curLoad / (Object.keys(imgs)).length * 600, 75);
+
+                break;
+
+                // logo screen
+            case "logo":
+
+                image(bck, 0, 0);
+                imageMode(CENTER);
+                for(var i = 0; i < logoImgs.length; i++) {
+                    pushMatrix();
+                    translate(logoImgs[i][3] + 15, logoImgs[i][4]);
+                    image(logoImgs[i][0], 0, 0);
+                    popMatrix();
+                    if(logoImgs[i][5]) {
+                        logoImgs[i][3] += (logoImgs[i][1] - logoImgs[i][3]) / 10;
+                        logoImgs[i][4] += (logoImgs[i][2] - logoImgs[i][4]) / 10;
+                    }
+                }
+                if(logoTimer < 96) {
+                    logoImgs[logoTimer * 5][5] = true;
+                    logoImgs[logoTimer * 5 - 1][5] = true;
+                    logoImgs[logoTimer * 5 - 2][5] = true;
+                    logoImgs[logoTimer * 5 - 3][5] = true;
+                    logoImgs[logoTimer * 5 - 4][5] = true;
+                }
+                imageMode(CORNER);
+                if(logoTimer > 55) {
+                    for(var i = 0; i < presents.length; i++) {
+                        textSize(height / 15);
+                        textFont(createFont("Montserrat Bold"));
+                        fill(255);
+                        text(pMsg[i], presents[i][2], presents[i][3]);
+                        if(logoTimer > 135) {
+                            presents[i][2] += (presents[i][0] - presents[i][2]) / 15;
+                            presents[i][3] += (presents[i][1] - presents[i][3]) / 15;
+                        }
+                    }
+                }
+                if(logoTimer > 280) {
+                    transImg = get(0, 0, width, height);
+                    page = "maine";
+                }
+                logoTimer++;
+
+                break;
+
+            case "game":
+                image(imgs.spaceBackground, 0, 0);
+                waveTimer++;
+                if(waveTimer > waveTimerPerWave[wave] && partOfWave <= waves[wave].length - 1 && waveNeedsToStart === false) {
+                    enemies.push(new Enemy(waves[wave][partOfWave]));
+                    partOfWave++;
+                    waveTimer = 0;
+                }
+                if(enemies.length === 0 && partOfWave >= waves[wave].length && waveNeedsToStart === false) {
+                    waveInBtwnTimer++;
+                }
+                noStroke();
+                image(imgs.gamePath, 0, 0);
+                for(var i = enemies.length - 1; i >= 0; i--) {
+                    enemies[i].draw();
+                    if(!dead) {
+                        enemies[i].move();
+                        if(enemies[i].die) {
+                            enemies.splice(i, 1);
+                        }
+                    }
+                }
+                for(var i = bullets.length - 1; i >= 0; i--) {
+                    bullets[i].draw();
+                    if(!dead) {
+                        bullets[i].func();
+                        if(bullets[i].die) {
+                            bullets.splice(i, 1);
+                        }
+                    }
+                }
+                for(var i = towers.length - 1; i >= 0; i--) {
+                    towers[i].draw();
+                    if(!dead) {
+                        towers[i].func();
+                    }
+                }
+
+                if((mouseX < 600 - (37.5 * 3) || mouseY < 525) && ((mouseX < 187.5 || mouseX > 525) || (mouseY > 37.5))) {
+                    fill(255, 50);
+                    strokeWeight(2);
+                    stroke(200, 100);
+                    if(wavePath[floor(mouseY / 37.5)][floor(mouseX / 37.5)] === " ") {
+                        rect(floor(mouseX / 37.5) * 37.5, floor(mouseY / 37.5) * 37.5, 37.5, 37.5);
+                        if(selTower !== false) {
+                            imageMode(CENTER);
+                            image([imgs.laserTower, imgs.streamTower, imgs.sparkTower, imgs.beamTower, imgs.beaconTower, imgs.lodestarTower, imgs.conduitTower, imgs.genTower][selTower], floor(mouseX / 37.5) * 37.5 + 37.5 / 2, floor(mouseY / 37.5) * 37.5 + 37.5 / 2, 37.5, 37.5);
+                            if(selTower === 7) {
+                                image(imgs.towerBoomGen, floor(mouseX / 37.5) * 37.5 + 37.5 / 2, floor(mouseY / 37.5) * 37.5 + 37.5 / 2, 52, 52);
+                            }
+                            else {
+                                image(imgs.towerBoom, floor(mouseX / 37.5) * 37.5 + 37.5 / 2, floor(mouseY / 37.5) * 37.5 + 37.5 / 2, 52, 52);
+                            }
+                            imageMode(CORNER);
+                        }
+                    }
+                }
+                hoverTower = false;
+                if(towerGrid[floor(mouseX / 37.5)][floor(mouseY / 37.5)] !== 0) {
+                    for(var i = 0; i < towers.length; i++) {
+                        if(towers[i].x === floor(mouseX / 37.5) * 37.5 + 37.5 / 2 && towers[i].y === floor(mouseY / 37.5) * 37.5 + 37.5 / 2) {
+                            hoverTower = i;
+                        }
+                    }
+                    if(hoverTower !== false) {
+                        fill(255, 50);
+                        ellipse(floor(mouseX / 37.5) * 37.5 + 37.5 / 2, floor(mouseY / 37.5) * 37.5 + 37.5 / 2, towers[hoverTower].range, towers[hoverTower].range);
+                        if(clicked) {
+                            shopBck = get();
+                            upgNum = hoverTower;
+                            page = "action";
+                        }
+                    }
+                    // if(selTower !== false) {
+                    // }
+                }
+                if(selTower !== false && towerGrid[floor(mouseX / 37.5)][floor(mouseY / 37.5)] === 0 && wavePath[floor(mouseY / 37.5)][floor(mouseX / 37.5)] !== "x" && wavePath[floor(mouseY / 37.5)][floor(mouseX / 37.5)] !== "f" && (mouseX < 600 - (37.5 * 3) || mouseY < 525) && ((mouseX < 187.5 || mouseX > 525) || (mouseY > 37.5))) {
+                    fill(255, 50);
+                    ellipse(floor(mouseX / 37.5) * 37.5 + 37.5 / 2, floor(mouseY / 37.5) * 37.5 + 37.5 / 2, towersList[selTower].range, towersList[selTower].range);
+                    if(clicked) {
+                        if(moneys >= towersList[selTower].price && selTower !== false) {
+                            towerGrid[floor(mouseX / 37.5)][floor(mouseY / 37.5)] = 1;
+                            for(var i = 0; i < 20; i++) {
+                                particles.push(Particle.new(floor(mouseX / 37.5) * 37.5 + random(0, 37.5), floor(mouseY / 37.5) * 37.5 + random(0, 37.5), towersList[selTower].mainColor, random(3, 7), random(-0.4, 0.4), random(-0.4, 0.4), random(160, 250), random(-2.5, -1), random(-0.05, -0.01)));
+                            }
+                            towers.push(new Tower(floor(mouseX / 37.5) * 37.5 + 37.5 / 2, floor(mouseY / 37.5) * 37.5 + 37.5 / 2, selTower));
+                            moneys -= towersList[selTower].price;
+                            selTower = false;
+                        }
+                    }
+                }
+                imageMode(CENTER);
+                image([imgs.core1, imgs.core2, imgs.core3][floor(frameCount / 20) % 3], 467.5, 50, 85, 120);
+                imageMode(CORNER);
+                textSize(18);
+                outlineText(round(healthDisp) + "/100", 467.5, 35, 255, 0, 15);
+                healthDisp += (health - healthDisp) / 20;
+                if(health > 100) {
+                    health = 100;
+                }
+                if(health < 0) {
+                    health = 0;
+                }
+                strokeWeight(2);
+                stroke(255, 100);
+                fill(255, 150);
+                rect(487.5, 525, 112.5, 150);
+                textSize(19);
+                outlineText("Wave " + (wave + 1) + "/" + waves.length, 487.5 + 112.5 / 2, 580, 255, 0, 10);
+                fill(98, 0, 255);
+                noStroke();
+                textSize(22);
+                imageMode(CENTER);
+                image(imgs.gem, 512, 547, 25, 27);
+                imageMode(CORNER);
+                // ellipse(506, 545, 25, 25);
+                outlineText(round(moneysDisp), 552, 545, 255, 0, 10);
+                if(!gameTutorial) {
+                    moneysDisp += (moneys - moneysDisp) / 12;
+                }
+                fill(200);
+                quad(200, 0, 400, 0, 350, 37.5, 250, 37.5);
+                noFill();
+                strokeWeight(2);
+                stroke(10);
+                line(275, 27, 325, 27);
+                line(255, 12, 345, 12);
+                fill(255, 150);
+                if(!dead && !gameTutorial) {
+                    if(waveNeedsToStart === true) {
+                        buttons.nextWav.draw();
+                    }
+                    if(mouseX > 200 && mouseX < 400 && mouseY < 37.5) {
+                        page = "shop";
+                        particles = [];
+                        shopBck = get(0, 0, 600, 600);
+                    }
+                }
+                if(waveInBtwnTimer > 240) {
+                    shopBck = get(0, 0, 600, 600);
+                    page = "complete";
+                    moneys += floor((wave + 1) * 12.75 + 5);
+                }
+                if(!dead) {
+                    for(var i = particles.length - 1; i >= 0; i--) {
+                        particles[i].draw();
+                        if(particles[i].die) {
+                            particles.splice(i, 1);
+                        }
+                    }
+                }
+                if(health <= 0) {
+                    dead = true;
+                    deadTimer--;
+                }
+                if(deadTimer < 0) {
+                    page = "lose";
+                }
+                if(gameTutorial) {
+                    strokeWeight(2);
+                    stroke(255, 100);
+                    fill(255, 150);
+                    rect(487.5, 525 - 37.5, 112.5, 36.5);
+                    textSize(18);
+                    outlineText("Next Wave", 487.5 + 112.5 / 2, 525 - 37.5 + 36.5 / 2, 255, 0, 20);
+                    switch(gTStage) {
+                        case 0:
+                            noStroke();
+                            fill(0, 40);
+                            rect(0, 0, 600, 600);
+                            fill(255, 90);
+                            rect(180, 0, 240, 65);
+                            textSize(25);
+                            outlineText("This is the shop.\nHover over this to open the menu.", 300, 500, 255, 0, 40);
+                            textSize(15);
+                            outlineText("click to continue", 300, 570, 255, 0, 20);
+                            break;
+                        case 1:
+                            noStroke();
+                            fill(0, 40);
+                            rect(0, 0, 600, 600);
+                            fill(255, 90);
+                            rect(467.5 - 20 - 85 / 2, 0, 125, 120);
+                            textSize(25);
+                            outlineText("This is the core.\nProtect it at all costs.", 300, 500, 255, 0, 40);
+                            textSize(15);
+                            outlineText("click to continue", 300, 570, 255, 0, 20);
+                            break;
+                        case 2:
+                            noStroke();
+                            fill(0, 40);
+                            rect(0, 0, 600, 600);
+                            fill(255, 90);
+                            rect(470, 470, 130, 130);
+                            textSize(25);
+                            outlineText("This shows all of your info.", 300, 500, 255, 0, 40);
+                            textSize(15);
+                            outlineText("click to continue", 300, 570, 255, 0, 20);
+                            break;
+                        case 3:
+                            noStroke();
+                            fill(0, 40);
+                            rect(0, 0, 600, 600);
+                            fill(255, 40);
+                            strokeWeight(7);
+                            stroke(255, 20, 20, 200);
+                            ellipse(545, 505, 150, 60);
+                            noStroke();
+                            textSize(25);
+                            outlineText("Press this button to start\nwhen you are ready.", 300, 500, 255, 0, 40);
+                            textSize(15);
+                            outlineText("click to continue", 300, 570, 255, 0, 20);
+                            break;
+                        case 4:
+                            noStroke();
+                            fill(0, 40);
+                            rect(0, 0, 600, 600);
+                            textSize(25);
+                            outlineText("Good luck!", 300, 500, 255, 0, 40);
+                            textSize(15);
+                            outlineText("click to begin", 300, 570, 255, 0, 20);
+                            break;
+                        case 5:
+                            gameTutorial = false;
+                    }
+                    if(clicked) {
+                        gTStage++;
+                    }
+                }
+                break;
+            case "complete":
+                image(shopBck, 0, 0, 600, 600);
+                noStroke();
+                fill(0, 20);
+                rect(0, 0, 600, 600);
+                fill(200);
+                strokeWeight(10);
+                stroke(150);
+                rect(100, 100, 400, 400, 20);
+                textSize(37);
+                outlineText("Wave Completed!", 300, 150, 255, 0, 50);
+                textSize(25);
+                outlineText(waveNotes[wave] + "\n\nBonus earned: " + floor((wave + 1) * 12.75 + 5) + " gems!", 300, 315, 255, 0, 50);
+                buttons.closeShop.draw();
+                break;
+            case "shop":
+                shopLeaving = false;
+                hoverText = "";
+                image(shopBck, 0, 0, 600, 600);
+                noStroke();
+                fill(0, shopTrans / 6);
+                rect(0, 0, 600, 600);
+                pushMatrix();
+                translate(0, shopTrans);
+                fill(200);
+                rect(50, -600, 500, 601, 40);
+                quad(200, 0, 400, 0, 350, 37.5, 250, 37.5);
+                noFill();
+                strokeWeight(2);
+                stroke(10);
+                line(275, 27, 325, 27);
+                line(255, 12, 345, 12);
+                fill(0, 50);
+                stroke(0, 50);
+                strokeWeight(9);
+                buttons.laserTower.draw();
+                buttons.streamTower.draw();
+                buttons.sparkTower.draw();
+                buttons.beamTower.draw();
+                buttons.beaconTower.draw();
+                buttons.lodestarTower.draw();
+                buttons.conduitTower.draw();
+                buttons.generatorTower.draw();
+                rotate(2);
+                textAlign(CENTER, CENTER);
+                textSize(100);
+                outlineText("SHOP", 278, -430, 255, 0, 150);
+                rotate(-2);
+                if(hoverText !== "") {
+                    fill(235);
+                    strokeWeight(2);
+                    stroke(100);
+                    rect(mouseX + 5, mouseY - 495, 100, 50);
+                    textAlign(LEFT);
+                    textSize(10);
+                    fill(0);
+                    text(hoverText, mouseX + 10, mouseY + 12.5 - 500, 90, 100);
+                    textAlign(CENTER, CENTER);
+                }
+                popMatrix();
+                if(mouseX < 50 || mouseX > 550 || mouseY > 37.5 + shopTrans) {
+                    shopLeaving = true;
+                }
+                if(shopLeaving) {
+                    shopTrans += (-6 - shopTrans) / 10;
+                    if(shopTrans < 0) {
+                        shopTrans = 0;
+                        page = "game";
+                    }
+                }
+                else {
+                    shopTrans += (500 - shopTrans) / 8;
+                }
+                break;
+
+            case "win":
+                image(shopBck, 0, 0, 600, 600);
+                noStroke();
+                fill(0, 20);
+                rect(0, 0, 600, 600);
+                fill(200);
+                strokeWeight(10);
+                stroke(150);
+                rect(50, 50, 500, 500, 20);
+                textSize(75);
+                outlineText("Impressive!", 300, 110, 255, 0, 50);
+                textSize(30);
+                outlineText("You finished the game\nwith a remarkable...", 300, 250, 255, 0, 50);
+                outlineText("health!", 300, 450, 255, 0, 50);
+                textSize(100);
+                outlineText(health, 300, 350, 255, 0, 80);
+                break;
+
+            case "lose":
+                image(shopBck, 0, 0, 600, 600);
+                noStroke();
+                fill(0, 20);
+                rect(0, 0, 600, 600);
+                fill(200);
+                strokeWeight(10);
+                stroke(150);
+                rect(50, 50, 500, 500, 20);
+                textSize(75);
+                outlineText("Oof", 300, 110, 255, 0, 50);
+                textSize(30);
+                outlineText("You still made it to wave", 300, 250, 255, 0, 50);
+                textSize(115);
+                outlineText((wave + 1), 300, 350, 255, 0, 100);
+                break;
+
+            case "action":
+                image(shopBck, 0, 0, 600, 600);
+                noStroke();
+                fill(0, 20);
+                rect(0, 0, 600, 600);
+                fill(200);
+                strokeWeight(10);
+                stroke(150);
+                rect(100, 100, 400, 400, 20);
+                textSize(40);
+                outlineText("Tower Actions", 300, 150, 255, 0, 50);
+                textSize(30);
+                // outlineText("To multiply all\nattributes by 1.5x, it\nwill cost: " + floor(towers[upgNum].cost * 0.85) + " gems.", 300, 270, 255, 0, 50);
+                buttons.sellBtn.draw();
+                buttons.upgradeBtn.draw();
+                buttons.xButton.draw();
+                break;
+
+            case "sell":
+                image(shopBck, 0, 0, 600, 600);
+                noStroke();
+                fill(0, 20);
+                rect(0, 0, 600, 600);
+                fill(200);
+                strokeWeight(10);
+                stroke(150);
+                rect(100, 100, 400, 400, 20);
+                textSize(37);
+                outlineText("Sell tower?", 300, 150, 255, 0, 50);
+                textSize(25);
+                outlineText("You will receive\n" + floor(towers[upgNum].cost * 0.7) + " gems. You will also free\nup a space on the board.", 300, 270, 255, 0, 40);
+                buttons.yeSell.draw();
+                buttons.closeUpg.draw();
+                // rect(200, 370, 200, 50, 10);
+                break;
+
+            case "upgrade":
+                image(shopBck, 0, 0, 600, 600);
+                noStroke();
+                fill(0, 20);
+                rect(0, 0, 600, 600);
+                fill(200);
+                strokeWeight(10);
+                stroke(150);
+                rect(100, 100, 400, 400, 20);
+                textSize(37);
+                outlineText("Upgrade tower?", 300, 150, 255, 0, 50);
+                textSize(30);
+                outlineText("To upgrade this tower,\nit will cost " + floor(towers[upgNum].cost * 0.75) + " gems.\n(you have " + moneys + ")", 300, 270, 255, 0, 50);
+                buttons.yeUpg.draw();
+                buttons.closeUpg.draw();
+                // rect(200, 370, 200, 50, 10);
+                if(mouseX > 200 && mouseX < 400 && mouseY > 370 && mouseY < 420 && moneys < floor(towers[upgNum].cost * 0.75)) {
+                    overButton = "x";
+                }
+                break;
+
+                // menu
+            case "maine":
+
+                image(imgs.spaceBackground, 0, 0);
+                textSize(125);
+                outlineText("COSMIC", 300, 110, 0, 255, 100);
+                imageMode(CENTER);
+                // image(imgs.pathBlur, 120, 300, 120, 120);
+                // image(imgs.pathBlur, 240, 300, 120, 120);
+                // image(imgs.pathBlur, 360, 300, 120, 120);
+                // image(imgs.pathBlur, 480, 300, 120, 120);
+                // image(imgs.pathBlur, 150, 460, 100, 100);
+                // image(imgs.pathBlur, 250, 460, 100, 100);
+                // image(imgs.pathBlur, 350, 460, 100, 100);
+                // image(imgs.pathBlur, 450, 460, 100, 100);
+                // rect(75, 240, 450, 120, 10);
+                buttons.playBtn.draw();
+                buttons.howBtn.draw();
+                textSize(55);
+
+                pushMatrix();
+                translate(150, 300);
+                image(imgs.laserTower, 0, 0, 100, 100);
+                image(imgs.towerBoom, 0, 0, 141, 141);
+                translate(300, 0);
+                image(imgs.beamTower, 0, 0, 100, 100);
+                rotate(180);
+                image(imgs.towerBoom, 0, 0, 141, 141);
+                popMatrix();
+                pushMatrix();
+                translate(160, 460);
+                image(imgs.conduitTower, 0, 0, 83, 83);
+                image(imgs.towerBoom, 0, 0, 116, 116);
+                translate(280, 0);
+                image(imgs.streamTower, 0, 0, 83, 83);
+                rotate(180);
+                image(imgs.towerBoom, 0, 0, 116, 116);
+                popMatrix();
+                imageMode(CORNER);
+                image(transImg, transImgX, 0);
+                transImgX += (600 - transImgX) / 15;
+
+                break;
+            case "how":
+
+                image(imgs.spaceBackground, 0, 0);
+                textSize(65);
+                outlineText("INSTRUCTIONS", 300, 90, 0, 255, 70);
+                textSize(24);
+                outlineText("It's quite simple. Enemies have\ninvaded the solar system and\nare trying to make it to the core\nthat supplies all of the power for\nour planet. Defeating enemies\ngives you gems which you can\nuse to purchase stronger towers\nand upgrades for those towers.\nDefend the core at all costs!\nGood luck!", 300, 315, 0, 255, 38);
+                buttons.bckBtn.draw();
+                imageMode(CENTER);
+                pushMatrix();
+                translate(75, 540);
+                image(imgs.sparkTower, 0, 0, 42, 42);
+                image(imgs.towerBoom, 0, 0, 58, 58);
+                translate(150, 0);
+                image(imgs.lodestarTower, 0, 0, 42, 42);
+                rotate(180);
+                image(imgs.towerBoom, 0, 0, 58, 58);
+                popMatrix();
+                imageMode(CORNER);
+                break;
+        }
+
+        // mouse interaction
+        if(overButton === true) {
+            cursor(HAND);
+        }
+        else if(overButton === "x") {
+            cursor('no-drop');
+        }
+        else {
+            cursor(ARROW);
+        }
+        clicked = false;
+        overButton = false;
+
+        // show frame rate
+        fill(0);
+        textSize(20);
+        outlineText(this.__frameRate.toFixed(1), 35, 15, 0, 255, 12);
+        fill(0, fade);
+        rect(0, 0, 600, 600);
+        fade += fadeVel;
+        fadeVel -= 1.1;
+        if(fade > 245) {
+            fadeVel = -2;
+            fade = 244;
+            page = pageToGoTo;
+        }
+    }
+    catch (e) {
+        println(e);
+    }
+};
+
+mouseClicked = function() {
+    clicked = true;
+};
+keyPressed = function() {
+    keys[keyCode] = true;
+};
+keyReleased = function() {
+    keys[keyCode] = false;
+};
+
+// }
+
