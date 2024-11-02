@@ -1,0 +1,1628 @@
+/**
+ * 
+ *  ▄████▄  ▒█████   █    ██  ███▄    █ ▄▄▄█████▓ ▓█████ ██▀███
+ * ▒██▀ ▀█ ▒██▒  ██▒ ██  ▓██▒ ██ ▀█   █ ▓  ██▒ ▓▒ ▓█   ▀▓██ ▒ ██
+ * ▒▓█    ▄▒██░  ██▒▓██  ▒██░▓██  ▀█ ██▒▒ ▓██░ ▒░ ▒███  ▓██ ░▄█ 
+ * ▒▓▓▄ ▄██▒██   ██░▓▓█  ░██░▓██▒  ▐▌██▒░ ▓██▓ ░  ▒▓█  ▄▒██▀▀█▄ 
+ * ▒ ▓███▀ ░ ████▓▒░▒▒█████▓ ▒██░   ▓██░  ▒██▒ ░ ▒░▒████░██▓ ▒██
+ * ░ ░▒ ▒  ░ ▒░▒░▒░ ░▒▓▒ ▒ ▒ ░ ▒░   ▒ ▒   ▒ ░░   ░░░ ▒░ ░ ▒▓ ░▒▓
+ *   ░  ▒    ░ ▒ ▒░ ░░▒░░▒░ ░ ░ ░░   ░ ▒░    ░    ░ ░ ░    ░▒ ░ ▒
+ * ░       ░ ░ ░ ▒░░  ▄▄▄█████▓ ▒█████   ██▓███ ░    ░    ░░   ░
+ * ░ ░         ░ ░   ▒▓  ██▒ ▓▒▒██▒  ██▒▓██░  ██   ░   ░     ░   
+ *                   ▒▒ ▓██░ ▒░▒██░  ██▒▓██░ ██▓▒
+ *                    ░ ▓██▓ ░ ▒██   ██░▒██▄█▓▒ ▒
+ *                   ▒  ▒██▒ ░ ░ ████▓▒░▒██▒ ░  ░
+ *                   ░  ▒ ░░   ░ ▒░▒░▒░ ▒▓▒░ ░  ░
+ *                      ░      ░ ▒ ▒░ ░▒ ░     
+ *                   ░      ░ ░ ░ ▒  ░░       
+ * 
+ * 
+ * SP @Prodigy6 - 10/24/24
+ * 
+ * I forgot to make a comment in the t&t and it will end up getting buried bc there are a bunch of other comments already but.... SuBsCrIbE!
+ *           khanacademy.org/cs/i/6262858309271552
+ * 
+ * VOTE LOG {
+ *  Day 1: +42, 43 votes, got locked a mere 6 hours after release, 1st on hl
+ *  Day 2: +25, 68 votes - dropped to 3rd
+ *  Day 2: +3, 71 votes - dropped to 5th, ka is super ded today
+ *  Day 3: +4, 75 votes - dropped to 11th, typical ka sunday prob will get to 90ish
+ *  Day 4: +9, 84 votes - dropped out of 1st page of hl
+ *  Day 5: +3, 87 votes - way off the hl. did pretty good
+ * }
+ * 
+ * Per usual I am expecting an essay from Timothy (whenever he gets the time to view this program).
+ * 
+ * And also per usual I didn't have time to neaten any of the code (my regards are sent to all who try to read it)
+ * 
+ * WASD / Arrow keys to move, R to restart the level.
+ * 
+ * If you managed to beat the game, let me know in the T&T and I will add you to the list!
+ * 
+ * This game is [verrry] loosely based on the Mario Kart track Squeaky Clean Sprint.
+ * 
+ * Synopsis (courtesy of PizzaNinja):
+ * Follow the adventure of Tim, a toothpaste cap that fell off the sink and is now trying to find his way back to his home in the cabinet
+ * (I think this sums up the game quite well).
+ * 
+ * 
+ * 
+ * yiiikes this game is very... eh
+ * not sure why, its just really boring...
+ * 
+ * constructive criticism, as always, is appreciated
+ * 
+ * I've been pretty sick the last few days so I had to really rush to get this done, you can probably notice that.
+ * 
+ * and yes the player is a toothpaste cap, I wasn't sure what else to make it.
+ * 
+ *
+ * 
+ **/
+
+// {
+
+// @mkaelin368
+Object.constructor.prototype.new = (function() {
+    var obj = Object.create(this.prototype);
+    this.apply(obj, arguments);
+    return obj;
+});
+
+// @dkareh
+(function() {
+    return this;
+})().LoopProtector.prototype.leave = function() {};
+
+// logo vars
+var logoImgs = [];
+var bck;
+var presents = [];
+var pMsg = "PRESENTS".split("");
+var transImg, transImgX = 0.1;
+var logoTimer = 1;
+
+// user interaction
+var page = "load";
+var clicked = false;
+var overButton = false;
+var keys = [];
+
+var bckTrans = 0;
+
+var counterTop = random(0, 1000);
+
+var finishers = "SP,JosiahJP,RedRaven9,Luke Ellis,awesomeorion,Avenger,Zidane Medina,moon0nshoe,DaBossBoi12,Griffinjiun,Froggers,Equilibrium,- k a t i t e -,cg048,hi bye,chiuch2028,CHOViolin,Spooderman Spooderman,Joseph,1AutumnLeaf,shredder,kurzgesagtMaker,Kirby,brighamshirley2024,Kesidedav,5507805,Zachary Davis,FossilTortoise,catQueen,🩵Doggo🩵".split(",");
+
+// outlined text function
+var outlineText = function(t, x, y, f, s, w) {
+    fill(s);
+    for(var i = 0; i < 30; i++) {
+        text(t, x + sin(i * 16) * w / 16, y + cos(i * 16) * w / 16);
+    }
+    fill(f);
+    text(t, x, y);
+};
+
+// rect colision fnuction
+function rectCollide(x, y, w, h, x2, y2, w2, h2) {
+    return x2 + w2 > x && x2 < x + w && y2 + h2 > y && y2 < y + h;
+}
+
+function Particle(x, y, col, size, xVel, yVel, trans, transVel, sizeVel) {
+    this.x = x;
+    this.y = y;
+    this.xVel = xVel;
+    this.yVel = yVel;
+    this.col = col;
+    this.size = size;
+    this.sizeVel = sizeVel;
+    this.shape = 0;
+    this.trans = trans;
+    this.transVel = transVel;
+}
+Particle.prototype.draw = function() {
+
+    // do stuff idk im tired
+    noStroke();
+    fill(red(this.col), green(this.col), blue(this.col), this.trans);
+    if(this.shape === 0) {
+        rect(this.x, this.y, this.size, this.size);
+    }
+    else {
+        ellipse(this.x, this.y, this.size, this.size);
+    }
+    this.x += this.xVel;
+    this.y += this.yVel;
+    this.trans += this.transVel;
+    this.xVel *= 0.98;
+    this.yVel += 0.07;
+    this.size += this.sizeVel;
+};
+
+// nice arrays
+var particles = [];
+
+
+// all of the graphics
+var imgs = {
+
+    "logoLoad": function() {
+
+        for(var i = 0; i < 8; i++) {
+            presents.push([i * 50 + 125, 525, 300, 615]);
+        }
+        background(0, 0, 0, 0);
+        fill(0);
+        textSize(380);
+        textFont(createFont("Montserrat Bold"));
+        textAlign(CENTER, CENTER);
+        text("SP", 295, 295);
+        fill(127.5);
+        text("SP", 300, 300);
+        fill(255);
+        text("SP", 305, 305);
+        for(var i = 0; i < 30; i++) {
+            for(var j = 5; j < 25; j++) {
+                logoImgs.push([get(i * 30, j * 30, 30, 30), i * 30, j * 30, 0, 285, false]);
+            }
+        }
+
+        noStroke();
+        background(21, 0, 158);
+        for(var i = 0; i < height; i += 10) {
+            fill(0, 3);
+            rect(0, i, width, height - i);
+        }
+        for(var i = 0; i < 600; i++) {
+            fill(255);
+            ellipse(random(0, width), random(0, height), random(0.5, 2.5), random(0.5, 2.5));
+        }
+
+        bck = get(0, 0, 600, 600);
+
+    },
+    
+    // this took an annoyingly long amount of time to make
+    "lovelyBackground": function() {
+
+        background(198, 192, 240);
+        strokeWeight(15);
+        stroke(218, 212, 255);
+        fill(165, 190, 240);
+        ellipse(175, 242, 240, 300);
+        noStroke();
+        fill(218, 212, 255);
+        rect(0, 475, 600, 125);
+        fill(238, 232, 255);
+        ellipse(175, 530, 300, 50);
+
+        beginShape();
+        vertex(300, 450);
+        vertex(325, 453);
+        vertex(330, 505);
+        vertex(297, 497);
+        endShape(CLOSE);
+        fill(227, 221, 244);
+        beginShape();
+        // vertex(300, 450);
+        vertex(325, 453);
+        vertex(330, 505);
+        vertex(340, 501);
+        vertex(331, 449);
+        vertex(304, 446);
+        vertex(300, 450);
+        endShape(CLOSE);
+        fill(141, 118, 188);
+        pushMatrix();
+        translate(309, 447);
+        rotate(5);
+        rect(0, 0, 12, 5, 10);
+        rect(3, -12, 5, 12);
+        rect(-7, -11, 12, 5, 3);
+        textAlign(CENTER, CENTER);
+        textSize(9);
+        fill(212, 206, 229);
+        text("SOUP", 6.5, 30);
+        popMatrix();
+
+
+        fill(218, 212, 255);
+        rect(400, 230, 200, 25);
+        rect(400, 360, 200, 25);
+
+        fill(238, 232, 255);
+        rect(420, 310, 45, 50, 20, 20, 10, 10);
+        rect(475, 310, 45, 50, 20, 20, 10, 10);
+        rect(475, 275, 45, 50, 20, 20, 10, 10);
+
+        rect(523, 415, 55, 60, 8);
+
+        fill(233, 227, 250);
+        rect(482, 435, 25, 40, 5);
+        rect(424, 425, 35, 50, 5);
+
+
+        fill(238, 232, 255);
+        // rect(420, 195, 70, 35, 8);
+        rect(415, 195, 70, 17.5, 8, 8, 8, 0);
+        rect(415, 195 + 17.5, 70, 17.5, 0, 8, 8, 8);
+
+        rect(415, 195 - 36, 70, 17.5, 15, 15, 15, 0);
+        rect(415, 195 + 17.5 - 36, 70, 17.5, 0, 15, 15, 15);
+
+        rect(495, 190, 100, 20, 15, 15, 15, 0);
+        rect(495, 190 + 20, 100, 20, 0, 15, 15, 15);
+        rect(541, 340, 40, 20, 5);
+        fill(233, 227, 250);
+        rect(539, 335, 44, 10, 5);
+        textSize(9);
+        fill(212, 206, 229);
+        text("CRÉME", 539 + 22, 353);
+        // ellipse(561, 340, 38, 5);
+
+
+        fill(238, 232, 255);
+
+        pushMatrix();
+        translate(510, 520);
+        rotate(10);
+        quad(-10, 0, 50, -10, 50, 25, -10, 20);
+        fill(198, 192, 215);
+        quad(-10, 0, -10, 20, -20, 15, -20, 5);
+        fill(218, 212, 235);
+        rect(42, 0, 7, 1);
+        rect(42, -5, 7, 1);
+        rect(42, 5, 7, 1);
+        rect(42, 10, 7, 1);
+        rect(42, 15, 7, 1);
+        rect(42, 20, 7, 1);
+
+
+        popMatrix();
+
+        fill(141, 118, 188);
+        ellipse(420 + 45 / 2, 317, 20, 6);
+        ellipse(420 + 45 / 2 + 55, 317 - 35, 20, 6);
+
+        pushMatrix();
+        translate(412, 500);
+        rotate(-10);
+        rect(0, 0, 65, 8, 5);
+        fill(248, 242, 255);
+        rect(40, -10, 20, 10, 5, 5, 0, 0);
+        popMatrix();
+
+
+        strokeWeight(0.5);
+        noFill();
+        stroke(141, 118, 188);
+        arc(420 + 45 / 2, 318, 40, 14, 0, 180);
+        arc(420 + 45 / 2 + 55, 318, 45, 11, 0, 180);
+        arc(420 + 45 / 2 + 55, 318 - 35, 40, 14, 0, 180);
+
+        strokeWeight(2);
+        stroke(198, 192, 240);
+        line(430, 212.5, 490, 212.5);
+        line(430, 212.5 - 35, 490, 212.5 - 35);
+        line(420, 195, 490, 195);
+        strokeWeight(2.5);
+        line(510, 210, 790, 210);
+
+
+        noStroke();
+
+        fill(141, 118, 188);
+        pushMatrix();
+        translate(542, 414);
+        scale(1.5);
+        rect(-3, 0, 18, 5, 10);
+        rect(3, -13, 5, 15, 2);
+        rect(-7, -11, 12, 5, 3);
+        popMatrix();
+
+        pushMatrix();
+        translate(489, 434);
+        scale(0.99);
+        rect(-1, 0, 14, 5, 10);
+        rect(3, -12, 5, 12);
+        rect(-7, -11, 12, 5, 3);
+        popMatrix();
+        pushMatrix();
+        translate(436, 426);
+        scale(1.1);
+        rect(-1, 0, 14, 5, 10);
+        rect(3, -12, 5, 12, 1);
+        rect(-7, -11, 12, 5, 3);
+        popMatrix();
+
+        fill(168, 167, 181);
+        rect(167, 394, 9, 100);
+        rect(201, 394, 9, 23);
+        rect(198, 410, 15, 9, 10);
+        ellipse(167 + 4.5, 494, 50, 11);
+        ellipse(167 + 4.5 + 70, 494, 20, 7);
+        ellipse(167 + 4.5 - 70, 494, 20, 7);
+        rect(167 + 4.5 + 70 - 5, 463, 10, 30, 150, 0, 0, 0);
+        rect(167 + 4.5 + 70 + 1, 463, 19, 10, 100);
+        rect(167 + 4.5 - 70 - 5, 463, 10, 30, 0, 150, 0, 0);
+        rect(167 + 4.5 - 70 - 20, 463, 19, 10, 100);
+
+
+        noFill();
+        stroke(168, 167, 181);
+        strokeWeight(9);
+        strokeCap(SQUARE);
+        arc(188.5, 395, 34, 68, 180, 360);
+
+        noStroke();
+        fill(0, 12);
+        // rect(400, 255, 200, 106);
+        quad(400, 255, 600, 255, 600, 255 + 106, 453, 255 + 106);
+        quad(400, 385, 600, 385, 600, 255 + 106 + 115, 445, 255 + 106 + 114);
+
+
+        fill(178, 172, 220);
+        rect(170, 0, 10, 120);
+        quad(170, 120, 180, 120, 230, 150, 120, 150);
+        filter(BLUR, 2);
+        return get();
+    },
+    "spongey": function() {
+        fill(230, 235, 136);
+        noStroke();
+        rect(20, 20, 115, 115);
+        for(var i = 0; i < 40; i++) {
+            for(var j = 0; j < 40; j++) {
+                fill(random(0, 255), random(0, 10));
+                rect(i * 2.9 + 20, j * 2.9 + 20, 2.9, 2.9);
+            }
+        }
+        for(var i = 0; i < 13; i++) {
+            fill(random(140, 160), random(90, 110), random(20, 40));
+            ellipse(random(25, 130), random(25, 130), i / 2 + 2, i / 2 + 2);
+        }
+        filter(BLUR);
+        return get(35, 35, 80, 80);
+    },
+    "hairDryer": function() {
+        pushMatrix();
+        scale(3);
+        translate(-150, -150);
+        noStroke();
+        beginShape();
+        fill(222, 142, 211);
+        vertex(294, 303);
+        bezierVertex(291, 331, 314, 350, 313, 297);
+        bezierVertex(327, 298, 330, 234, 273, 258);
+        vertex(258, 257);
+        bezierVertex(258, 256, 234, 239, 231, 270);
+        bezierVertex(231, 270, 226, 296, 247, 292);
+        vertex(254, 289);
+        vertex(270, 291);
+        bezierVertex(270, 291, 278, 307, 292, 304);
+        endShape(CLOSE);
+        stroke(222, 142, 211);
+        strokeWeight(4);
+        fill(60);
+        pushMatrix();
+        translate(245, 270);
+        rotate(6);
+        ellipse(-3, 2, 21, 35);
+        popMatrix();
+        noFill();
+        strokeWeight(7);
+        stroke(255, 50);
+        arc(294, 287, 41, 50, 255, 332);
+        strokeWeight(2);
+        stroke(140, 255);
+        pushMatrix();
+        line(239, 258, 248, 261);
+        translate(0, 3);
+        line(236, 260, 250, 264);
+        translate(0, 5);
+        line(235, 260, 250, 264);
+        translate(0, 5);
+        line(234, 260, 250, 264);
+        translate(0, 5);
+        line(235, 261, 246, 264);
+        popMatrix();
+        noFill();
+        stroke(222, 142, 211);
+        strokeWeight(4);
+        pushMatrix();
+        translate(245, 270);
+        rotate(6);
+        ellipse(-3, 2, 21, 35);
+        popMatrix();
+        popMatrix();
+        return get(234, 301, 285, 244);
+    },
+    "countertop": function() {
+        fill(178, 172, 220);
+        noStroke();
+        rect(20, 20, 115, 115);
+        for(var i = 0; i < 40; i++) {
+            for(var j = 0; j < 40; j++) {
+                fill(random(0, 255), random(0, 10));
+                rect(i * 2.9 + 20, j * 2.9 + 20, 2.9, 2.9);
+            }
+        }
+        filter(BLUR);
+        return get(35, 35, 80, 80);
+    },
+    "soapy": function() {
+        image(imgs.countertop, 35, 35, 80, 80);
+        for(var i = 0; i < 600; i++) {
+            fill(random(175, 210), random(175, 210), random(155, 190), random(70 - i / 19, 110 - i / 19));
+            ellipse(random(24, 126), random(25, 45 + random(0, i / 12)), random(5, 20), random(5, 20));
+        }
+        return get(35, 35, 80, 80);
+    },
+    "soapyTransR": function() {
+        image(imgs.countertop, 35, 35, 80, 80);
+        for(var i = 0; i < 200; i++) {
+            fill(random(175, 210), random(175, 210), random(155, 190), random(90 - i / 17, 140 - i / 17));
+            ellipse(170 - random(71 + i / 2.5, 180), random(25, 45 + random(0, i / 3)), random(5, 20), random(5, 20));
+        }
+        return get(35, 35, 80, 80);
+    },
+    "toofTransL": function() {
+        image(imgs.countertop, 35, 35, 80, 80);
+        for(var i = 0; i < 200; i++) {
+            fill(random(140, 160), random(220, 240), random(230, 250), random(70 - i / 17, 110 - i / 17));
+            ellipse(random(71 + i / 2.5, 180), random(25, 45 + random(0, i / 3)), random(5, 20), random(5, 20));
+        }
+        return get(35, 35, 80, 80);
+    },
+    "toofTransR": function() {
+        image(imgs.countertop, 35, 35, 80, 80);
+        for(var i = 0; i < 200; i++) {
+            fill(random(140, 160), random(220, 240), random(230, 250), random(70 - i / 17, 110 - i / 17));
+            ellipse(170 - random(71 + i / 2.5, 180), random(25, 45 + random(0, i / 3)), random(5, 20), random(5, 20));
+        }
+        return get(35, 35, 80, 80);
+    },
+    "toofSpongeTransL": function() {
+        image(imgs.spongey, 35, 35, 80, 80);
+        for(var i = 0; i < 200; i++) {
+            fill(random(140, 160), random(220, 240), random(230, 250), random(70 - i / 17, 110 - i / 17));
+            ellipse(random(70 + i / 2.5, 180), random(25, 45 + random(0, i / 3)), random(5, 20), random(5, 20));
+        }
+        return get(35, 35, 80, 80);
+    },
+    "toofSpongeTransR": function() {
+        image(imgs.spongey, 35, 35, 80, 80);
+        for(var i = 0; i < 200; i++) {
+            fill(random(140, 160), random(220, 240), random(230, 250), random(70 - i / 17, 110 - i / 17));
+            ellipse(160 - random(71 + i / 2.5, 180), random(25, 45 + random(0, i / 3)), random(5, 20), random(5, 20));
+        }
+        return get(35, 35, 80, 80);
+    },
+    "soapyTransL": function() {
+        image(imgs.countertop, 35, 35, 80, 80);
+        for(var i = 0; i < 200; i++) {
+            fill(random(175, 210), random(175, 210), random(155, 190), random(90 - i / 17, 140 - i / 17));
+            ellipse(random(71 + i / 2.5, 180), random(25, 45 + random(0, i / 3)), random(5, 20), random(5, 20));
+        }
+        return get(35, 35, 80, 80);
+    },
+    "toofpasta": function() {
+        image(imgs.countertop, 35, 35, 80, 80);
+        for(var i = 0; i < 600; i++) {
+            fill(random(140, 160), random(220, 240), random(230, 250), random(70 - i / 19, 110 - i / 19));
+            ellipse(random(24, 126), random(25, 45 + random(0, i / 24)), random(5, 20), random(5, 20));
+        }
+        return get(35, 35, 80, 80);
+    },
+    "washy": function() {
+        background(0, 0);
+        for(var i = 0; i < 40; i++) {
+            for(var j = 0; j < 40; j++) {
+                fill(random(59, 79), random(222, 242), random(67, 87), 254);
+                pushMatrix();
+                translate(0, map(noise(abs(i - 20) / 30 + counterTop), 0.3, 0.6, 25, 55));
+                rect(i * 2.9 + 20, j * 2.9 + 20, 2.9, 2.9);
+                popMatrix();
+            }
+        }
+        filter(BLUR, 1.1);
+        return get(35, 35, 80, 80);
+    },
+    "plungerTop": function() {
+        background(0, 0);
+        noStroke();
+        fill(184, 51, 31);
+        arc(75, 40, 80, 90, 0, 180);
+        fill(169, 36, 16);
+        rect(35, 35, 80, 5);
+        rect(62, 83, 26, 10);
+        fill(140, 78, 36);
+        rect(69, 93, 12, 85, 0, 0, 10000, 10000);
+        noFill();
+        strokeWeight(1);
+        stroke(0);
+        arc(75, 40, 80, 90, 73, 108);
+        return get(35, 35, 80, 80);
+    },
+    "plungerBottom": function() {
+        background(0, 0);
+        image(imgs.countertop, 35, 35 + 80, 80, 80);
+        noStroke();
+        fill(184, 51, 31);
+        arc(75, 40, 80, 90, 0, 180);
+        fill(169, 36, 16);
+        rect(35, 35, 80, 5);
+        rect(62, 83, 26, 10);
+        fill(140, 78, 36);
+        rect(69, 93, 12, 85, 0, 0, 10000, 10000);
+        noFill();
+        strokeWeight(1);
+        stroke(0);
+        arc(75, 40, 80, 90, 73, 108);
+        return get(35, 35 + 80, 80, 80);
+    },
+    "mirrorL": function() {
+        pushMatrix();
+        translate(100, 100);
+        stroke(138, 88, 54);
+        // strokeWeight(5);
+        // line(-2, 0, 20, 40);
+        stroke(148, 98, 24);
+        translate(5, 0);
+        strokeWeight(7);
+        line(-8, -15, 24, 40);
+        rotate(8);
+
+        strokeWeight(4);
+        fill(139, 206, 240);
+        ellipse(0, 0, 25, 80);
+        noFill();
+        strokeWeight(6);
+        arc(0, 0, 25, 80, -90, 90);
+        noStroke();
+        fill(255, 50);
+        rotate(120);
+        rect(-24, 9, 20, 3);
+        rect(-12, -1, 20, 3);
+        rect(1, -11, 20, 3);
+        popMatrix();
+        return get(86, 53, 50, 97);
+    },
+    "mirrorR": function() {
+        pushMatrix();
+        translate(100, 100);
+        scale(-1, 1);
+        stroke(138, 88, 54);
+        // strokeWeight(5);
+        // line(-2, 0, 20, 40);
+        stroke(148, 98, 24);
+        translate(5, 0);
+        strokeWeight(7);
+        line(-8, -15, 24, 40);
+        rotate(8);
+
+        strokeWeight(4);
+        fill(139, 206, 240);
+        ellipse(0, 0, 25, 80);
+        noFill();
+        strokeWeight(6);
+        arc(0, 0, 25, 80, -90, 90);
+        noStroke();
+        fill(255, 50);
+        rotate(120);
+        rect(-24, 9, 20, 3);
+        rect(-12, -1, 20, 3);
+        rect(1, -11, 20, 3);
+        popMatrix();
+        return get(64, 53, 50, 97);
+    },
+    "player": function() {
+        noStroke();
+        fill(220);
+        quad(50, 130, 130, 130, 115, 50, 65, 50);
+        for(var i = 0; i < 8; i++) {
+            strokeWeight(3.29);
+            stroke(200);
+            line(55 + i * 10, 130, 60 + (i) * 6 + 9, 50);
+        }
+        return get(50, 50, 80, 80);
+    },
+    // template
+    /*
+    "": function() {
+        
+    },
+    */
+};
+
+var curLevel = 0;
+
+var levels = [
+    /*
+    m: mouthwash
+    c: countertop
+    s: soap
+    p: sponge
+    t: sticky toothpaste
+    L: top plunger
+    l: bottom plunger
+    f: mirror facing l
+    F: mirror r
+    transitions:
+    q: ct > soap l
+    Q: ct > soap r
+    w: ct > tooth l
+    W: ct > tooth r
+    sp > tooth l
+    sp > tooth r
+    
+    
+    
+    S: spawn
+    */
+
+    [
+        "S         f",
+        "ccccccccccc",
+    ],
+    [
+        "S                         f",
+        "cccccqsssssQccccwtttttWcccc",
+    ],
+    [
+        "S                    f",
+        "cccccqsmmmmmcccccccccc",
+    ],
+    [
+        "                   f",
+        "              cccccc",
+        "              cccccc",
+        "              cccccc",
+        "              cccccc",
+        "              cccc",
+        "              cccc",
+        "              cccc",
+        "              cccc",
+        "       ccccLcccccc",
+        "       cccclcccccc",
+        "       ccccccccccc",
+        "       ccccccccccc",
+        "       cccc",
+        "S      cccc",
+        "cccccpccccc",
+    ],
+    [
+        "S                    f",
+        "ccLcwttmmmmmmmcccccccc",
+        "cclccccccccccccccccccc",
+    ],
+    [
+        "      cF              ",
+        "       c              ",
+        "        ccc     s     ",
+        "",
+        "",
+        "        ss      s    p",
+        "         c",
+        "S             c",
+        "cwtEet",
+        "",
+        "mmmmmmmmmmmmmmmmmmmmmm",
+    ],
+    [
+        "         ",
+        "",
+        "",
+        "S",
+        "ccccc",
+        "ccccc",
+        "ccccc   f",
+        "ccccccccc",
+    ],
+    [
+        "         c ",
+        "F",
+        "c",
+        "",
+        "",
+        "",
+        "        cp ",
+        "S          ",
+        "ttttWwttttt",
+    ],
+    [
+        " c                      ",
+        " c  c",
+        " c",
+        " c",
+        " cc",
+        " fc                  c ",
+        "ccc         s        c",
+        "   p               p  s",
+        "  s                   ",
+        "",
+        "c          S           p",
+        "      c    c    c  c",
+        "",
+        "mmmmmmmmmmmmmmmmmmmmmmmmm",
+    ],
+    [
+        "S                     ",
+        "ccc           ",
+        "ccc           ",
+        "ccc                  f",
+        "cccccL         ccccccc",
+        "cccccltttttttttccccccc",
+    ],
+    [
+        "         ccc c             ",
+        "         c   c",
+        "         c   c            ",
+        "         c S c            f",
+        "cmmmcmmmccccpccmmmmcmmmmmmc",
+    ],
+    [
+        "                                                 ",
+        "           s       s                             ",
+        "                                                f",
+        "                                               ss",
+        "                                  s",
+        "                          s",
+        "                                      c",
+        "    s      p                          c",
+        "S                                     c",
+        "ccwtttttttttttttttttttttttttttttttttttccmmmpmmmmm",
+    ],
+    [
+        "S              f",
+        "cqs        ccccc",
+        "",
+        "mmmmmmmmmmmmmmmm",
+    ],
+    [
+        "ccccccccccccccccc",
+        "        c    cc f",
+        "        c c  c  c",
+        "        c c  c cc",
+        "          c  c  c",
+        "          c  cc c",
+        "        cpc  c  c",
+        "        ccc  c cc",
+        "        ccc  c  c",
+        "S       ccc  cc c",
+        "ccc     ccc  c  c",
+        "ccc     ccc  c cc",
+        "ccc     ccc    cc",
+        "ccccLmmmcccmccmccc",
+        "cccclccccccccccccc",
+    ],
+    [
+        "  qssssp  ccc        ",
+        " cc       ccc",
+        "  c       ccc",
+        "  c       ccc",
+        " pc      fcccS",
+        "  cmmmmmcccccttttttt",
+        "p ccccccc   c   c",
+        "  c c   c   c   c ttt",
+        " p",
+        "  ",
+        "pcc   c   c   c   c",
+    ],
+    //s        s
+    /*
+    m: mouthwash✔
+    c: countertop✔
+    s: soap✔
+    p: sponge✔
+    t: sticky toothpaste✔
+    L: top plunger
+    l: bottom plunger
+    f: finish / portal (?)
+    q: soap trans
+    S: spawn✔
+    hair dryer
+    */
+    /*
+    [
+        "",
+    ]
+    */
+];
+
+var Player = function() {
+    this.x = 0;
+    this.y = 0;
+    this.xVel = 0;
+    this.yVel = 0;
+    this.canJump = true;
+    this.sliding = false;
+    this.stuck = false;
+};
+var tony = new Player();
+
+function HairDryer(x, y, push, dir) {
+    this.x = x;
+    this.y = y;
+    this.push = push;
+    this.dir = dir;
+    // 0 = right, 1 = left
+}
+HairDryer.prototype.draw = function() {
+    if(this.dir === 1) {
+        image(imgs.hairDryer, this.x, this.y + 6, 150, 128);
+        stroke(255, 80);
+        strokeWeight(5);
+        pushMatrix();
+        translate(180, 0);
+        // translate(this.x, this.y)
+        line(this.x - 220 + sin(frameCount * 15) * 2, this.y + 15 + cos(frameCount * 15 + 100) * 2, this.x - 380 + sin(frameCount * 15) * 2, this.y + 15 + cos(frameCount * 15 + 100) * 2);
+        line(this.x - 220 + sin(frameCount * 15) * 2, this.y + 65 + cos(frameCount * 15) * 2, this.x - 380 + sin(frameCount * 15) * 2, this.y + 65 + cos(frameCount * 15) * 2);
+        line(this.x - 240 + sin(frameCount * 15 + 200) * 2, this.y + 40 + cos(frameCount * 15 + 100) * 2, this.x - 400 + sin(frameCount * 15 + 200) * 2, this.y + 40 + cos(frameCount * 15 + 200) * 2);
+        noStroke();
+        popMatrix();
+    }
+    else {
+        pushMatrix();
+        translate(this.x, this.y);
+        scale(-1, 1);
+        image(imgs.hairDryer, -200, 6, 150, 128);
+        popMatrix();
+        pushMatrix();
+        strokeWeight(5);
+        stroke(255, 90);
+        line(this.x + 220 + sin(frameCount * 15) * 2, this.y + 15 + cos(frameCount * 15 + 100) * 2, this.x + 380 + sin(frameCount * 15) * 2, this.y + 15 + cos(frameCount * 15 + 100) * 2);
+        line(this.x + 220 + sin(frameCount * 15) * 2, this.y + 65 + cos(frameCount * 15) * 2, this.x + 380 + sin(frameCount * 15) * 2, this.y + 65 + cos(frameCount * 15) * 2);
+        line(this.x + 240 + sin(frameCount * 15 + 200) * 2, this.y + 40 + cos(frameCount * 15 + 100) * 2, this.x + 400 + sin(frameCount * 15 + 200) * 2, this.y + 40 + cos(frameCount * 15 + 200) * 2);
+        popMatrix();
+    }
+};
+HairDryer.prototype.func = function() {
+    if(this.dir === 0) {
+        if(rectCollide(tony.x, tony.y, 80, 80, this.x, this.y, 400, 100)) {
+            tony.xVel += map(tony.x - this.x, 0, 400, this.push, 1) / 2;
+        }
+    }
+    else {
+        if(rectCollide(tony.x, tony.y, 80, 80, this.x - 400, this.y, 400, 100)) {
+            tony.xVel -= map(tony.x - this.x, 0, 400, this.push, 1) / 2;
+        }
+    }
+};
+
+var levelTexts = [
+    ": Arrow keys to move",
+    ": Soap is slippery, toothpaste is sticky",
+    ": Mouthwash will hurt you!",
+    ": Sponges and plungers are bouncy!",
+    ": R to restart. Good luck!",
+    "",
+    ": Hair dryers will move you",
+    ": A leap of faith",
+    "",
+    ": Timing is everything",
+    "",
+    ": Exploration",
+    ": It is possible",
+    ": Take it easy",
+    ": Final (sponges may help)",
+];
+
+var hairDryers = [];
+
+var hairDryerLevels = [
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [
+        new HairDryer(180, 465, 5, 0)
+    ],
+    [],
+    [],
+    [
+        new HairDryer(30, 225, 5, 0)
+    ],
+    [],
+    [],
+    [],
+    [
+        new HairDryer(30, 285 + 630, 16.5, 0)
+    ],
+    [
+        new HairDryer(810, 250, 15.2, 1)
+    ],
+    [],
+];
+
+var Block = function(x, y, t) {
+    this.x = x;
+    this.y = y;
+    this.type = t;
+    if(this.type === "L") {
+        this.plungerRelease = 81;
+    }
+};
+Block.prototype.draw = function() {
+    strokeWeight(4);
+    stroke(0);
+    switch(this.type) {
+        case "c":
+            image(imgs.countertop, this.x, this.y, 81, 81);
+            break;
+        case "s":
+            image(imgs.soapy, this.x, this.y, 81, 81);
+            break;
+        case "q":
+            image(imgs.soapyTransL, this.x, this.y, 81, 81);
+            break;
+        case "Q":
+            image(imgs.soapyTransR, this.x, this.y, 81, 81);
+            break;
+        case "w":
+            image(imgs.toofTransL, this.x, this.y, 81, 81);
+            break;
+        case "W":
+            image(imgs.toofTransR, this.x, this.y, 81, 81);
+            break;
+        case "e":
+            image(imgs.toofSpongeTransL, this.x, this.y, 81, 81);
+            break;
+        case "E":
+            image(imgs.toofSpongeTransR, this.x, this.y, 81, 81);
+            break;
+        case "m":
+            if(frameCount % 25 === floor(this.x * 123.19537) % 25) {
+                particles.push(new Particle(this.x + random(0, 80), this.y + random(10, 40), color(random(59, 79), random(222, 242), random(67, 87)), random(5, 11), random(-0.5, 0.5), random(-1.5, -1.5), 255, 0, random(-0.15, -0.11)));
+            }
+            image(imgs.washy, this.x, this.y, 81, 81);
+            break;
+        case "p":
+            image(imgs.spongey, this.x, this.y, 81, 81);
+            break;
+        case "t":
+            image(imgs.toofpasta, this.x, this.y, 81, 81);
+            break;
+        case "L":
+            image(imgs.countertop, this.x, this.y, 81, 81);
+            image(imgs.plungerTop, this.x, this.y + 81 - this.plungerRelease, 81, this.plungerRelease);
+            this.plungerRelease += (81 - this.plungerRelease) / 10;
+
+            if(frameCount % 120 < 4) {
+                this.plungerRelease += (0 - this.plungerRelease) / 2.2;
+                if(rectCollide(tony.x, tony.y, 80, 81, this.x, this.y, 80, 80)) {
+                    tony.yVel = -20;
+                }
+            }
+            break;
+        case "l":
+            image(imgs.plungerBottom, this.x, this.y, 81, 81);
+            break;
+        case "f":
+            image(imgs.mirrorL, this.x + 30, this.y, 43, 87);
+            break;
+        case "F":
+            image(imgs.mirrorR, this.x + 10, this.y, 43, 87);
+            break;
+    }
+
+};
+
+var blocks = [];
+
+Player.prototype.draw = function() {
+    image(imgs.player, this.x, this.y, 80, 80);
+    strokeWeight(3.5);
+    stroke(0);
+    fill(0);
+    rect(this.x + 25 + this.xVel / 1.25, this.y + 35 + this.yVel / 1.25, 2, 6, 999);
+    rect(this.x + 52 + this.xVel / 1.25, this.y + 35 + this.yVel / 1.25, 2, 6, 999);
+};
+Player.prototype.collideX = function() {
+    for(var i = 0; i < blocks.length; i++) {
+        switch(blocks[i].type) {
+            case "c":
+            case "s":
+            case "t":
+            case "p":
+            case "L":
+            case "l":
+            case "q":
+            case "Q":
+            case "w":
+            case "W":
+            case "e":
+            case "E":
+                if(rectCollide(this.x, this.y, 80, 80, blocks[i].x, blocks[i].y, 80, 80)) {
+                    if(this.x + 50 > blocks[i].x) {
+                        this.x = blocks[i].x + 80;
+                        this.xVel = 0;
+                    }
+                    else {
+                        this.x = blocks[i].x - 80;
+                        this.xVel = 0;
+                    }
+                }
+        }
+    }
+};
+Player.prototype.collideY = function() {
+    for(var i = 0; i < blocks.length; i++) {
+        switch(blocks[i].type) {
+            case "c":
+            case "s":
+            case "t":
+            case "p":
+            case "L":
+            case "l":
+            case "q":
+            case "Q":
+            case "w":
+            case "W":
+            case "e":
+            case "E":
+                if(rectCollide(this.x, this.y, 80, 80, blocks[i].x, blocks[i].y, 80, 80)) {
+                    if(this.y + 50 > blocks[i].y) {
+                        this.y = blocks[i].y + 80;
+                        this.yVel = 0;
+                    }
+                    else {
+                        this.y = blocks[i].y - 80;
+                        if(this.yVel > 1) {
+                            // soap: fill(random(175, 210), random(175, 210), random(155, 190), random(70 - i / 19, 110 - i / 19));
+                            // ct: fill(178, 172, 220);
+                            // toofpasta: fill(random(140, 160), random(220, 240), random(230, 250), random(70 - i / 19, 110 - i / 19));
+                            for(var m = 0; m < 10; m++) {
+                                switch(blocks[i].type) {
+                                    case "c":
+                                    particles.push(new Particle(this.x + random(-10, 90) + this.xVel * 2, this.y + random(60, 80), color(random(168, 188), random(162, 182), random(210, 230)), random(5, 11), random(-0.5, 0.5), random(-1.5, -1.5), 255, 0, random(-0.15, -0.11)));
+                                    break;
+                                    case "s":
+                                        particles.push(new Particle(this.x + random(-10, 90) + this.xVel * 2, this.y + random(60, 80), color(random(190, 210), random(190, 210), random(155, 190)), random(5, 11), random(-0.5, 0.5), random(-1.5, -1.5), 255, 0, random(-0.15, -0.11)));
+                                    break;
+                                    case "t":
+                                        particles.push(new Particle(this.x + random(-10, 90) + this.xVel * 2, this.y + random(60, 80), color(random(140, 160), random(220, 240), random(230, 250)), random(5, 11), random(-0.5, 0.5), random(-1.5, -1.5), 255, 0, random(-0.15, -0.11)));
+                                    break;
+                                }
+                            }
+                        }
+                        this.yVel = 0;
+                        this.canJump = true;
+                    }
+                }
+        }
+    }
+};
+
+function loadLevel() {
+    bckTrans = 255;
+    if(curLevel >= levels.length) {
+        page = "ganar";
+    }
+    else {
+        tony.xVel = 0;
+        tony.yVel = 0;
+        blocks = [];
+        hairDryers = [];
+        for(var i = 0; i < hairDryerLevels[curLevel].length; i++) {
+            hairDryers.push(hairDryerLevels[curLevel][i]);
+        }
+        for(var i = 0; i < levels[curLevel].length; i++) {
+            for(var j = 0; j < levels[curLevel][i].length; j++) {
+                switch(levels[curLevel][i][j]) {
+                    case "c":
+                    case "m":
+                    case "s":
+                    case "p":
+                    case "t":
+                    case "L":
+                    case "l":
+                    case "f":
+                    case "F":
+                    case "q":
+                    case "Q":
+                    case "w":
+                    case "W":
+                    case "e":
+                    case "E":
+                        blocks.push(new Block(j * 80, i * 80, levels[curLevel][i][j]));
+                        break;
+                    case "S":
+                        if(levels[curLevel][i][j] === "S") {
+                            tony.x = j * 80;
+                            tony.y = i * 80;
+                        }
+                }
+            }
+        }
+    }
+}
+
+
+Player.prototype.specialCollide = function() {
+    for(var i = 0; i < blocks.length; i++) {
+        if(rectCollide(this.x, this.y, 80, 80, blocks[i].x, blocks[i].y + 20, 80, 60)) {
+            if(blocks[i].type === "m") {
+                loadLevel();
+            }
+        }
+        if((rectCollide(this.x, this.y, 80, 80, blocks[i].x + 26, blocks[i].y, 54, 80) && blocks[i].type === "f") || (rectCollide(this.x, this.y, 80, 80, blocks[i].x + 7, blocks[i].y, 54, 80) && blocks[i].type === "F")) {
+            curLevel++;
+            loadLevel();
+        }
+        // if(rectCollide(this.x, this.y, 80, 81, blocks[i].x, blocks[i].y, 80, 80) && blocks[i].type === "f") {
+        //     curLevel ++;
+        //     loadLevel();
+        // }
+    }
+};
+Player.prototype.move = function() {
+    if(this.yVel > 0.3) {
+        this.canJump = false;
+    }
+
+    if(keys[LEFT] || keys[65]) {
+        this.xVel -= 1.1685;
+    }
+    if(keys[RIGHT] || keys[68]) {
+        this.xVel += 1.1685;
+    }
+    this.x += this.xVel;
+    tony.x = constrain(tony.x, 0, levels[curLevel][0].length * 80 - 80);
+    this.sliding = false;
+    this.stuck = false;
+    for(var i = 0; i < blocks.length; i++) {
+        if(rectCollide(this.x, this.y, 80, 81, blocks[i].x, blocks[i].y, 80, 80)) {
+            if(blocks[i].type === "s") {
+                this.sliding = true;
+            }
+        }
+    }
+    if(this.sliding) {
+        this.xVel += (0 - this.xVel) / 12;
+    }
+    else {
+        this.xVel += (0 - this.xVel) / 6;
+    }
+    this.collideX();
+    if((keys[UP] || keys[87]) && this.canJump) {
+        this.yVel = -11;
+        this.canJump = false;
+        for(var i = 0; i < blocks.length; i++) {
+            if(rectCollide(this.x, this.y, 80, 81, blocks[i].x, blocks[i].y, 80, 80)) {
+                if((blocks[i].type === "p" || blocks[i].type === "e" || blocks[i].type === "E") && !this.stuck) {
+                    this.yVel = -17;
+                    this.xVel *= 0.89;
+                }
+                if(blocks[i].type === "t") {
+                    this.stuck = true;
+                }
+            }
+        }
+    }
+    if(this.stuck) {
+        this.yVel = 0;
+    }
+    this.y += this.yVel;
+    this.yVel += 0.3;
+    this.collideY();
+    this.specialCollide();
+    if(this.y > levels[curLevel].length * 80) {
+        loadLevel();
+    }
+};
+
+
+var cam = {
+    x: 0,
+    y: 0
+};
+
+
+loadLevel();
+bckTrans = 0;
+
+// what # of the loading thing it is on
+var curLoad = 0;
+
+// is the loading done
+var loaded = false;
+
+
+var load = function() {
+
+    background(0, 0);
+
+
+    var obj = Object.keys(imgs);
+
+    imgs[obj[curLoad]] = imgs[obj[curLoad]]();
+    curLoad++;
+
+    if(curLoad < obj.length) {
+        loaded = false;
+    }
+
+    // finish loading
+    else {
+        loaded = true;
+        page = "logo";
+    }
+
+};
+
+// main function
+function Button(config) {
+    this.x = config.x;
+    this.y = config.y;
+
+    this.w = config.w;
+    this.h = config.h;
+
+    this.show = config.show;
+
+    this.clicky = config.clicky;
+}
+
+Button.prototype.draw = function() {
+
+    // draw button
+    this.show();
+
+    // mouse collisions
+    if(mouseX > this.x && mouseX < this.x + this.w && mouseY > this.y && mouseY < this.y + this.h) {
+
+        overButton = true;
+
+        fill(0, 30);
+        noStroke();
+        rect(this.x, this.y, this.w, this.h);
+        if(clicked) {
+            this.clicky();
+        }
+
+    }
+
+};
+
+// all of the buttons
+var buttons = {
+    play: new Button({
+        x: 400,
+        y: 200,
+        w: 150,
+        h: 100,
+
+        show: function() {
+            fill(200);
+            strokeWeight(4);
+            stroke(150);
+            rect(400, 200, 150, 100);
+            textSize(30);
+            outlineText("play", 475, 250, 255, 0, 20);
+        },
+        clicky: function() {
+            bckTrans = 255;
+            page = "game";
+        },
+    }),
+    winners: new Button({
+        x: 400,
+        y: 320,
+        w: 150,
+        h: 100,
+
+        show: function() {
+            fill(200);
+            strokeWeight(4);
+            stroke(150);
+            rect(400, 320, 150, 100);
+            textSize(30);
+            outlineText("winners", 475, 370, 255, 0, 20);
+        },
+        clicky: function() {
+            bckTrans = 255;
+            page = "leaders";
+        },
+    }),
+    back: new Button({
+        x: 20,
+        y: 530,
+        w: 150,
+        h: 50,
+
+        show: function() {
+            fill(200);
+            strokeWeight(4);
+            stroke(150);
+            rect(20, 530, 150, 50);
+            textSize(30);
+            outlineText("<", 95, 555, 255, 0, 20);
+        },
+        clicky: function() {
+            bckTrans = 255;
+            page = "maine";
+        },
+    }),
+    /*
+    x: new Button({
+        x: ,
+        y: ,
+        w: ,
+        h: ,
+        
+        show: function() {
+            
+        },
+        clicky: function() {
+            
+        },
+    }),
+    */
+
+};
+
+draw = function() {
+
+    // i did
+    try {
+        switch(page) {
+
+            // loading screen
+            case "load":
+                load();
+
+                background(155);
+                noStroke();
+                fill(255);
+                textSize(60);
+                textAlign(CENTER, CENTER);
+                outlineText("Loading...", 300, 120, 255, 0, 20);
+                textSize(65);
+                outlineText((curLoad / (Object.keys(imgs)).length * 100).toFixed(1) + "%", 300, 320, 255, 0, 20);
+                fill(220);
+                rect(0, 525, curLoad / (Object.keys(imgs)).length * 600, 75);
+
+                break;
+
+                // logo screen
+            case "logo":
+
+                image(bck, 0, 0);
+                imageMode(CENTER);
+                for(var i = 0; i < logoImgs.length; i++) {
+                    pushMatrix();
+                    translate(logoImgs[i][3] + 15, logoImgs[i][4]);
+                    image(logoImgs[i][0], 0, 0);
+                    popMatrix();
+                    if(logoImgs[i][5]) {
+                        logoImgs[i][3] += (logoImgs[i][1] - logoImgs[i][3]) / 10;
+                        logoImgs[i][4] += (logoImgs[i][2] - logoImgs[i][4]) / 10;
+                    }
+                }
+                if(logoTimer < 120) {
+                    logoImgs[logoTimer * 5][5] = true;
+                    logoImgs[logoTimer * 5 - 1][5] = true;
+                    logoImgs[logoTimer * 5 - 2][5] = true;
+                    logoImgs[logoTimer * 5 - 3][5] = true;
+                    logoImgs[logoTimer * 5 - 4][5] = true;
+                }
+                imageMode(CORNER);
+                if(logoTimer > 60) {
+                    for(var i = 0; i < presents.length; i++) {
+                        textSize(height / 15);
+                        textFont(createFont("Montserrat Bold"));
+                        fill(255);
+                        text(pMsg[i], presents[i][2], presents[i][3]);
+                        if(logoTimer > 135) {
+                            presents[i][2] += (presents[i][0] - presents[i][2]) / 15;
+                            presents[i][3] += (presents[i][1] - presents[i][3]) / 15;
+                        }
+                    }
+                }
+                if(logoTimer > 280) {
+                    transImg = get(0, 0, width, height);
+                    page = "maine";
+                }
+                logoTimer++;
+
+                break;
+
+            case "game":
+                image(imgs.lovelyBackground, map(cam.x, -levels[curLevel][0].length * 80 + 600, 0, -40, 0), 0, 640, 600);
+                fill(255, 15);
+                noStroke();
+                rect(0, 0, 600, 600);
+                pushMatrix();
+                translate(cam.x, cam.y);
+                for(var i = 0; i < blocks.length; i++) {
+                    blocks[i].draw();
+                }
+                for(var i = 0; i < hairDryers.length; i++) {
+                    hairDryers[i].draw();
+                    hairDryers[i].func();
+                }
+                tony.move();
+                tony.draw();
+                for(var i = particles.length - 1; i > 0; i--) {
+                    particles[i].draw();
+                    if(particles[i].size < 0) {
+                        particles.splice(i, 1);
+                    }
+                }
+                popMatrix();
+                textSize(25);
+                if(curLevel < levels.length) {
+                    outlineText("Level " + (curLevel + 1) + levelTexts[curLevel], 300, 100, 255, 0, 15);
+
+                    cam.x += (250 - tony.x - cam.x) / 6;
+                    cam.y += (250 - tony.y - cam.y) / 6;
+                    cam.x = constrain(cam.x, -levels[curLevel][0].length * 80 + 600, 0);
+                    // println(cam.y);
+                    // println(-levels[curLevel].length * 80 + 410);
+                    cam.y = constrain(cam.y, -levels[curLevel].length * 80 + 600, 99999);
+                    if(tony.x < 0) {
+                        tony.x = 0;
+                        tony.xVel = 0;
+                    }
+                    if(tony.x > levels[curLevel][0].length * 80 - 80) {
+                        tony.x = levels[curLevel][0].length * 80 - 80;
+                        tony.xVel = 0;
+                    }
+                    tony.x = constrain(tony.x, 0, levels[curLevel][0].length * 80 - 80);
+
+                    if(keys[82]) {
+                        loadLevel();
+                    }
+                }
+                // println(cam.y);
+                break;
+
+
+                // menu
+            case "maine":
+
+                image(imgs.lovelyBackground, 0, 0, 600, 600);
+                textSize(75);
+                pushMatrix();
+                translate(300, 100);
+                rotate(3);
+                outlineText("COUNTERTOP", 0, 0, 255, 0, 100);
+                popMatrix();
+                pushMatrix();
+                rotate(20);
+                translate(120, 360);
+                for(var i = 0; i < 4; i++) {
+                    if(i < 2) {
+                        image(imgs.washy, i * 160, 0, 161, 160);
+                    }
+                    else {
+                        image(imgs.countertop, i * 160, 0, 161, 160);
+                    }
+                    image(imgs.countertop, i * 160, 160, 161, 160);
+                }
+                rotate(15);
+                image(imgs.player, 50, -280, 160, 160);
+                fill(0);
+                noStroke();
+                rect(96, -210, 10, 20, 999);
+                rect(144, -210, 10, 20, 999);
+                popMatrix();
+
+                buttons.play.draw();
+                buttons.winners.draw();
+
+                image(transImg, transImgX, 0);
+                transImgX += (600 - transImgX) / 15;
+
+                break;
+            case "leaders":
+                image(imgs.lovelyBackground, 0, 0, 600, 600);
+                fill(0, 50);
+                noStroke();
+                rect(0, 0, 600, 600);
+                textSize(60);
+                pushMatrix();
+                translate(300, 100);
+                rotate(-3);
+                outlineText("List of finishers", 0, 0, 255, 0, 70);
+                popMatrix();
+                textSize(20);
+                for(var i = 0; i < floor(finishers.length / 2); i++) {
+                    outlineText(finishers[i], 180, 160 + i * 24.5, 255, 0, 20);
+                }
+                for(var i = floor(finishers.length / 2); i < finishers.length; i++) {
+                    outlineText(finishers[i], 420, 160 + (i - floor(finishers.length / 2)) * 24.5, 255, 0, 20);
+                }
+                buttons.back.draw();
+                textSize(18.5);
+                outlineText("Put your name in the T&T to be featured!", 390, 570, 255, 0, 25);
+            break;
+            case "ganar":
+
+                image(imgs.lovelyBackground, 0, 0, 600, 600);
+                textSize(200);
+                pushMatrix();
+                translate(300, 100);
+                rotate(-3);
+                outlineText("WIN!", 0, 0, 255, 0, 100);
+                popMatrix();
+                pushMatrix();
+                rotate(20);
+                translate(120, 360);
+                for(var i = 0; i < 4; i++) {
+                    if(i < 2) {
+                        image(imgs.washy, i * 160, 0, 161, 160);
+                    }
+                    else {
+                        image(imgs.countertop, i * 160, 0, 161, 160);
+                    }
+                    image(imgs.countertop, i * 160, 160, 161, 160);
+                }
+                rotate(15);
+                image(imgs.player, 50, -280, 160, 160);
+                fill(0);
+                noStroke();
+                rect(96, -210, 10, 20, 999);
+                rect(144, -210, 10, 20, 999);
+                popMatrix();
+                textSize(20);
+                outlineText("tell me in the t&t to be\nfeatured on the winners page!", 300, 550, 255, 0, 30);
+                break;
+        }
+
+        // mouse interaction
+        if(overButton) {
+            cursor(HAND);
+        }
+        else {
+            cursor(ARROW);
+        }
+        clicked = false;
+        overButton = false;
+
+        // show frame rate
+        fill(0);
+        textSize(20);
+        text(this.__frameRate.toFixed(1), 35, 15);
+
+        fill(200, bckTrans);
+        rect(0, 0, 600, 600);
+        if(page === "ganar") {
+            bckTrans += (-6 - bckTrans) / 175;
+        }
+        else {
+        bckTrans += (-3 - bckTrans) / 20;
+        }
+        if(bckTrans < 0) {
+            bckTrans = 0;
+        }
+
+    }
+    catch (e) {
+        
+        // there was a glitch somewhere so instead of fixing it i just masked over it so nobody knew it existed :))))
+        // dont fix your problems just ignore them :))))
+        if(curLevel < 14) {
+            println(e);
+        }
+    }
+};
+
+mouseClicked = function() {
+    clicked = true;
+};
+keyPressed = function() {
+    keys[keyCode] = true;
+};
+keyReleased = function() {
+    keys[keyCode] = false;
+};
+
+// }
+
+
+
